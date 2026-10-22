@@ -426,7 +426,7 @@
       element.classList.toggle("error", isError);
     }
 
-    function showSignedInView(user) {
+    function showPasswordRecovery() {       state.passwordRecovery = true;       $("app").hidden = true;       $("authScreen").hidden = false;       $("authTitle").textContent = "Reset your password";       $("authDescription").hidden = true;       $("signupDescription").hidden = true;       $("authFormFields").hidden = true;       $("passwordRecoveryFields").hidden = false;       setAuthMessage("");     }      function showSignInForm() {       state.passwordRecovery = false;       $("authTitle").textContent = "Sign in to your dashboard";       $("authDescription").hidden = false;       $("signupDescription").hidden = false;       $("authFormFields").hidden = false;       $("passwordRecoveryFields").hidden = true;       $("recoveryPassword").value = "";       $("recoveryPasswordConfirm").value = "";     }      function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
       state.isOwner = user.app_metadata?.role === "owner";       state.hasPlusAccess = state.isOwner || user.app_metadata?.plus_access === true;
@@ -560,7 +560,7 @@
       }
     }
 
-    function disconnectBitcoinStream() {
+    async function sendPasswordReset() {       if (!state.supabase) return;       const emailInput = $("authEmail");       if (!emailInput.reportValidity()) return;       $("forgotPasswordButton").disabled = true;       setAuthMessage("Sending password reset link…");       try {         const { error } = await state.supabase.auth.resetPasswordForEmail(emailInput.value.trim(), {           redirectTo: `${window.location.origin}${window.location.pathname}`         });         if (error) throw error;         setAuthMessage("If an account exists for this email, a reset link was sent. Check your inbox and spam folder.");       } catch (error) {         console.error("Password reset request failed", error);         setAuthMessage(error.message || "Could not send a password reset link. Try again later.", true);       } finally {         $("forgotPasswordButton").disabled = false;       }     }      async function updatePassword() {       if (!state.supabase) return;       const password = $("recoveryPassword").value;       if (!$("recoveryPassword").reportValidity() || !$("recoveryPasswordConfirm").reportValidity()) return;       if (password !== $("recoveryPasswordConfirm").value) {         setAuthMessage("The passwords do not match.", true);         return;       }       $("updatePasswordButton").disabled = true;       setAuthMessage("Updating your password…");       try {         const { data, error } = await state.supabase.auth.updateUser({ password });         if (error) throw error;         if (!data.user) throw new Error("Supabase did not return the updated account.");         state.passwordRecovery = false;         showSignedInView(data.user);         showToast("Password updated successfully.");       } catch (error) {         console.error("Password update failed", error);         setAuthMessage(error.message || "Could not update your password. Request a new reset link and try again.", true);       } finally {         $("updatePasswordButton").disabled = false;       }     }      async function backToSignIn() {       if (!state.supabase) return;       try {         const { error } = await state.supabase.auth.signOut();         if (error) throw error;         showSignInForm();         setAuthMessage("");       } catch (error) {         console.error("Could not leave password recovery", error);         setAuthMessage(`Could not return to sign in: ${error.message}`, true);       }     }      function disconnectBitcoinStream() {
       clearTimeout(state.socketRetryTimer);
       state.socketRetryTimer = null;
       const socket = state.socket;
@@ -1123,8 +1123,8 @@
       event.preventDefault();
       addAsset($("symbolSearch").value);
     });
-    $("authForm").addEventListener("submit", signIn);
-    $("signUpButton").addEventListener("click", signUp);
+    $("authForm").addEventListener("submit", (event) => {       if (state.passwordRecovery) updatePassword();       else signIn(event);     });
+    $("signUpButton").addEventListener("click", signUp);     $("forgotPasswordButton").addEventListener("click", sendPasswordReset);     $("updatePasswordButton").addEventListener("click", updatePassword);     $("backToSignInButton").addEventListener("click", backToSignIn);
     $("signOutButton").addEventListener("click", async () => {
       if (!state.supabase) return;
       try {
