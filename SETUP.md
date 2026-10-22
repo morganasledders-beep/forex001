@@ -18,7 +18,9 @@ If the GitHub Actions secrets are missing, the site shows a setup-required scree
 
 ## Optional M-Pesa subscription
 
-The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). It publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
+The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). The owner account email configured in `boby_bot.html` is exempt from the watchlist limit. This comparison is in public browser code and is only a convenience for this client-side watchlist feature; it is not secure authorization for private data or backend services.
+
+The site publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
 
 GitHub Pages only serves static files. Before taking payments, deploy a secure HTTPS backend that:
 
@@ -26,7 +28,7 @@ GitHub Pages only serves static files. Before taking payments, deploy a secure H
 2. Accepts an authenticated customer's explicit request to start a one-month subscription, validates the amount and phone number server-side, and initiates a customer-confirmed M-Pesa STK Push to the merchant business account.
 3. Verifies the Daraja payment callback server-side, validates the transaction and amount, handles duplicate callbacks safely, and records the subscription expiry for the signed-in account.
 4. Exposes a protected subscription-status endpoint. The site must grant Plus access only from this verified status, never from a browser flag, receipt text, or local storage.
-5. Sends clear KES 100/month pricing and renewal terms before checkout. Renew monthly only after the customer initiates and confirms each payment; this setup does not enable automatic recurring charges.
+5. Sends clear KES 500/month pricing and renewal terms before checkout. Renew monthly only after the customer initiates and confirms each payment; this setup does not enable automatic recurring charges.
 
 Also provide appropriate privacy, refund, and customer-support details before launch. Test the backend with Daraja sandbox credentials before production. Do not request or store a visitor's M-Pesa PIN, OTP, or broker credentials. Do not enter Daraja secrets into GitHub Pages, the HTML, or `auth-config.js`.
 

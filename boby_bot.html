@@ -312,6 +312,7 @@
           <div class="analysis-copy">Plus unlocks up to 7 watchlist symbols. To request a one-month subscription, send KES 500 using M-Pesa Send Money to:</div>
           <p style="margin:10px 0"><a class="broker-link" href="tel:+254718654009" aria-label="Call the M-Pesa recipient at plus 254 718 654 009"><strong>+254 718 654 009</strong></a></p>
           <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div>
+          <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>
           <div class="notice">Manual payment only. No payment is verified or watchlist limit changed automatically. No automatic renewals.</div>
         </section>
       </aside>
@@ -359,12 +360,16 @@
       USDCHF: { label: "USD / CHF", name: "US dollar / Swiss franc · ECB reference rate", kind: "forex", base: "USD", quote: "CHF" }
     };
     const DEFAULT_WATCHLIST = ["BTCUSDT", "EURUSD", "GBPUSD", "USDJPY"];
+    const OWNER_EMAIL = "morganasledders@gmail.com";
+    const FREE_WATCHLIST_LIMIT = 4;
+    const PLUS_WATCHLIST_LIMIT = 7;
     const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
     const state = {
       watchlist: [...DEFAULT_WATCHLIST],
       trades: [],
       storageKeys: null,
       userId: null,
+      isOwner: false,
       selected: "BTCUSDT",
       interval: "15m",
       prices: {},
@@ -424,7 +429,10 @@
     function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
-      setText("accountEmail", user.email || "Signed in");
+      state.isOwner = typeof user.email === "string"
+        && user.email.trim().toLowerCase() === OWNER_EMAIL;
+      setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
+      $("ownerAccessNotice").hidden = !state.isOwner;
       if (state.userId !== user.id) {
         state.userId = user.id;
         state.storageKeys = {
@@ -460,6 +468,8 @@
       $("app").hidden = true;
       $("authScreen").hidden = false;
       setText("accountEmail", "");
+      state.isOwner = false;
+      $("ownerAccessNotice").hidden = true;
       state.userId = null;
       state.storageKeys = null;
       disconnectBitcoinStream();
@@ -1004,8 +1014,11 @@
         return;
       }
       if (!state.watchlist.includes(normalized)) {
-        if (state.watchlist.length >= 4) {
-          showToast("The free plan supports 4 watchlist symbols. Extra symbols require the KES 100/month Plus plan; M-Pesa checkout is not set up yet.", true);
+        const watchlistLimit = state.isOwner ? PLUS_WATCHLIST_LIMIT : FREE_WATCHLIST_LIMIT;
+        if (state.watchlist.length >= watchlistLimit) {
+          showToast(state.isOwner
+            ? `The owner account supports up to ${PLUS_WATCHLIST_LIMIT} watchlist symbols.`
+            : `The free plan supports ${FREE_WATCHLIST_LIMIT} watchlist symbols. Plus supports ${PLUS_WATCHLIST_LIMIT} for KES 500/month; checkout is manual.`, true);
           return;
         }
         state.watchlist.push(normalized);
