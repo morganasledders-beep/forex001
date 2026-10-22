@@ -592,13 +592,27 @@ Deno.serve(async (request) => {
       return jsonResponse({ authorizationUrl: url.toString() }, 200, origin);
     }
 
+    const configured = [
+      "CTRADER_CLIENT_ID",
+      "CTRADER_CLIENT_SECRET",
+      "CTRADER_ENCRYPTION_KEY",
+    ].every((name) => Boolean(Deno.env.get(name)));
+
+    if (body.action === "readiness") {
+      return jsonResponse({ configured }, 200, origin);
+    }
+
     if (body.action === "status") {
+      if (!configured) {
+        return jsonResponse({ configured: false, connected: false, accounts: [] }, 200, origin);
+      }
       const existing = await loadConnection(user.id);
-      if (!existing) return jsonResponse({ connected: false, accounts: [] }, 200, origin);
+      if (!existing) return jsonResponse({ configured: true, connected: false, accounts: [] }, 200, origin);
       const connection = await refreshConnection(existing);
       connection.accounts = await loadAccounts(connection);
       await saveConnection(user.id, connection);
       return jsonResponse({
+        configured: true,
         connected: true,
         accounts: connection.accounts.map((account) => ({
           ...account,

@@ -311,6 +311,7 @@
           <div class="trade-buttons">
             <button id="connectCtraderButton" class="button secondary small" type="button">Connect cTrader</button>
             <button id="disconnectCtraderButton" class="button secondary small" type="button" hidden>Disconnect</button>
+            <button id="ctraderNotifyButton" class="button secondary small" type="button" aria-pressed="false">Notify me when cTrader is ready</button>
           </div>
           <div class="field">
             <label for="ctraderAccount">cTrader account</label>
@@ -432,6 +433,9 @@
       currentSetup: null,
       ctraderAccounts: [],
       ctraderAccountId: "",
+      ctraderConfigured: null,
+      ctraderNotificationsEnabled: false,
+      ctraderStatusTimer: null,
       ctraderRequestId: 0,
       ctraderReturn: "",
       notificationsEnabled: false,
@@ -477,6 +481,13 @@
       toast.hidden = false;
       clearTimeout(state.toastTimer);
       state.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
+    }
+
+    function updateCtraderNotificationButton() {
+      $("ctraderNotifyButton").textContent = state.ctraderNotificationsEnabled
+        ? "cTrader ready alerts on"
+        : "Notify me when cTrader is ready";
+      $("ctraderNotifyButton").setAttribute("aria-pressed", String(state.ctraderNotificationsEnabled));
     }
 
     function updateAlertAccess() {
@@ -560,8 +571,20 @@
       $("ownerAccessNotice").hidden = !state.isOwner;
       $("plusAccessNotice").hidden = !state.hasPlusAccess || state.isOwner;
       $("paymentInstructions").hidden = state.hasPlusAccess;
+      try {
+        state.ctraderNotificationsEnabled =
+          localStorage.getItem("boby-ctrader-ready-notifications-v1") === "true" &&
+          "Notification" in window &&
+          Notification.permission === "granted";
+      } catch (error) {
+        console.error("Could not load cTrader notification preference", error);
+      }
+      updateCtraderNotificationButton();
       updateAlertAccess();
       refreshCtraderStatus();
+      if (state.ctraderStatusTimer === null) {
+        state.ctraderStatusTimer = setInterval(checkCtraderReadiness, 60_000);
+      }
       if (state.ctraderReturn) {
         showToast(state.ctraderReturn === "connected"
           ? "cTrader authorization completed. Select the account to use for FX data."
@@ -607,6 +630,13 @@
       state.isOwner = false;
       state.hasPlusAccess = false;
       state.notificationsEnabled = false;
+      state.ctraderNotificationsEnabled = false;
+      state.ctraderConfigured = null;
+      if (state.ctraderStatusTimer !== null) {
+        clearInterval(state.ctraderStatusTimer);
+        state.ctraderStatusTimer = null;
+      }
+      updateCtraderNotificationButton();
       $("ownerAccessNotice").hidden = true;
       $("plusAccessNotice").hidden = true;
       $("paymentInstructions").hidden = false;
@@ -1054,18 +1084,53 @@
       return data;
     }
 
+    function setCtraderConfigured(configured) {
+      const wasConfigured = state.ctraderConfigured;
+      state.ctraderConfigured = configured;
+      if (
+        configured &&
+        wasConfigured !== true &&
+        state.ctraderNotificationsEnabled &&
+        "Notification" in window &&
+        Notification.permission === "granted"
+      ) {
+        new Notification("FOREX001 · cTrader is ready", {
+          body: "The cTrader service is configured. Open the dashboard and connect your account for read-only market data. No trades are placed.",
+          tag: "forex001-ctrader-ready"
+        });
+      }
+      if (configured && wasConfigured === false && $("ctraderStatus")) {
+        $("ctraderStatus").textContent = "cTrader is configured. Connect your account for read-only market data.";
+      }
+    }
+
+    async function checkCtraderReadiness() {
+      if (!state.supabase || !state.dashboardStarted) return false;
+      try {
+        const result = await ctraderRequest("readiness");
+        if (typeof result.configured === "boolean") setCtraderConfigured(result.configured);
+        return true;
+      } catch (error) {
+        console.error("Could not check cTrader configuration status", error);
+        return false;
+      }
+    }
+
     async function refreshCtraderStatus() {
       const requestId = ++state.ctraderRequestId;
       try {
         const result = await ctraderRequest("status");
         if (requestId !== state.ctraderRequestId) return;
+        setCtraderConfigured(result.configured === true);
         state.ctraderAccounts = Array.isArray(result.accounts) ? result.accounts : [];
         state.ctraderAccountId = "";
         updateMarketStatLabels();
         populateCtraderAccounts();
         $("connectCtraderButton").disabled = false;
         $("disconnectCtraderButton").hidden = !result.connected;
-        $("ctraderStatus").textContent = result.connected
+        $("ctraderStatus").textContent = !state.ctraderConfigured
+          ? "cTrader setup is incomplete. The site owner must add the cTrader app credentials in Supabase."
+          : result.connected
           ? "Connected to cTrader. Authorized accounts are grouped as live or demo below."
           : "Not connected. Connect to use your broker's FX candles and prices.";
         $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex";
@@ -1089,6 +1154,10 @@
     }
 
     async function connectCtrader() {
+      if (state.ctraderConfigured === false) {
+        showToast("cTrader setup is incomplete. Click Notify me when cTrader is ready to get an alert.", true);
+        return;
+      }
       $("connectCtraderButton").disabled = true;
       try {
         const result = await ctraderRequest("start");
@@ -1861,6 +1930,64 @@
     });
     $("connectCtraderButton").addEventListener("click", connectCtrader);
     $("disconnectCtraderButton").addEventListener("click", disconnectCtrader);
+    $("ctraderNotifyButton").addEventListener("click", async () => {
+      if (state.ctraderNotificationsEnabled) {
+        state.ctraderNotificationsEnabled = false;
+        updateCtraderNotificationButton();
+        try {
+          localStorage.setItem("boby-ctrader-ready-notifications-v1", "false");
+        } catch (error) {
+          console.error("Could not save cTrader notification preference", error);
+          showToast("Notifications are off for this session, but the browser could not save this preference.", true);
+          return;
+        }
+        showToast("cTrader readiness notifications are off.");
+        return;
+      }
+      if (!("Notification" in window)) {
+        showToast("This browser does not support desktop notifications.", true);
+        return;
+      }
+      try {
+        const permission = Notification.permission === "granted"
+          ? "granted"
+          : await Notification.requestPermission();
+        if (permission !== "granted") {
+          showToast("Allow notifications in your browser settings to receive cTrader readiness alerts.", true);
+          return;
+        }
+        state.ctraderNotificationsEnabled = true;
+        updateCtraderNotificationButton();
+        let preferenceSaved = true;
+        try {
+          localStorage.setItem("boby-ctrader-ready-notifications-v1", "true");
+        } catch (error) {
+          console.error("Could not save cTrader notification preference", error);
+          preferenceSaved = false;
+        }
+        const readinessChecked = await checkCtraderReadiness();
+        if (!readinessChecked) {
+          showToast("Notifications are enabled, but cTrader readiness could not be checked. Keep the dashboard open and try Refresh.", true);
+          return;
+        }
+        if (state.ctraderConfigured) {
+          new Notification("FOREX001 · cTrader is ready", {
+            body: "The cTrader service is configured. Open the dashboard and connect your account for read-only market data. No trades are placed.",
+            tag: "forex001-ctrader-ready"
+          });
+          if (!preferenceSaved) {
+            showToast("Notifications are enabled for this session, but the browser could not save the preference.", true);
+          }
+        } else {
+          showToast(preferenceSaved
+            ? "We'll notify you when cTrader is configured while this dashboard remains open."
+            : "Notifications are enabled for this session only; browser storage could not save the preference.", !preferenceSaved);
+        }
+      } catch (error) {
+        console.error("Could not enable cTrader readiness notifications", error);
+        showToast("Could not enable browser notifications in this browser context.", true);
+      }
+    });
     $("ctraderAccount").addEventListener("change", () => {
       state.ctraderAccountId = $("ctraderAccount").value;
       updateCtraderAccountSummary();
