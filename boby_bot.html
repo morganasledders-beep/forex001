@@ -325,8 +325,8 @@
         <div class="brand-icon">F</div>
         <span class="brand-name">FOREX001</span>
       </div>
-      <h1>Sign in to your dashboard</h1>
-      <p>Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>       <p>New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
+      <h1 id="authTitle">Sign in to your dashboard</h1>
+      <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>       <p id="signupDescription">New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
       <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
       <div id="authFormFields">
         <div class="field">
@@ -338,9 +338,9 @@
           <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
         </div>
         <button id="signInButton" class="button" type="submit">Sign in</button>
-        <button id="signUpButton" class="button secondary" type="button">Create account</button>
+        <button id="signUpButton" class="button secondary" type="button">Create account</button>         <button id="forgotPasswordButton" class="button secondary" type="button">Forgot your password?</button>
       </div>
-      <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
+      <div id="passwordRecoveryFields" hidden><p>Enter the email for your account and request a reset link. Public email delivery requires the site owner to configure custom SMTP in Supabase.</p><div class="field"><label for="recoveryPassword">New password</label><input id="recoveryPassword" type="password" autocomplete="new-password" minlength="8" required></div><div class="field"><label for="recoveryPasswordConfirm">Confirm new password</label><input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required></div><button id="updatePasswordButton" class="button" type="button">Save new password</button><button id="backToSignInButton" class="button secondary" type="button">Back to sign in</button></div><div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
     </form>
   </section>
   <div id="toast" class="toast" role="status" hidden></div>
@@ -381,7 +381,7 @@
       socketUrl: null,
       socketRetryTimer: null,
       socketRetryMs: 1000,
-      supabase: null,
+      supabase: null, passwordRecovery: false,
       dashboardStarted: false,
       toastTimer: null
     };
@@ -426,7 +426,7 @@
       element.classList.toggle("error", isError);
     }
 
-    function showPasswordRecovery() {       state.passwordRecovery = true;       $("app").hidden = true;       $("authScreen").hidden = false;       $("authTitle").textContent = "Reset your password";       $("authDescription").hidden = true;       $("signupDescription").hidden = true;       $("authFormFields").hidden = true;       $("passwordRecoveryFields").hidden = false;       setAuthMessage("");     }      function showSignInForm() {       state.passwordRecovery = false;       $("authTitle").textContent = "Sign in to your dashboard";       $("authDescription").hidden = false;       $("signupDescription").hidden = false;       $("authFormFields").hidden = false;       $("passwordRecoveryFields").hidden = true;       $("recoveryPassword").value = "";       $("recoveryPasswordConfirm").value = "";     }      function showSignedInView(user) {
+    function showPasswordRecovery() {       state.passwordRecovery = true;       $("app").hidden = true;       $("authScreen").hidden = false;       $("authTitle").textContent = "Reset your password";       $("authDescription").hidden = true;       $("signupDescription").hidden = true; $("authEmail").disabled = true; $("authPassword").disabled = true; $("recoveryPassword").disabled = false; $("recoveryPasswordConfirm").disabled = false;       $("authFormFields").hidden = true;       $("passwordRecoveryFields").hidden = false;       setAuthMessage("");     }      function showSignInForm() {       state.passwordRecovery = false;       $("authTitle").textContent = "Sign in to your dashboard";       $("authDescription").hidden = false;       $("signupDescription").hidden = false; $("authEmail").disabled = false; $("authPassword").disabled = false; $("recoveryPassword").disabled = true; $("recoveryPasswordConfirm").disabled = true;       $("authFormFields").hidden = false;       $("passwordRecoveryFields").hidden = true;       $("recoveryPassword").value = "";       $("recoveryPasswordConfirm").value = "";     }      function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
       state.isOwner = user.app_metadata?.role === "owner";       state.hasPlusAccess = state.isOwner || user.app_metadata?.plus_access === true;
@@ -494,13 +494,13 @@
       }
       try {
         state.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-        state.supabase.auth.onAuthStateChange((_event, session) => {
-          if (session && session.user) showSignedInView(session.user);
+        state.supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") showPasswordRecovery(); else if (state.passwordRecovery) { if (event === "SIGNED_OUT") showSignInForm(); } else if (session && session.user) showSignedInView(session.user);
           else showSignedOutView();
         });
         const { data, error } = await state.supabase.auth.getSession();
         if (error) throw error;
-        if (data.session && data.session.user) showSignedInView(data.session.user);
+        const recoveryHash = new URLSearchParams(window.location.hash.slice(1)); const recoveryRedirect = recoveryHash.get("type") === "recovery" || new URLSearchParams(window.location.search).has("code"); if (recoveryRedirect) showPasswordRecovery(); else if (data.session && data.session.user) showSignedInView(data.session.user);
         else showSignedOutView();
       } catch (error) {
         console.error("Could not initialize account sign-in", error);
@@ -1124,7 +1124,7 @@
       addAsset($("symbolSearch").value);
     });
     $("authForm").addEventListener("submit", (event) => {       if (state.passwordRecovery) updatePassword();       else signIn(event);     });
-    $("signUpButton").addEventListener("click", signUp);     $("forgotPasswordButton").addEventListener("click", sendPasswordReset);     $("updatePasswordButton").addEventListener("click", updatePassword);     $("backToSignInButton").addEventListener("click", backToSignIn);
+    $("signUpButton").addEventListener("click", signUp); $("forgotPasswordButton").addEventListener("click", sendPasswordReset); $("updatePasswordButton").addEventListener("click", updatePassword); $("backToSignInButton").addEventListener("click", backToSignIn);     $("forgotPasswordButton").addEventListener("click", sendPasswordReset);     $("updatePasswordButton").addEventListener("click", updatePassword);     $("backToSignInButton").addEventListener("click", backToSignIn);
     $("signOutButton").addEventListener("click", async () => {
       if (!state.supabase) return;
       try {
