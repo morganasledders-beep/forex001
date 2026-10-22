@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07101f">
+  <title>forex001 - Market Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07101f;
+      --panel: #0b172a;
+      --panel-soft: #0f1e34;
+      --line: #1b2b43;
+      --text: #edf4ff;
+      --muted: #8da2bd;
+      --blue: #3997ff;
+      --green: #16d39a;
+      --red: #ff6174;
+      --amber: #ffc15a;
+      font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--text); }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header {
+      min-height: 64px; padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+      border-bottom: 1px solid var(--line); background: #0a1527;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 190px; font-weight: 800; letter-spacing: .04em; }
+    .brand-icon {
+      width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--green)); color: white;
+    }
+    .brand-name { background: linear-gradient(90deg, #64b4ff, #57e5b5); color: transparent; background-clip: text; }
+    .status-pill { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+    .status-dot.live { background: var(--green); box-shadow: 0 0 10px #16d39a66; }
+    .search { display: flex; flex: 1; max-width: 520px; gap: 8px; }
+    .search input, .field input, .field select {
+      width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+      outline: 0; background: var(--panel-soft); color: var(--text);
+    }
+    .search input:focus, .field input:focus, .field select:focus { border-color: var(--blue); }
+    .button {
+      border: 1px solid transparent; border-radius: 8px; padding: 9px 13px; cursor: pointer;
+      background: var(--blue); color: white; font-weight: 700; transition: filter .15s, transform .15s;
+    }
+    .button:hover { filter: brightness(1.12); }
+    .button:active { transform: translateY(1px); }
+    .button.secondary { background: var(--panel-soft); border-color: var(--line); color: var(--text); }
+    .button.small { padding: 7px 10px; font-size: 12px; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    [hidden] { display: none !important; }
+    .clock { color: var(--muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .main { display: grid; grid-template-columns: 230px minmax(0, 1fr) 310px; flex: 1; min-height: 0; }
+    .sidebar, .rightbar { background: #091427; }
+    .sidebar { border-right: 1px solid var(--line); padding: 16px 12px; }
+    .rightbar { border-left: 1px solid var(--line); padding: 14px; }
+    .section-title { margin: 2px 0 10px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .watchlist { display: grid; gap: 5px; }
+    .asset-row {
+      width: 100%; display: flex; justify-content: space-between; gap: 8px; align-items: center;
+      border: 1px solid transparent; border-radius: 8px; padding: 10px 9px; text-align: left;
+      background: transparent; cursor: pointer;
+    }
+    .asset-row:hover, .asset-row.active { background: var(--panel); border-color: var(--line); }
+    .asset-row.active { border-left: 3px solid var(--blue); }
+    .asset-symbol { font-size: 12px; font-weight: 800; }
+    .asset-name { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .asset-price { text-align: right; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .asset-change { margin-top: 3px; text-align: right; font-size: 10px; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .muted { color: var(--muted); }
+    .market-note { margin-top: 18px; padding: 11px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .workspace { min-width: 0; padding: 18px; overflow: auto; }
+    .asset-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .asset-heading h1 { margin: 0 0 5px; font-size: 21px; }
+    .asset-subtitle { color: var(--muted); font-size: 11px; }
+    .price-large { font-size: 23px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .price-change { margin-top: 4px; font-size: 12px; text-align: right; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+    .stat, .card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+    .stat { padding: 11px 12px; }
+    .stat-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+    .stat-value { margin-top: 6px; font-size: 14px; font-weight: 700; }
+    .card { padding: 13px; }
+    .chart-card { min-height: 300px; }
+    .card-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .card-heading h2 { margin: 0; font-size: 13px; }
+    .timeframes { display: flex; gap: 4px; }
+    .timeframe { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); color: var(--muted); cursor: pointer; font-size: 10px; }
+    .timeframe.active { border-color: var(--blue); background: #12345a; color: white; }
+    .chart-wrap { position: relative; height: 230px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .chart-status { min-height: 16px; margin-top: 5px; color: var(--muted); font-size: 10px; }
+    .lower-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .analysis-copy { color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .signal {
+      display: inline-block; border-radius: 99px; padding: 5px 10px; margin-bottom: 8px;
+      background: #17263b; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .04em;
+    }
+    .signal.bullish { background: #0d382f; color: var(--green); }
+    .signal.bearish { background: #3d2029; color: var(--red); }
+    .signal.neutral { background: #382f1f; color: var(--amber); }
+    .signal-action { font-size: 15px; font-weight: 800; margin: 2px 0 7px; }
+    .signal-action.buy { color: var(--green); }
+    .signal-action.sell { color: var(--red); }
+    .signal-action.wait { color: var(--amber); }
+    .alert-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+    .alert-help { color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .indicator-list { display: grid; gap: 7px; margin-top: 10px; }
+    .indicator { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; }
+    .indicator strong { color: var(--text); }
+    .panel { margin-bottom: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
+    .panel h2 { margin: 0 0 10px; font-size: 13px; }
+    .broker-status { display: flex; align-items: center; gap: 8px; margin: 9px 0; font-size: 11px; }
+    .broker-actions { display: flex; gap: 7px; margin-top: 10px; }
+    .broker-actions .button { flex: 1; text-align: center; }
+    .broker-link { color: #8cc9ff; text-decoration: none; font-size: 11px; }
+    .broker-link:hover { text-decoration: underline; }
+    .field { display: grid; gap: 5px; margin: 9px 0; }
+    .field label { color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .field input, .field select { padding: 8px 10px; font-size: 12px; }
+    .trade-buttons { display: flex; gap: 7px; margin-top: 10px; }
+    .trade-buttons .button { flex: 1; }
+    .button.buy { background: #087b5c; }
+    .button.sell { background: #a93648; }
+    .paper-label { color: var(--amber); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .portfolio-line { display: flex; justify-content: space-between; margin: 8px 0; color: var(--muted); font-size: 11px; }
+    .portfolio-line strong { color: var(--text); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 10px; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+    .empty-row { padding: 15px 5px; color: var(--muted); text-align: center; }
+    .notice { margin-top: 12px; border-left: 3px solid var(--amber); padding: 8px 10px; background: #211d16; color: #e4c98e; font-size: 10px; line-height: 1.5; }
+    .toast {
+      position: fixed; right: 18px; bottom: 18px; z-index: 5; max-width: 340px;
+      padding: 11px 14px; border: 1px solid var(--line); border-radius: 9px;
+      background: #12223a; box-shadow: 0 8px 28px #0008; font-size: 12px;
+    }
+    .toast.error { border-color: #8f3947; }
+    .footer { border-top: 1px solid var(--line); padding: 9px 16px; color: var(--muted); font-size: 10px; }
+    .auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(ellipse at top, #102747, var(--bg) 65%); }
+    .auth-card { width: min(100%, 390px); padding: 25px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: 0 18px 60px #0006; }
+    .auth-card h1 { margin: 0 0 7px; font-size: 23px; }
+    .auth-card p { color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .auth-card .field { margin: 14px 0; }
+    .auth-card .button { width: 100%; margin-top: 8px; }
+    .auth-message { min-height: 18px; margin-top: 12px; color: var(--amber); font-size: 11px; line-height: 1.5; }
+    .auth-message.error { color: var(--red); }
+    .account-email { color: var(--muted); font-size: 11px; }
+    @media (max-width: 1050px) {
+      .main { grid-template-columns: 205px minmax(0, 1fr); }
+      .rightbar { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .rightbar .panel { margin: 0; }
+    }
+    @media (max-width: 700px) {
+      .header { flex-wrap: wrap; padding: 10px 12px; gap: 10px; }
+      .brand { min-width: 0; }
+      .header-right { margin-left: auto; }
+      .search { order: 3; flex-basis: 100%; max-width: none; }
+      .clock { display: none; }
+      .main { display: flex; flex-direction: column; }
+      .sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 10px; }
+      .watchlist { display: flex; overflow-x: auto; }
+      .asset-row { min-width: 130px; }
+      .market-note { display: none; }
+      .workspace { padding: 12px; }
+      .rightbar { display: flex; flex-direction: column; padding: 12px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .lower-grid { grid-template-columns: 1fr; }
+      .asset-heading h1 { font-size: 18px; }
+      .price-large { font-size: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app" hidden>
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">F</div>
+        <span class="brand-name">FOREX001</span>
+        <span class="status-pill"><i id="feedDot" class="status-dot"></i><span id="feedStatus">Connecting</span></span>
+      </div>
+      <form id="searchForm" class="search" role="search">
+        <input id="symbolSearch" aria-label="Search market" placeholder="Add BTC, EURUSD, GBPUSD, USDJPY...">
+        <button class="button" type="submit">Add</button>
+      </form>
+      <div class="header-right">
+        <span id="accountEmail" class="account-email"></span>
+        <span class="clock" id="clock">--:--:-- UTC</span>
+        <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
+        <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <h2 class="section-title">Watchlist</h2>
+        <div id="watchlist" class="watchlist"></div>
+        <div class="market-note">
+          <strong>Data sources</strong><br>
+          BTC prices: Binance public market data.<br>
+          FX reference rates: Frankfurter (ECB).<br><br>
+          FX reference prices update on business days and are not broker quotes.
+        </div>
+      </aside>
+
+      <section class="workspace" aria-label="Market analysis">
+        <div class="asset-heading">
+          <div>
+            <h1 id="assetTitle">BTC / USDT</h1>
+            <div id="assetSubtitle" class="asset-subtitle">Bitcoin · Binance spot market</div>
+          </div>
+          <div>
+            <div id="currentPrice" class="price-large">Loading…</div>
+            <div id="priceChange" class="price-change muted">Waiting for market data</div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><div id="highLabel" class="stat-label">24h high</div><div id="highValue" class="stat-value">—</div></div>
+          <div class="stat"><div id="lowLabel" class="stat-label">24h low</div><div id="lowValue" class="stat-value">—</div></div>
+          <div class="stat"><div id="volumeLabel" class="stat-label">24h volume</div><div id="volumeValue" class="stat-value">—</div></div>
+          <div class="stat"><div class="stat-label">Last updated</div><div id="updatedValue" class="stat-value">—</div></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-heading">
+            <h2>Price history</h2>
+            <div id="cryptoTimeframes" class="timeframes" aria-label="Chart timeframe">
+              <button class="timeframe" data-interval="1m" type="button">1m</button>
+              <button class="timeframe" data-interval="5m" type="button">5m</button>
+              <button class="timeframe active" data-interval="15m" type="button">15m</button>
+              <button class="timeframe" data-interval="1h" type="button">1h</button>
+            </div>
+            <span id="fxTimeframe" class="muted" style="font-size:10px" hidden>Daily reference · 120 days</span>
+          </div>
+          <div class="chart-wrap"><canvas id="priceChart" aria-label="Price history chart"></canvas></div>
+          <div id="chartStatus" class="chart-status">Loading price history…</div>
+        </div>
+
+        <div class="lower-grid">
+          <section class="card">
+            <div class="card-heading"><h2>Market analysis</h2><span id="analysisUpdated" class="muted" style="font-size:10px">—</span></div>
+            <div id="actionSignal" class="signal-action wait">WAIT</div>
+            <div id="signalBadge" class="signal">WAITING FOR DATA</div>
+            <div id="analysisText" class="analysis-copy">Analysis will appear when enough price history has loaded.</div>
+            <div class="indicator-list">
+              <div class="indicator"><span>SMA 20</span><strong id="sma20">—</strong></div>
+              <div class="indicator"><span>SMA 50</span><strong id="sma50">—</strong></div>
+              <div class="indicator"><span>RSI 14</span><strong id="rsiValue">—</strong></div>
+            </div>
+            <div class="alert-controls">
+              <span id="alertHelp" class="alert-help">Alerts only notify when a setup changes. No trades are placed.</span>
+              <button id="alertButton" class="button secondary small" type="button">Enable alerts</button>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-heading"><h2>Paper positions</h2><span class="paper-label">Simulation only</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Asset</th><th>Side</th><th>Entry</th><th>Now</th><th>P/L</th><th></th></tr></thead>
+                <tbody id="positionsBody"></tbody>
+              </table>
+            </div>
+            <div id="positionsEmpty" class="empty-row">No paper positions yet.</div>
+          </section>
+        </div>
+        <div class="notice">Indicators are educational market summaries, not financial advice or guaranteed trading signals. Market prices may be delayed or unavailable.</div>
+      </section>
+
+      <aside class="rightbar">
+        <section class="panel">
+          <h2>Pocket Option</h2>
+          <div class="broker-status"><i class="status-dot"></i><span>Not connected to this dashboard</span></div>
+          <div class="analysis-copy">This dashboard does not log in to Pocket Option or send broker orders. Open the broker separately if you choose.</div>
+          <p><a class="broker-link" href="https://pocketoption.com/" target="_blank" rel="noopener noreferrer">Open Pocket Option ↗</a></p>
+          <div class="notice">Never enter broker passwords, one-time codes, or API secrets into this page.</div>
+        </section>
+
+        <section class="panel">
+          <div class="card-heading"><h2>Paper trade</h2><span class="paper-label">No real orders</span></div>
+          <div class="field">
+            <label for="tradeAmount">Simulated amount (USD)</label>
+            <input id="tradeAmount" type="number" min="1" max="1000000" step="1" value="100">
+          </div>
+          <div class="trade-buttons">
+            <button id="callButton" class="button buy" type="button">Paper CALL</button>
+            <button id="putButton" class="button sell" type="button">Paper PUT</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Paper portfolio</h2>
+          <div class="portfolio-line"><span>Starting balance</span><strong id="startingBalance">$10,000.00</strong></div>
+          <div class="portfolio-line"><span>Open positions</span><strong id="openCount">0</strong></div>
+          <div class="portfolio-line"><span>Unrealized P/L</span><strong id="totalPnl">$0.00</strong></div>
+          <div class="analysis-copy">Positions and watchlist are saved in this browser only.</div>
+        </section>
+      </aside>
+    </main>
+    <footer class="footer">FOREX001 · Analysis and paper trading only · No broker execution</footer>
+  </div>
+  <section id="authScreen" class="auth-screen" aria-label="Account sign in">
+    <form id="authForm" class="auth-card">
+      <div class="brand" style="margin-bottom:18px">
+        <div class="brand-icon">F</div>
+        <span class="brand-name">FOREX001</span>
+      </div>
+      <h1>Sign in to your dashboard</h1>
+      <p>Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
+      <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
+      <div id="authFormFields">
+        <div class="field">
+          <label for="authEmail">Email</label>
+          <input id="authEmail" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="authPassword">Password</label>
+          <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
+        </div>
+        <button id="signInButton" class="button" type="submit">Sign in</button>
+        <button id="signUpButton" class="button secondary" type="button">Create account</button>
+      </div>
+      <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="./auth-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    "use strict";
+
+    const ASSETS = {
+      BTCUSDT: { label: "BTC / USDT", name: "Bitcoin · Binance spot market", kind: "crypto", symbol: "BTCUSDT", base: "BTC", quote: "USDT" },
+      EURUSD: { label: "EUR / USD", name: "Euro / US dollar · ECB reference rate", kind: "forex", base: "EUR", quote: "USD" },
+      GBPUSD: { label: "GBP / USD", name: "Pound sterling / US dollar · ECB reference rate", kind: "forex", base: "GBP", quote: "USD" },
+      USDJPY: { label: "USD / JPY", name: "US dollar / Japanese yen · ECB reference rate", kind: "forex", base: "USD", quote: "JPY" },
+      AUDUSD: { label: "AUD / USD", name: "Australian dollar / US dollar · ECB reference rate", kind: "forex", base: "AUD", quote: "USD" },
+      USDCAD: { label: "USD / CAD", name: "US dollar / Canadian dollar · ECB reference rate", kind: "forex", base: "USD", quote: "CAD" },
+      USDCHF: { label: "USD / CHF", name: "US dollar / Swiss franc · ECB reference rate", kind: "forex", base: "USD", quote: "CHF" }
+    };
+    const DEFAULT_WATCHLIST = ["BTCUSDT", "EURUSD", "GBPUSD", "USDJPY"];
+    const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
+    const state = {
+      watchlist: [...DEFAULT_WATCHLIST],
+      trades: [],
+      storageKeys: null,
+      userId: null,
+      selected: "BTCUSDT",
+      interval: "15m",
+      prices: {},
+      candles: [],
+      previousSignal: {},
+      notificationsEnabled: false,
+      requestId: 0,
+      socket: null,
+      socketUrl: null,
+      socketRetryTimer: null,
+      socketRetryMs: 1000,
+      supabase: null,
+      dashboardStarted: false,
+      toastTimer: null
+    };
+    const $ = (id) => document.getElementById(id);
+
+    function loadList(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return Array.isArray(value) ? value : [...fallback];
+      } catch (error) {
+        console.error(`Could not read ${key} from local storage`, error);
+        return [...fallback];
+      }
+    }
+
+    function saveList(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        console.error(`Could not save ${key} to local storage`, error);
+        showToast("Browser storage is unavailable. Changes may not be saved.", true);
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.toggle("error", isError);
+      toast.hidden = false;
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
+    }
+
+    function setFeedStatus(message, connected) {
+      $("feedStatus").textContent = message;
+      $("feedDot").classList.toggle("live", connected);
+    }
+
+    function setAuthMessage(message, isError = false) {
+      const element = $("authMessage");
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    function showSignedInView(user) {
+      $("authScreen").hidden = true;
+      $("app").hidden = false;
+      setText("accountEmail", user.email || "Signed in");
+      if (state.userId !== user.id) {
+        state.userId = user.id;
+        state.storageKeys = {
+          watchlist: `${STORAGE.watchlist}:${user.id}`,
+          trades: `${STORAGE.trades}:${user.id}`
+        };
+        state.watchlist = loadList(state.storageKeys.watchlist, DEFAULT_WATCHLIST);
+        state.trades = loadList(state.storageKeys.trades, []);
+      }
+      if (state.dashboardStarted) {
+        renderWatchlist();
+        renderTrades();
+        loadAllWatchlistPrices();
+        loadSelectedAsset();
+        return;
+      }
+      state.dashboardStarted = true;
+      updateClock();
+      $("cryptoTimeframes").hidden = ASSETS[state.selected].kind !== "crypto";
+      $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
+      renderWatchlist();
+      renderTrades();
+      loadAllWatchlistPrices();
+      loadSelectedAsset();
+      setInterval(updateClock, 1000);
+      setInterval(() => {
+        loadAllWatchlistPrices();
+        if (ASSETS[state.selected].kind === "forex") loadSelectedAsset();
+      }, 60000);
+    }
+
+    function showSignedOutView() {
+      $("app").hidden = true;
+      $("authScreen").hidden = false;
+      setText("accountEmail", "");
+      state.userId = null;
+      state.storageKeys = null;
+      disconnectBitcoinStream();
+    }
+
+    async function startAuthentication() {
+      $("app").hidden = true;
+      $("authScreen").hidden = false;
+      $("authConfigNotice").hidden = true;
+      $("authFormFields").hidden = false;
+      setAuthMessage("");
+      const config = window.BOBY_AUTH_CONFIG || {};
+      if (!config.supabaseUrl || !config.supabaseAnonKey) {
+        $("authConfigNotice").hidden = false;
+        $("authFormFields").hidden = true;
+        setAuthMessage("Authentication is not configured yet.");
+        return;
+      }
+      if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        setAuthMessage("The authentication library did not load. Check your internet connection and reload.", true);
+        return;
+      }
+      try {
+        state.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+        state.supabase.auth.onAuthStateChange((_event, session) => {
+          if (session && session.user) showSignedInView(session.user);
+          else showSignedOutView();
+        });
+        const { data, error } = await state.supabase.auth.getSession();
+        if (error) throw error;
+        if (data.session && data.session.user) showSignedInView(data.session.user);
+        else showSignedOutView();
+      } catch (error) {
+        console.error("Could not initialize account sign-in", error);
+        setAuthMessage(`Could not initialize sign-in: ${error.message}`, true);
+      }
+    }
+
+    async function signIn(event) {
+      event.preventDefault();
+      if (!state.supabase) return;
+      $("signInButton").disabled = true;
+      $("signUpButton").disabled = true;
+      setAuthMessage("Signing in…");
+      try {
+        const { error } = await state.supabase.auth.signInWithPassword({
+          email: $("authEmail").value.trim(),
+          password: $("authPassword").value
+        });
+        if (error) throw error;
+        setAuthMessage("Signed in.");
+      } catch (error) {
+        console.error("Sign-in failed", error);
+        setAuthMessage(error.message || "Sign-in failed. Check your email and password.", true);
+      } finally {
+        $("signInButton").disabled = false;
+        $("signUpButton").disabled = false;
+      }
+    }
+
+    async function signUp() {
+      if (!state.supabase) return;
+      const email = $("authEmail").value.trim();
+      const password = $("authPassword").value;
+      if (!$("authEmail").reportValidity()) return;
+      if (password.length < 8) {
+        setAuthMessage("Use a password with at least 8 characters.", true);
+        return;
+      }
+      $("signInButton").disabled = true;
+      $("signUpButton").disabled = true;
+      setAuthMessage("Creating your account…");
+      try {
+        const { data, error } = await state.supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        if (data.session && data.user) {
+          showSignedInView(data.user);
+          setAuthMessage("Account created and signed in.");
+        } else {
+          setAuthMessage("Account created. Check your email to confirm it, then sign in.");
+        }
+      } catch (error) {
+        console.error("Account creation failed", error);
+        setAuthMessage(error.message || "Could not create the account.", true);
+      } finally {
+        $("signInButton").disabled = false;
+        $("signUpButton").disabled = false;
+      }
+    }
+
+    function disconnectBitcoinStream() {
+      clearTimeout(state.socketRetryTimer);
+      state.socketRetryTimer = null;
+      const socket = state.socket;
+      state.socket = null;
+      state.socketUrl = null;
+      if (socket && socket.readyState < WebSocket.CLOSING) socket.close();
+    }
+
+    function connectBitcoinStream() {
+      const streamUrl = `wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/btcusdt@kline_${state.interval}`;
+      if (state.socketUrl === streamUrl && state.socket
+          && (state.socket.readyState === WebSocket.CONNECTING || state.socket.readyState === WebSocket.OPEN)) {
+        return;
+      }
+      disconnectBitcoinStream();
+      setFeedStatus("Connecting live feed", false);
+      let socket;
+      try {
+        socket = new WebSocket(streamUrl);
+      } catch (error) {
+        console.error("Could not open the Binance live market feed", error);
+        scheduleBitcoinReconnect();
+        return;
+      }
+      state.socket = socket;
+      state.socketUrl = streamUrl;
+
+      socket.addEventListener("open", () => {
+        if (state.socket !== socket) return;
+        state.socketRetryMs = 1000;
+        setFeedStatus("Live BTC stream", true);
+        setText("chartStatus", `Binance BTC/USDT live stream · ${state.interval} candles`);
+      });
+      socket.addEventListener("message", (event) => {
+        if (state.socket !== socket) return;
+        try {
+          const packet = JSON.parse(event.data);
+          const data = packet.data || packet;
+          if (data.e === "24hrTicker") {
+            const price = Number(data.c);
+            if (Number.isFinite(price)) state.prices.BTCUSDT = price;
+            const change = Number(data.P);
+            if (Number.isFinite(change)) {
+              setText("priceChange", `${change >= 0 ? "+" : ""}${change.toFixed(2)}% over 24h`);
+              $("priceChange").className = `price-change ${change >= 0 ? "positive" : "negative"}`;
+            }
+            setText("highValue", formatPrice(Number(data.h), ASSETS.BTCUSDT));
+            setText("lowValue", formatPrice(Number(data.l), ASSETS.BTCUSDT));
+            setText("volumeValue", `${Number(data.v).toLocaleString("en-US", { maximumFractionDigits: 2 })} BTC`);
+            setText("updatedValue", new Date().toLocaleTimeString());
+            renderCurrentPrice();
+          } else if (data.e === "kline" && data.k) {
+            const candle = {
+              time: Number(data.k.t),
+              close: Number(data.k.c),
+              volume: Number(data.k.v)
+            };
+            if (!Number.isFinite(candle.time) || !Number.isFinite(candle.close)) return;
+            const existingIndex = state.candles.findIndex((item) => item.time === candle.time);
+            if (existingIndex >= 0) state.candles[existingIndex] = candle;
+            else state.candles.push(candle);
+            state.candles.sort((a, b) => a.time - b.time);
+            state.candles = state.candles.slice(-100);
+            if (state.selected === "BTCUSDT") {
+              drawChart();
+              renderAnalysis();
+              renderTrades();
+            }
+          }
+        } catch (error) {
+          console.error("Could not process a Binance market update", error);
+        }
+      });
+      socket.addEventListener("close", () => {
+        if (state.socket !== socket) return;
+        state.socket = null;
+        state.socketUrl = null;
+        if (state.selected === "BTCUSDT") {
+          setFeedStatus("Reconnecting live feed", false);
+          setText("chartStatus", "Live feed disconnected; reconnecting. REST prices may continue to update.");
+          scheduleBitcoinReconnect();
+        }
+      });
+      socket.addEventListener("error", () => {
+        if (state.socket === socket) setFeedStatus("Live feed reconnecting", false);
+      });
+    }
+
+    function scheduleBitcoinReconnect() {
+      if (state.selected !== "BTCUSDT" || state.socketRetryTimer !== null) return;
+      const delay = state.socketRetryMs;
+      state.socketRetryMs = Math.min(state.socketRetryMs * 2, 30000);
+      state.socketRetryTimer = setTimeout(() => {
+        state.socketRetryTimer = null;
+        if (state.selected === "BTCUSDT") connectBitcoinStream();
+      }, delay);
+    }
+
+    function formatPrice(value, asset) {
+      if (!Number.isFinite(value)) return "—";
+      const digits = asset.kind === "crypto" ? 2 : (asset.quote === "JPY" ? 3 : 5);
+      return new Intl.NumberFormat("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    }
+
+    function formatUsd(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
+    }
+
+    function renderWatchlist() {
+      const container = $("watchlist");
+      container.replaceChildren();
+      state.watchlist.forEach((symbol) => {
+        const asset = ASSETS[symbol];
+        if (!asset) return;
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = `asset-row${state.selected === symbol ? " active" : ""}`;
+        row.setAttribute("aria-label", `Select ${asset.label}`);
+        row.addEventListener("click", () => selectAsset(symbol));
+        const left = document.createElement("span");
+        const symbolText = document.createElement("span");
+        symbolText.className = "asset-symbol";
+        symbolText.textContent = symbol;
+        const nameText = document.createElement("span");
+        nameText.className = "asset-name";
+        nameText.textContent = asset.kind === "crypto" ? "Crypto" : "FX reference";
+        left.append(symbolText, document.createElement("br"), nameText);
+        const right = document.createElement("span");
+        const priceText = document.createElement("span");
+        priceText.className = "asset-price";
+        priceText.textContent = Number.isFinite(state.prices[symbol]) ? formatPrice(state.prices[symbol], asset) : "—";
+        right.append(priceText);
+        row.append(left, right);
+        container.append(row);
+      });
+    }
+
+    function selectAsset(symbol) {
+      if (!ASSETS[symbol]) return;
+      state.selected = symbol;
+      $("assetTitle").textContent = ASSETS[symbol].label;
+      $("assetSubtitle").textContent = ASSETS[symbol].name;
+      $("cryptoTimeframes").hidden = ASSETS[symbol].kind !== "crypto";
+      $("fxTimeframe").hidden = ASSETS[symbol].kind === "crypto";
+      $("highLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h high" : "120d high";
+      $("lowLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h low" : "120d low";
+      $("volumeLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h volume" : "Rate source";
+      renderWatchlist();
+      loadSelectedAsset();
+    }
+
+    function setText(id, value) {
+      $(id).textContent = value;
+    }
+
+    function updateClock() {
+      setText("clock", `${new Date().toISOString().slice(11, 19)} UTC`);
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Market data request failed (${response.status})`);
+      return response.json();
+    }
+
+    async function loadBitcoinTicker() {
+      const [ticker, stats] = await Promise.all([
+        fetchJson("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"),
+        fetchJson("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT")
+      ]);
+      state.prices.BTCUSDT = Number(ticker.price);
+      if (ASSETS[state.selected].kind === "crypto") {
+        setText("highValue", formatPrice(Number(stats.highPrice), ASSETS.BTCUSDT));
+        setText("lowValue", formatPrice(Number(stats.lowPrice), ASSETS.BTCUSDT));
+        setText("volumeValue", `${Number(stats.volume).toLocaleString("en-US", { maximumFractionDigits: 2 })} BTC`);
+        const change = Number(stats.priceChangePercent);
+        $("priceChange").textContent = `${change >= 0 ? "+" : ""}${change.toFixed(2)}% over 24h`;
+        $("priceChange").className = `price-change ${change >= 0 ? "positive" : "negative"}`;
+      }
+    }
+
+    async function loadFxRate(symbol) {
+      const asset = ASSETS[symbol];
+      const url = `https://api.frankfurter.dev/v1/latest?from=${asset.base}&to=${asset.quote}`;
+      const data = await fetchJson(url);
+      const rate = Number(data.rates[asset.quote]);
+      if (!Number.isFinite(rate)) throw new Error(`No reference rate available for ${symbol}`);
+      state.prices[symbol] = rate;
+      return { rate, date: data.date };
+    }
+
+    async function loadForexTicker(symbol) {
+      const asset = ASSETS[symbol];
+      const [current, range] = await Promise.all([
+        loadFxRate(symbol),
+        (async () => {
+          const end = new Date();
+          const start = new Date(end);
+          start.setUTCDate(start.getUTCDate() - 120);
+          const from = start.toISOString().slice(0, 10);
+          const to = end.toISOString().slice(0, 10);
+          const url = `https://api.frankfurter.dev/v1/${from}..${to}?from=${asset.base}&to=${asset.quote}`;
+          return fetchJson(url);
+        })()
+      ]);
+      const points = Object.entries(range.rates)
+        .map(([date, rates]) => ({ time: Date.parse(`${date}T00:00:00Z`), close: Number(rates[asset.quote]) }))
+        .filter((point) => Number.isFinite(point.close))
+        .sort((a, b) => a.time - b.time);
+      if (!points.length) throw new Error(`No historical reference rates available for ${symbol}`);
+      points.push({ time: Date.parse(`${current.date}T00:00:00Z`), close: current.rate });
+      points.sort((a, b) => a.time - b.time);
+      const unique = points.filter((point, index) => index === 0 || point.time !== points[index - 1].time);
+      return { rate: current.rate, points: unique, date: current.date };
+    }
+
+    async function loadSelectedAsset() {
+      const symbol = state.selected;
+      const requestId = ++state.requestId;
+      const asset = ASSETS[symbol];
+      setText("chartStatus", "Loading market data…");
+      $("actionSignal").className = "signal-action wait";
+      $("actionSignal").textContent = "WAIT";
+      $("signalBadge").className = "signal neutral";
+      $("signalBadge").textContent = "LOADING DATA";
+      setText("analysisText", "Waiting for current market data before evaluating this asset.");
+      if (asset.kind === "crypto") connectBitcoinStream();
+      else disconnectBitcoinStream();
+      try {
+        if (asset.kind === "crypto") {
+          const [tickerResult, candles] = await Promise.all([
+            loadBitcoinTicker(),
+            fetchJson(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=${state.interval}&limit=100`)
+          ]);
+          void tickerResult;
+          if (requestId !== state.requestId) return;
+          state.candles = candles.map((candle) => ({ time: Number(candle[0]), close: Number(candle[4]), volume: Number(candle[5]) }));
+          setText("chartStatus", "Binance BTC/USDT spot · candle history");
+          setText("updatedValue", new Date().toLocaleTimeString());
+          renderCurrentPrice();
+        } else {
+          const result = await loadForexTicker(symbol);
+          if (requestId !== state.requestId) return;
+          state.candles = result.points;
+          setText("highValue", formatPrice(Math.max(...result.points.map((point) => point.close)), asset));
+          setText("lowValue", formatPrice(Math.min(...result.points.map((point) => point.close)), asset));
+          setText("volumeValue", "ECB reference");
+          setText("updatedValue", result.date);
+          const previous = result.points.length > 1 ? result.points[result.points.length - 2].close : result.rate;
+          const change = previous ? ((result.rate - previous) / previous) * 100 : 0;
+          setText("priceChange", `${change >= 0 ? "+" : ""}${change.toFixed(3)}% vs previous reference`);
+          $("priceChange").className = `price-change ${change >= 0 ? "positive" : "negative"}`;
+          setText("chartStatus", `Frankfurter / ECB reference rates · latest: ${result.date}`);
+          renderCurrentPrice();
+        }
+        if (asset.kind === "crypto") {
+          const live = state.socket && state.socket.readyState === WebSocket.OPEN;
+          setFeedStatus(live ? "Live BTC stream" : "BTC REST fallback", live);
+          setText("chartStatus", live
+            ? `Binance BTC/USDT live stream · ${state.interval} candles`
+            : "Binance BTC/USDT candle history · REST fallback");
+        } else {
+          setFeedStatus("ECB reference", false);
+        }
+        renderWatchlist();
+        drawChart();
+        renderAnalysis();
+        renderTrades();
+      } catch (error) {
+        if (requestId !== state.requestId) return;
+        console.error(`Could not load market data for ${symbol}`, error);
+        setFeedStatus("Data unavailable", false);
+        setText("chartStatus", `${error.message}. Check your internet connection and refresh.`);
+        setText("analysisText", "Analysis is unavailable until valid market data has loaded.");
+        showToast(`Could not load ${symbol} market data: ${error.message}`, true);
+      }
+    }
+
+    function renderCurrentPrice() {
+      const asset = ASSETS[state.selected];
+      const price = state.prices[state.selected];
+      setText("currentPrice", Number.isFinite(price) ? formatPrice(price, asset) : "—");
+      renderWatchlist();
+    }
+
+    function movingAverage(values, period) {
+      if (values.length < period) return null;
+      const recent = values.slice(-period);
+      return recent.reduce((sum, value) => sum + value, 0) / period;
+    }
+
+    function calculateRsi(values, period = 14) {
+      if (values.length <= period) return null;
+      let gains = 0;
+      let losses = 0;
+      for (let index = values.length - period; index < values.length; index++) {
+        const difference = values[index] - values[index - 1];
+        if (difference > 0) gains += difference;
+        else losses -= difference;
+      }
+      if (losses === 0) return gains === 0 ? 50 : 100;
+      const averageGain = gains / period;
+      const averageLoss = losses / period;
+      return 100 - (100 / (1 + averageGain / averageLoss));
+    }
+
+    function getMarketSetup(values, currentPrice) {
+      const sma20 = movingAverage(values, 20);
+      const sma50 = movingAverage(values, 50);
+      const rsi = calculateRsi(values);
+      if (sma20 === null || sma50 === null || rsi === null || !Number.isFinite(currentPrice)) {
+        return { action: "WAIT", reason: "Waiting for enough valid price history to evaluate the setup.", sma20, sma50, rsi };
+      }
+      if (currentPrice > sma20 && sma20 > sma50 && rsi >= 50 && rsi < 70) {
+        return {
+          action: "BUY SETUP",
+          reason: "Price is above the 20-period average, the 20-period average is above the 50-period average, and RSI is between 50 and 70. This is a rule-based bullish setup, not a prediction.",
+          sma20, sma50, rsi
+        };
+      }
+      if (currentPrice < sma20 && sma20 < sma50 && rsi > 30 && rsi <= 50) {
+        return {
+          action: "SELL SETUP",
+          reason: "Price is below the 20-period average, the 20-period average is below the 50-period average, and RSI is between 30 and 50. This is a rule-based bearish setup, not a prediction.",
+          sma20, sma50, rsi
+        };
+      }
+      return {
+        action: "WAIT",
+        reason: "The price, moving-average trend, and RSI do not all align with the setup rules. Waiting may help avoid acting on mixed conditions.",
+        sma20, sma50, rsi
+      };
+    }
+
+    function alertForSetupChange(action, symbol) {
+      const previous = state.previousSignal[symbol];
+      state.previousSignal[symbol] = action;
+      if (previous === undefined || previous === action || action === "WAIT") return;
+      const message = `${symbol}: ${action}. Check the indicators and risk before deciding.`;
+      showToast(message);
+      if (state.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
+        new Notification("forex001 market setup", { body: message, tag: `forex001-${symbol}` });
+      }
+    }
+
+    function renderAnalysis() {
+      const values = state.candles.map((candle) => candle.close);
+      const asset = ASSETS[state.selected];
+      const setup = getMarketSetup(values, state.prices[state.selected] || values[values.length - 1]);
+      const { sma20, sma50, rsi } = setup;
+      setText("sma20", sma20 === null ? "Not enough history" : formatPrice(sma20, asset));
+      setText("sma50", sma50 === null ? "Not enough history" : formatPrice(sma50, asset));
+      setText("rsiValue", rsi === null ? "Not enough history" : rsi.toFixed(1));
+      setText("analysisUpdated", `Updated ${new Date().toLocaleTimeString()}`);
+
+      const badge = $("signalBadge");
+      badge.className = "signal";
+      const action = $("actionSignal");
+      action.className = "signal-action";
+      if (setup.action === "BUY SETUP") {
+        action.classList.add("buy");
+        action.textContent = "BUY SETUP";
+        badge.classList.add("bullish");
+        badge.textContent = "BULLISH CONDITIONS";
+      } else if (setup.action === "SELL SETUP") {
+        action.classList.add("sell");
+        action.textContent = "SELL SETUP";
+        badge.classList.add("bearish");
+        badge.textContent = "BEARISH CONDITIONS";
+      } else if (sma20 === null || sma50 === null || rsi === null) {
+        action.classList.add("wait");
+        action.textContent = "WAIT";
+        badge.classList.add("neutral");
+        badge.textContent = "MORE DATA NEEDED";
+      } else {
+        action.classList.add("wait");
+        action.textContent = "WAIT";
+        badge.classList.add("neutral");
+        badge.textContent = "NO ALIGNED SETUP";
+      }
+      setText("analysisText", setup.reason);
+      if (asset.kind === "forex") {
+        setText("analysisText", `${setup.reason} Forex calculations use daily ECB reference prices, not real-time broker quotes.`);
+      }
+      alertForSetupChange(setup.action, state.selected);
+    }
+
+    function drawChart() {
+      const canvas = $("priceChart");
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * ratio);
+      canvas.height = Math.floor(rect.height * ratio);
+      const context = canvas.getContext("2d");
+      context.scale(ratio, ratio);
+      const width = rect.width;
+      const height = rect.height;
+      context.clearRect(0, 0, width, height);
+      const values = state.candles.map((point) => point.close).filter(Number.isFinite);
+      if (values.length < 2) {
+        context.fillStyle = "#8da2bd";
+        context.font = "12px Segoe UI";
+        context.fillText("Waiting for enough price history…", 12, 24);
+        return;
+      }
+      const minimum = Math.min(...values);
+      const maximum = Math.max(...values);
+      const range = maximum - minimum || Math.abs(maximum) * 0.001 || 1;
+      const padding = { top: 12, right: 12, bottom: 22, left: 10 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+      context.font = "10px Segoe UI";
+      context.strokeStyle = "#1b2b43";
+      context.fillStyle = "#8da2bd";
+      context.lineWidth = 1;
+      for (let row = 0; row <= 4; row++) {
+        const y = padding.top + (chartHeight * row) / 4;
+        context.beginPath();
+        context.moveTo(padding.left, y);
+        context.lineTo(width - padding.right, y);
+        context.stroke();
+        const value = maximum - (range * row) / 4;
+        context.fillText(formatPrice(value, ASSETS[state.selected]), padding.left + 4, Math.max(10, y - 3));
+      }
+      const points = values.map((value, index) => ({
+        x: padding.left + (chartWidth * index) / (values.length - 1),
+        y: padding.top + ((maximum - value) / range) * chartHeight
+      }));
+      const gradient = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      gradient.addColorStop(0, "#3997ff44");
+      gradient.addColorStop(1, "#3997ff00");
+      context.beginPath();
+      context.moveTo(points[0].x, height - padding.bottom);
+      points.forEach((point) => context.lineTo(point.x, point.y));
+      context.lineTo(points[points.length - 1].x, height - padding.bottom);
+      context.closePath();
+      context.fillStyle = gradient;
+      context.fill();
+      context.beginPath();
+      points.forEach((point, index) => index === 0 ? context.moveTo(point.x, point.y) : context.lineTo(point.x, point.y));
+      context.strokeStyle = "#52aaff";
+      context.lineWidth = 2;
+      context.stroke();
+    }
+
+    function addAsset(symbol) {
+      const normalized = symbol.trim().toUpperCase().replace(/[^A-Z]/g, "");
+      if (!ASSETS[normalized]) {
+        showToast("Supported symbols: BTCUSDT, EURUSD, GBPUSD, USDJPY, AUDUSD, USDCAD, USDCHF.", true);
+        return;
+      }
+      if (!state.watchlist.includes(normalized)) {
+        state.watchlist.push(normalized);
+        saveList(state.storageKeys.watchlist, state.watchlist);
+      }
+      $("symbolSearch").value = "";
+      renderWatchlist();
+      selectAsset(normalized);
+    }
+
+    function placePaperTrade(side) {
+      const amount = Number($("tradeAmount").value);
+      const price = state.prices[state.selected];
+      if (!Number.isFinite(amount) || amount < 1 || amount > 1000000) {
+        showToast("Enter a simulated amount between $1 and $1,000,000.", true);
+        return;
+      }
+      if (!Number.isFinite(price) || price <= 0) {
+        showToast("A current market price is required before placing a paper trade.", true);
+        return;
+      }
+      const trade = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        symbol: state.selected,
+        side,
+        amount,
+        entry: price,
+        createdAt: new Date().toISOString()
+      };
+      state.trades.unshift(trade);
+      saveList(state.storageKeys.trades, state.trades);
+      renderTrades();
+      showToast(`Paper ${side} recorded at ${formatPrice(price, ASSETS[state.selected])}. No broker order was sent.`);
+    }
+
+    function closePaperTrade(id) {
+      state.trades = state.trades.filter((trade) => trade.id !== id);
+      saveList(state.storageKeys.trades, state.trades);
+      renderTrades();
+    }
+
+    function renderTrades() {
+      const body = $("positionsBody");
+      body.replaceChildren();
+      let totalPnl = 0;
+      state.trades.forEach((trade) => {
+        const asset = ASSETS[trade.symbol];
+        if (!asset) return;
+        const current = state.prices[trade.symbol];
+        const pnl = Number.isFinite(current) ? (trade.side === "CALL" ? current - trade.entry : trade.entry - current) / trade.entry * trade.amount : 0;
+        totalPnl += pnl;
+        const row = document.createElement("tr");
+        const values = [
+          trade.symbol,
+          trade.side,
+          formatPrice(trade.entry, asset),
+          Number.isFinite(current) ? formatPrice(current, asset) : "—",
+          Number.isFinite(current) ? `${pnl >= 0 ? "+" : ""}${formatUsd(pnl)}` : "—"
+        ];
+        values.forEach((value, index) => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          if (index === 1) cell.className = trade.side === "CALL" ? "positive" : "negative";
+          if (index === 4) cell.className = pnl >= 0 ? "positive" : "negative";
+          row.append(cell);
+        });
+        const actionCell = document.createElement("td");
+        const closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.className = "button secondary small";
+        closeButton.textContent = "Close";
+        closeButton.setAttribute("aria-label", `Close paper position for ${trade.symbol}`);
+        closeButton.addEventListener("click", () => closePaperTrade(trade.id));
+        actionCell.append(closeButton);
+        row.append(actionCell);
+        body.append(row);
+      });
+      $("positionsEmpty").hidden = state.trades.length > 0;
+      setText("openCount", String(state.trades.length));
+      const pnlElement = $("totalPnl");
+      pnlElement.textContent = `${totalPnl >= 0 ? "+" : ""}${formatUsd(totalPnl)}`;
+      pnlElement.className = totalPnl >= 0 ? "positive" : "negative";
+    }
+
+    function loadAllWatchlistPrices() {
+      const symbols = state.watchlist.filter((symbol) => ASSETS[symbol]);
+      const forexSymbols = symbols.filter((symbol) => ASSETS[symbol].kind === "forex");
+      const jobs = [loadBitcoinTicker().catch((error) => console.error("Could not refresh BTC watchlist price", error))];
+      forexSymbols.forEach((symbol) => jobs.push(
+        loadFxRate(symbol).catch((error) => console.error(`Could not refresh ${symbol} watchlist price`, error))
+      ));
+      Promise.all(jobs).then(() => {
+        renderWatchlist();
+        if (state.selected === "BTCUSDT") renderCurrentPrice();
+        renderTrades();
+      });
+    }
+
+    $("searchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addAsset($("symbolSearch").value);
+    });
+    $("authForm").addEventListener("submit", signIn);
+    $("signUpButton").addEventListener("click", signUp);
+    $("signOutButton").addEventListener("click", async () => {
+      if (!state.supabase) return;
+      try {
+        const { error } = await state.supabase.auth.signOut();
+        if (error) throw error;
+      } catch (error) {
+        console.error("Sign-out failed", error);
+        showToast(`Could not sign out: ${error.message}`, true);
+      }
+    });
+    $("refreshButton").addEventListener("click", () => {
+      loadAllWatchlistPrices();
+      loadSelectedAsset();
+    });
+    $("callButton").addEventListener("click", () => placePaperTrade("CALL"));
+    $("putButton").addEventListener("click", () => placePaperTrade("PUT"));
+    $("alertButton").addEventListener("click", async () => {
+      if (!("Notification" in window)) {
+        showToast("This browser does not support desktop notifications.", true);
+        return;
+      }
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          state.notificationsEnabled = false;
+          $("alertButton").textContent = "Enable alerts";
+          setText("alertHelp", "Browser notifications are disabled. The on-page setup still updates.");
+          return;
+        }
+        state.notificationsEnabled = true;
+        $("alertButton").textContent = "Alerts enabled";
+        setText("alertHelp", "You will be notified when a BUY/SELL setup changes. No trades are placed.");
+        showToast("Browser alerts enabled for changes in market setup.");
+      } catch (error) {
+        console.error("Could not enable browser notifications", error);
+        showToast("Could not enable browser notifications in this browser context.", true);
+      }
+    });
+    document.querySelectorAll(".timeframe").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".timeframe").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        state.interval = button.dataset.interval;
+        if (ASSETS[state.selected].kind === "crypto") loadSelectedAsset();
+      });
+    });
+    window.addEventListener("resize", drawChart);
+
+    startAuthentication();
+  </script>
+</body>
+</html>
