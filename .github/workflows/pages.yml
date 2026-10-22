@@ -1,0 +1,59 @@
+name: Deploy forex001 to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare website
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          mkdir -p dist
+          cp boby_bot.html dist/index.html
+          cp SETUP.md dist/SETUP.md
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          config = {
+              "supabaseUrl": os.environ.get("SUPABASE_URL", ""),
+              "supabaseAnonKey": os.environ.get("SUPABASE_ANON_KEY", ""),
+          }
+          Path("dist/auth-config.js").write_text(
+              "window.BOBY_AUTH_CONFIG = "
+              + json.dumps(config)
+              + ";\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Publish website
+        id: deployment
+        uses: actions/deploy-pages@v4
