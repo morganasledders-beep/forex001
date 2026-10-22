@@ -258,8 +258,8 @@
               <div class="indicator"><span>RSI 14</span><strong id="rsiValue">—</strong></div>
             </div>
             <div class="alert-controls">
-              <span id="alertHelp" class="alert-help">Alerts only notify when a setup changes. No trades are placed.</span>
-              <button id="alertButton" class="button secondary small" type="button">Enable alerts</button>
+              <span id="alertHelp" class="alert-help">Plus includes browser notifications when the selected asset's BUY/SELL setup changes. Signals do not guarantee profit.</span>
+              <button id="alertButton" class="button secondary small" type="button">Get Plus alerts · KES 1,000/month</button>
             </div>
           </section>
           <section class="card">
@@ -308,11 +308,11 @@
         <section class="panel" aria-labelledby="membershipTitle">
           <div class="card-heading"><h2 id="membershipTitle">Extra watchlists</h2><span class="paper-label">Optional plan</span></div>
           <div class="portfolio-line"><span>Free plan</span><strong>4 symbols</strong></div>
-          <div class="portfolio-line"><span>Plus plan</span><strong>KES 500 / month</strong></div>
-          <div id="paymentInstructions"><div class="analysis-copy">Plus unlocks up to 7 watchlist symbols. To request a one-month subscription, send KES 500 using M-Pesa Send Money to:</div>
+          <div class="portfolio-line"><span>Plus plan</span><strong>KES 1,000 / month</strong></div>
+          <div id="paymentInstructions"><div class="analysis-copy">Plus includes browser alerts when the selected asset's rule-based BUY/SELL setup changes and up to 7 watchlist symbols. Alerts are indicators, not guaranteed profits or personalized financial advice. To request one month of access, send KES 1,000 using M-Pesa Send Money to:</div>
           <p style="margin:10px 0"><a class="broker-link" href="tel:+254718654009" aria-label="Call the M-Pesa recipient at plus 254 718 654 009"><strong>+254 718 654 009</strong></a></p>
-          <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div></div>
-          <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>
+          <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. Browser notifications also require permission on your device. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div></div>
+          <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>           <div id="plusAccessNotice" class="notice" hidden>Plus access is active. Alerts are indicators and do not guarantee profits.</div>
           <div class="notice">Manual payment only. No payment is verified or watchlist limit changed automatically. No automatic renewals.</div>
         </section>
       </aside>
@@ -369,7 +369,7 @@
       trades: [],
       storageKeys: null,
       userId: null,
-      isOwner: false,
+      isOwner: false,       hasPlusAccess: false,
       selected: "BTCUSDT",
       interval: "15m",
       prices: {},
@@ -415,7 +415,7 @@
       state.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
     }
 
-    function setFeedStatus(message, connected) {
+    function updateAlertAccess() { $("alertButton").textContent = state.hasPlusAccess ? (state.notificationsEnabled ? "Alerts enabled" : "Enable Plus alerts") : "Get Plus alerts · KES 1,000/month"; setText("alertHelp", state.hasPlusAccess ? "Browser alerts notify you when the selected asset's BUY/SELL setup changes. No trades are placed; signals do not guarantee profit." : "Plus alerts notify you when the selected asset's BUY/SELL setup changes. Signals do not guarantee profit."); }      function setFeedStatus(message, connected) {
       $("feedStatus").textContent = message;
       $("feedDot").classList.toggle("live", connected);
     }
@@ -429,10 +429,10 @@
     function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
-      state.isOwner = user.app_metadata?.role === "owner";
+      state.isOwner = user.app_metadata?.role === "owner";       state.hasPlusAccess = state.isOwner || user.app_metadata?.plus_access === true;
         
       setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
-      $("ownerAccessNotice").hidden = !state.isOwner;       $("paymentInstructions").hidden = state.isOwner;
+      $("ownerAccessNotice").hidden = !state.isOwner;       $("plusAccessNotice").hidden = !state.hasPlusAccess || state.isOwner;       $("paymentInstructions").hidden = state.hasPlusAccess;       updateAlertAccess();
       if (state.userId !== user.id) {
         state.userId = user.id;
         state.storageKeys = {
@@ -898,7 +898,7 @@
     function alertForSetupChange(action, symbol) {
       const previous = state.previousSignal[symbol];
       state.previousSignal[symbol] = action;
-      if (previous === undefined || previous === action || action === "WAIT") return;
+      if (!state.hasPlusAccess || previous === undefined || previous === action || action === "WAIT") return;
       const message = `${symbol}: ${action}. Check the indicators and risk before deciding.`;
       showToast(message);
       if (state.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
@@ -1018,7 +1018,7 @@
         if (state.watchlist.length >= watchlistLimit) {
           showToast(state.isOwner
             ? `The owner account supports up to ${PLUS_WATCHLIST_LIMIT} watchlist symbols.`
-            : `The free plan supports ${FREE_WATCHLIST_LIMIT} watchlist symbols. Plus supports ${PLUS_WATCHLIST_LIMIT} for KES 500/month; checkout is manual.`, true);
+            : `The free plan supports ${FREE_WATCHLIST_LIMIT} watchlist symbols. Plus supports ${PLUS_WATCHLIST_LIMIT} and setup-change alerts for KES 1,000/month; checkout is manual.`, true);
           return;
         }
         state.watchlist.push(normalized);
@@ -1139,7 +1139,7 @@
     });
     $("callButton").addEventListener("click", () => placePaperTrade("CALL"));
     $("putButton").addEventListener("click", () => placePaperTrade("PUT"));
-    $("alertButton").addEventListener("click", async () => {
+    $("alertButton").addEventListener("click", async () => {       if (!state.hasPlusAccess) {         $("membershipTitle").scrollIntoView({ behavior: "smooth", block: "center" });         showToast("BUY/SELL setup-change alerts are included with Plus for KES 1,000/month. Payment and access are verified manually.");         return;       }
       if (!("Notification" in window)) {
         showToast("This browser does not support desktop notifications.", true);
         return;
@@ -1148,13 +1148,13 @@
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
           state.notificationsEnabled = false;
-          $("alertButton").textContent = "Enable alerts";
+          updateAlertAccess();
           setText("alertHelp", "Browser notifications are disabled. The on-page setup still updates.");
           return;
         }
         state.notificationsEnabled = true;
         $("alertButton").textContent = "Alerts enabled";
-        setText("alertHelp", "You will be notified when a BUY/SELL setup changes. No trades are placed.");
+        setText("alertHelp", "Browser alerts notify you when the selected asset's BUY/SELL setup changes. No trades are placed; signals do not guarantee profit.");
         showToast("Browser alerts enabled for changes in market setup.");
       } catch (error) {
         console.error("Could not enable browser notifications", error);
