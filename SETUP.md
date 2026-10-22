@@ -10,7 +10,7 @@ The dashboard is a static website. It reads public Binance BTC market data and E
    - `SUPABASE_URL`: the Supabase Project URL.
    - `SUPABASE_ANON_KEY`: the public publishable/anon key.
 4. In Supabase **Authentication → URL Configuration**, set the site URL to the GitHub Pages address and add that exact address as a redirect URL. The address is usually `https://<account>.github.io/<repository>/`.
-5. Keep Supabase email confirmation enabled. For email/password accounts, use Supabase's hosted email confirmation flow.
+5. Email confirmation is currently disabled in this Supabase project so new members can create an account and sign in without confirmation email delivery. This means email addresses are not verified, and password recovery emails may not reach public users with Supabase's default SMTP. For a public production service, configure a custom SMTP provider in Supabase Authentication settings, then enable **Confirm email**.
 
 The GitHub Pages workflow writes these values into `auth-config.js` during deployment. The publishable/anon key is designed for browser use; access control for any future private database tables must be enforced with Supabase Row Level Security policies. Do not add service-role keys, broker credentials, or other server secrets to this website.
 
