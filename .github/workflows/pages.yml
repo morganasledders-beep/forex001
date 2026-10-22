@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out website
@@ -36,10 +39,24 @@ jobs:
           import json
           import os
           from pathlib import Path
+          from urllib.parse import urlparse
+
+          supabase_url = os.environ.get("SUPABASE_URL", "").strip()
+          supabase_anon_key = os.environ.get("SUPABASE_ANON_KEY", "").strip()
+          if not supabase_url or not supabase_anon_key:
+              raise SystemExit(
+                  "Authentication deployment blocked: set SUPABASE_URL and "
+                  "SUPABASE_ANON_KEY in GitHub Actions secrets."
+              )
+          parsed_url = urlparse(supabase_url)
+          if parsed_url.scheme != "https" or not parsed_url.netloc:
+              raise SystemExit(
+                  "Authentication deployment blocked: SUPABASE_URL must be a valid HTTPS URL."
+              )
 
           config = {
-              "supabaseUrl": os.environ.get("SUPABASE_URL", ""),
-              "supabaseAnonKey": os.environ.get("SUPABASE_ANON_KEY", ""),
+              "supabaseUrl": supabase_url,
+              "supabaseAnonKey": supabase_anon_key,
           }
           Path("dist/auth-config.js").write_text(
               "window.BOBY_AUTH_CONFIG = "

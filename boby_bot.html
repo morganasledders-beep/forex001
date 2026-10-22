@@ -89,13 +89,20 @@
     .stat-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
     .stat-value { margin-top: 6px; font-size: 14px; font-weight: 700; }
     .card { padding: 13px; }
-    .chart-card { min-height: 300px; }
+    .chart-card {
+      min-height: 300px;
+      overflow: hidden;
+      background: linear-gradient(155deg, #111b30 0%, #0b1426 55%, #10192b 100%);
+    }
     .card-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
     .card-heading h2 { margin: 0; font-size: 13px; }
-    .timeframes { display: flex; gap: 4px; }
-    .timeframe { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); color: var(--muted); cursor: pointer; font-size: 10px; }
-    .timeframe.active { border-color: var(--blue); background: #12345a; color: white; }
-    .chart-wrap { position: relative; height: 230px; }
+    .chart-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .chart-mode { color: #67e6bd; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .timeframes { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid #243750; border-radius: 7px; background: #081424; }
+    .timeframe { min-width: 34px; padding: 6px 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #91a5bb; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .timeframe:hover { color: white; background: #15263a; }
+    .timeframe.active { border-color: #237966; background: #18493f; color: #effff9; box-shadow: inset 0 0 0 1px #2a9b7628; }
+    .chart-wrap { position: relative; height: 340px; margin: 0 -2px; }
     canvas { display: block; width: 100%; height: 100%; }
     .chart-status { min-height: 16px; margin-top: 5px; color: var(--muted); font-size: 10px; }
     .lower-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
@@ -113,7 +120,7 @@
     .signal-action.wait { color: var(--amber); }
     .alert-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
     .alert-help { color: var(--muted); font-size: 10px; line-height: 1.4; }
-    .indicator-list { display: grid; gap: 7px; margin-top: 10px; }
+    .indicator-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 12px; margin-top: 10px; }
     .indicator { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; }
     .indicator strong { color: var(--text); }
     .panel { margin-bottom: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
@@ -233,16 +240,23 @@
 
         <div class="card chart-card">
           <div class="card-heading">
-            <h2>Price history</h2>
-            <div id="cryptoTimeframes" class="timeframes" aria-label="Chart timeframe">
-              <button class="timeframe" data-interval="1m" type="button">1m</button>
-              <button class="timeframe" data-interval="5m" type="button">5m</button>
-              <button class="timeframe active" data-interval="15m" type="button">15m</button>
-              <button class="timeframe" data-interval="1h" type="button">1h</button>
+            <h2>Price chart</h2>
+            <div class="chart-toolbar">
+              <span class="chart-mode">Line</span>
+              <div id="cryptoTimeframes" class="timeframes" role="group" aria-label="Chart timeframe">
+                <button class="timeframe" data-interval="1m" aria-pressed="false" type="button">1m</button>
+                <button class="timeframe" data-interval="5m" aria-pressed="false" type="button">5m</button>
+                <button class="timeframe active" data-interval="15m" aria-pressed="true" type="button">15m</button>
+                <button class="timeframe" data-interval="30m" aria-pressed="false" type="button">30m</button>
+                <button class="timeframe" data-interval="1h" aria-pressed="false" type="button">1h</button>
+                <button class="timeframe" data-interval="4h" aria-pressed="false" type="button">4h</button>
+                <button class="timeframe" data-interval="1d" aria-pressed="false" type="button">1d</button>
+              </div>
             </div>
             <span id="fxTimeframe" class="muted" style="font-size:10px" hidden>Daily reference · 120 days</span>
           </div>
           <div class="chart-wrap"><canvas id="priceChart" aria-label="Price history chart"></canvas></div>
+          <div class="chart-status">Blue price trace · Mountain backdrop · Current price marker</div>
           <div id="chartStatus" class="chart-status">Loading price history…</div>
         </div>
 
@@ -256,9 +270,15 @@
               <div class="indicator"><span>SMA 20</span><strong id="sma20">—</strong></div>
               <div class="indicator"><span>SMA 50</span><strong id="sma50">—</strong></div>
               <div class="indicator"><span>RSI 14</span><strong id="rsiValue">—</strong></div>
+              <div class="indicator"><span>MACD / signal (12, 26, 9)</span><strong id="macdValue">—</strong></div>
+              <div class="indicator"><span>ATR 14</span><strong id="atrValue">—</strong></div>
+              <div class="indicator"><span>Volume vs 20-bar average</span><strong id="volumeRatioValue">—</strong></div>
+              <div class="indicator"><span>Short-term trend</span><strong id="trendValue">—</strong></div>
+              <div class="indicator"><span>20-candle support</span><strong id="supportValue">—</strong></div>
+              <div class="indicator"><span>20-candle resistance</span><strong id="resistanceValue">—</strong></div>
             </div>
             <div class="alert-controls">
-              <span id="alertHelp" class="alert-help">Plus includes browser notifications when the selected asset's BUY/SELL setup changes. Signals do not guarantee profit.</span>
+              <span id="alertHelp" class="alert-help">Rule-based indicators are informational, not instructions or guaranteed outcomes. Plus setup alerts run only while this dashboard stays open.</span>
               <button id="alertButton" class="button secondary small" type="button">Get Plus alerts · KES 1,000/month</button>
             </div>
           </section>
@@ -273,7 +293,7 @@
             <div id="positionsEmpty" class="empty-row">No paper positions yet.</div>
           </section>
         </div>
-        <div class="notice">Indicators are educational market summaries, not financial advice or guaranteed trading signals. Market prices may be delayed or unavailable.</div>
+        <div class="notice">Line chart with mountain shading. Indicators are educational summaries, not financial advice or guaranteed trading signals. Market prices may be delayed or unavailable.</div>
       </section>
 
       <aside class="rightbar">
@@ -286,23 +306,22 @@
         </section>
 
         <section class="panel">
-          <div class="card-heading"><h2>cTrader market data</h2><span class="paper-label">Read only</span></div>
-          <div id="ctraderStatus" class="analysis-copy">Not connected. Connect to use your broker's FX candles and prices.</div>
+          <div class="card-heading"><h2>Paper trade</h2><span class="paper-label">No real orders</span></div>
+          <div class="analysis-copy">Optional cTrader connection for broker FX market data:</div>
+          <div class="trade-buttons">
+            <button id="connectCtraderButton" class="button secondary small" type="button">Connect cTrader</button>
+            <button id="disconnectCtraderButton" class="button secondary small" type="button" hidden>Disconnect</button>
+          </div>
           <div class="field">
             <label for="ctraderAccount">cTrader account</label>
             <select id="ctraderAccount" disabled>
               <option value="">Connect cTrader first</option>
             </select>
           </div>
-          <div class="trade-buttons">
-            <button id="connectCtraderButton" class="button secondary small" type="button">Connect cTrader</button>
-            <button id="disconnectCtraderButton" class="button secondary small" type="button" hidden>Disconnect</button>
-          </div>
-          <div class="notice">FOREX001 requests view-only account access for market data. It cannot place or modify broker trades.</div>
-        </section>
-
-        <section class="panel">
-          <div class="card-heading"><h2>Paper trade</h2><span class="paper-label">No real orders</span></div>
+          <div id="ctraderAccountOverview" class="notice" hidden></div>
+          <div id="ctraderSelectedAccount" class="notice" role="status" hidden></div>
+          <div id="ctraderStatus" class="analysis-copy">Not connected. Connect to use your broker's FX candles and prices.</div>
+          <div class="notice">Read-only market data connection. This panel's CALL/PUT buttons remain paper trades; it cannot place or modify broker orders.</div>
           <div class="field">
             <label for="tradeAmount">Simulated amount (USD)</label>
             <input id="tradeAmount" type="number" min="1" max="1000000" step="1" value="100">
@@ -346,7 +365,7 @@
       </div>
       <h1 id="authTitle">Sign in to your dashboard</h1>
       <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
-      <p id="signupDescription">New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
+      <p id="signupDescription" hidden>Create an account with your email and a password of at least 8 characters. If email confirmation is enabled, check your inbox before signing in.</p>
       <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
       <div id="authFormFields">
         <div class="field">
@@ -355,21 +374,22 @@
         </div>
         <div class="field">
           <label for="authPassword">Password</label>
-          <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
+          <input id="authPassword" type="password" autocomplete="current-password" required>
         </div>
         <button id="signInButton" class="button" type="submit">Sign in</button>
         <button id="signUpButton" class="button secondary" type="button">Create account</button>
+        <button id="cancelSignUpButton" class="button secondary" type="button" hidden>Back to sign in</button>
         <button id="forgotPasswordButton" class="button secondary" type="button">Forgot your password?</button>
       </div>
       <div id="passwordRecoveryFields" hidden>
         <p>Enter the email for your account and request a reset link. Public email delivery requires the site owner to configure custom SMTP in Supabase.</p>
         <div class="field">
           <label for="recoveryPassword">New password</label>
-          <input id="recoveryPassword" type="password" autocomplete="new-password" minlength="8" required>
+          <input id="recoveryPassword" type="password" autocomplete="new-password" minlength="8" required disabled>
         </div>
         <div class="field">
           <label for="recoveryPasswordConfirm">Confirm new password</label>
-          <input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required>
+          <input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required disabled>
         </div>
         <button id="updatePasswordButton" class="button" type="button">Save new password</button>
         <button id="backToSignInButton" class="button secondary" type="button">Back to sign in</button>
@@ -422,6 +442,7 @@
       socketRetryMs: 1000,
       supabase: null,
       passwordRecovery: false,
+      authMode: "signIn",
       dashboardStarted: false,
       toastTimer: null
     };
@@ -482,6 +503,22 @@
       element.classList.toggle("error", isError);
     }
 
+    function setAuthMode(mode) {
+      state.authMode = mode;
+      const signingUp = mode === "signUp";
+      $("authTitle").textContent = signingUp ? "Create your account" : "Sign in to your dashboard";
+      $("authDescription").hidden = signingUp;
+      $("signupDescription").hidden = !signingUp;
+      $("signInButton").hidden = signingUp;
+      $("signUpButton").type = signingUp ? "submit" : "button";
+      $("signUpButton").textContent = "Create account";
+      $("cancelSignUpButton").hidden = !signingUp;
+      $("forgotPasswordButton").hidden = signingUp;
+      $("authPassword").autocomplete = signingUp ? "new-password" : "current-password";
+      $("authPassword").minLength = signingUp ? 8 : 0;
+      setAuthMessage("");
+    }
+
     function showPasswordRecovery() {
       state.passwordRecovery = true;
       $("app").hidden = true;
@@ -500,9 +537,7 @@
 
     function showSignInForm() {
       state.passwordRecovery = false;
-      $("authTitle").textContent = "Sign in to your dashboard";
-      $("authDescription").hidden = false;
-      $("signupDescription").hidden = false;
+      setAuthMode("signIn");
       $("authEmail").disabled = false;
       $("authPassword").disabled = false;
       $("authFormFields").hidden = false;
@@ -578,6 +613,7 @@
       state.ctraderAccounts = [];
       state.ctraderAccountId = "";
       state.ctraderRequestId++;
+      updateCtraderAccountSummary();
       updateAlertAccess();
       updateMarketStatLabels();
       $("ctraderStatus").textContent = "Sign in to connect cTrader market data.";
@@ -657,14 +693,25 @@
         setAuthMessage("Signed in.");
       } catch (error) {
         console.error("Sign-in failed", error);
-        setAuthMessage(error.message || "Sign-in failed. Check your email and password.", true);
+        const message = error.message || "";
+        const lowerMessage = message.toLowerCase();
+        if (lowerMessage.includes("invalid login credentials")) {
+          setAuthMessage("That email and password do not match. Check them or use Forgot your password? to reset your password.", true);
+        } else if (lowerMessage.includes("email not confirmed")) {
+          setAuthMessage("Confirm your email using the link from Supabase, then sign in again.", true);
+        } else if (lowerMessage.includes("too many requests")) {
+          setAuthMessage("Too many attempts. Wait a few minutes, then try again or reset your password.", true);
+        } else {
+          setAuthMessage(message || "Sign-in failed. Check your email and password.", true);
+        }
       } finally {
         $("signInButton").disabled = false;
         $("signUpButton").disabled = false;
       }
     }
 
-    async function signUp() {
+    async function signUp(event) {
+      event.preventDefault();
       if (!state.supabase) return;
       const email = $("authEmail").value.trim();
       const password = $("authPassword").value;
@@ -683,7 +730,7 @@
           showSignedInView(data.user);
           setAuthMessage("Account created and signed in.");
         } else {
-          setAuthMessage("Could not sign in automatically. If this email is already registered, use Sign in instead; otherwise try creating the account again.", true);
+          setAuthMessage("Account creation did not return a sign-in session. If email confirmation is enabled, check your inbox. If you already have an account, sign in or reset your password before trying again.", true);
         }
       } catch (error) {
         console.error("Account creation failed", error);
@@ -807,10 +854,19 @@
           } else if (data.e === "kline" && data.k) {
             const candle = {
               time: Number(data.k.t),
+              open: Number(data.k.o),
+              high: Number(data.k.h),
+              low: Number(data.k.l),
               close: Number(data.k.c),
               volume: Number(data.k.v)
             };
-            if (!Number.isFinite(candle.time) || !Number.isFinite(candle.close)) return;
+            if (
+              !Number.isFinite(candle.time) ||
+              !Number.isFinite(candle.open) ||
+              !Number.isFinite(candle.high) ||
+              !Number.isFinite(candle.low) ||
+              !Number.isFinite(candle.close)
+            ) return;
             const existingIndex = state.candles.findIndex((item) => item.time === candle.time);
             if (existingIndex >= 0) state.candles[existingIndex] = candle;
             else state.candles.push(candle);
@@ -903,6 +959,50 @@
         : state.ctraderAccountId ? "Data source" : "Rate source";
     }
 
+    function accountTypeLabel(account) {
+      return account.isLive ? "Live (real-money)" : "Demo (practice)";
+    }
+
+    function updateCtraderAccountSummary() {
+      const liveAccounts = state.ctraderAccounts.filter((account) => account.isLive);
+      const demoAccounts = state.ctraderAccounts.filter((account) => !account.isLive);
+      const overview = $("ctraderAccountOverview");
+      const selected = state.ctraderAccounts.find(
+        (account) => account.ctidTraderAccountId === state.ctraderAccountId
+      );
+      overview.hidden = state.ctraderAccounts.length === 0;
+      overview.textContent = `Authorized accounts: ${liveAccounts.length} live (real-money), ${demoAccounts.length} demo (practice). Choose one above to view its market data.`;
+      const selectedNotice = $("ctraderSelectedAccount");
+      selectedNotice.hidden = !selected;
+      selectedNotice.textContent = selected
+        ? `Selected: ${accountTypeLabel(selected)} · ${selected.brokerTitleShort ?? "cTrader"} · ${selected.traderLogin ?? selected.ctidTraderAccountId}`
+        : "";
+    }
+
+    function populateCtraderAccounts() {
+      const select = $("ctraderAccount");
+      select.replaceChildren(new Option(
+        state.ctraderAccounts.length ? "Choose an account" : "No authorized account found",
+        ""
+      ));
+      const liveAccounts = state.ctraderAccounts.filter((account) => account.isLive);
+      const demoAccounts = state.ctraderAccounts.filter((account) => !account.isLive);
+      [
+        { accounts: liveAccounts, label: "Live accounts (real-money)" },
+        { accounts: demoAccounts, label: "Demo accounts (practice)" },
+      ].forEach(({ accounts, label }) => {
+        if (!accounts.length) return;
+        const group = document.createElement("optgroup");
+        group.label = label;
+        accounts.forEach((account) => {
+          group.append(new Option(account.label, account.ctidTraderAccountId));
+        });
+        select.append(group);
+      });
+      select.disabled = state.ctraderAccounts.length === 0;
+      updateCtraderAccountSummary();
+    }
+
     function selectAsset(symbol) {
       if (!ASSETS[symbol]) return;
       state.selected = symbol;
@@ -959,20 +1059,11 @@
         state.ctraderAccounts = Array.isArray(result.accounts) ? result.accounts : [];
         state.ctraderAccountId = "";
         updateMarketStatLabels();
-        const select = $("ctraderAccount");
-        select.replaceChildren(new Option(
-          state.ctraderAccounts.length ? "Choose an account" : "No authorized account found",
-          ""
-        ));
-        state.ctraderAccounts.forEach((account) => {
-          const option = new Option(account.label, account.ctidTraderAccountId);
-          select.append(option);
-        });
-        select.disabled = state.ctraderAccounts.length === 0;
+        populateCtraderAccounts();
         $("connectCtraderButton").disabled = false;
         $("disconnectCtraderButton").hidden = !result.connected;
         $("ctraderStatus").textContent = result.connected
-          ? "Connected to cTrader. Choose an account to load broker FX data."
+          ? "Connected to cTrader. Authorized accounts are grouped as live or demo below."
           : "Not connected. Connect to use your broker's FX candles and prices.";
         $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex";
         $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
@@ -987,6 +1078,9 @@
         $("ctraderStatus").textContent = "cTrader is not configured or could not be reached.";
         $("ctraderAccount").replaceChildren(new Option("cTrader unavailable", ""));
         $("ctraderAccount").disabled = true;
+        state.ctraderAccounts = [];
+        state.ctraderAccountId = "";
+        updateCtraderAccountSummary();
         $("connectCtraderButton").disabled = false;
       }
     }
@@ -1015,6 +1109,7 @@
         state.ctraderAccounts = [];
         $("ctraderAccount").replaceChildren(new Option("Connect cTrader first", ""));
         $("ctraderAccount").disabled = true;
+        updateCtraderAccountSummary();
         $("disconnectCtraderButton").hidden = true;
         $("ctraderStatus").textContent = "cTrader connection removed from FOREX001. Revoke app access in cTrader to fully revoke authorization.";
         showToast("Saved cTrader tokens removed from FOREX001.");
@@ -1092,12 +1187,21 @@
       const points = result.candles
         .map((candle) => ({
           time: Number(candle.time),
+          open: Number(candle.open),
           low: Number(candle.low),
           high: Number(candle.high),
           close: Number(candle.close),
           volume: Number(candle.volume)
         }))
-        .filter((point) => Number.isFinite(point.time) && Number.isFinite(point.close))
+        .filter((point) =>
+          Number.isFinite(point.time) &&
+          Number.isFinite(point.open) &&
+          Number.isFinite(point.high) &&
+          Number.isFinite(point.low) &&
+          Number.isFinite(point.close) &&
+          point.high >= Math.max(point.open, point.close, point.low) &&
+          point.low <= Math.min(point.open, point.close, point.high)
+        )
         .sort((left, right) => left.time - right.time);
       if (points.length < 50) {
         throw new Error("cTrader returned fewer than 50 valid candles; setup analysis needs more history.");
@@ -1116,6 +1220,17 @@
       const symbol = state.selected;
       const requestId = ++state.requestId;
       const asset = ASSETS[symbol];
+      [
+        "sma20",
+        "sma50",
+        "rsiValue",
+        "macdValue",
+        "atrValue",
+        "volumeRatioValue",
+        "trendValue",
+        "supportValue",
+        "resistanceValue"
+      ].forEach((id) => setText(id, "—"));
       if (asset.kind === "forex") {
         state.candles = [];
         delete state.prices[symbol];
@@ -1127,6 +1242,11 @@
         setText("sma20", "—");
         setText("sma50", "—");
         setText("rsiValue", "—");
+        setText("macdValue", "—");
+        setText("atrValue", "—");
+        setText("trendValue", "—");
+        setText("supportValue", "—");
+        setText("resistanceValue", "—");
         state.currentSetup = null;
         renderWatchlist();
         drawChart();
@@ -1147,7 +1267,18 @@
           ]);
           void tickerResult;
           if (requestId !== state.requestId) return;
-          state.candles = candles.map((candle) => ({ time: Number(candle[0]), close: Number(candle[4]), volume: Number(candle[5]) }));
+          state.candles = candles.map((candle) => ({
+            time: Number(candle[0]),
+            open: Number(candle[1]),
+            high: Number(candle[2]),
+            low: Number(candle[3]),
+            close: Number(candle[4]),
+            volume: Number(candle[5])
+          })).filter((candle) =>
+            [candle.time, candle.open, candle.high, candle.low, candle.close].every(Number.isFinite) &&
+            candle.high >= Math.max(candle.open, candle.close, candle.low) &&
+            candle.low <= Math.min(candle.open, candle.close, candle.high)
+          );
           setText("chartStatus", "Binance BTC/USDT spot · candle history");
           setText("updatedValue", new Date().toLocaleTimeString());
           renderCurrentPrice();
@@ -1220,17 +1351,116 @@
 
     function calculateRsi(values, period = 14) {
       if (values.length <= period) return null;
-      let gains = 0;
-      let losses = 0;
-      for (let index = values.length - period; index < values.length; index++) {
+      let averageGain = 0;
+      let averageLoss = 0;
+      for (let index = 1; index <= period; index++) {
         const difference = values[index] - values[index - 1];
-        if (difference > 0) gains += difference;
-        else losses -= difference;
+        if (difference > 0) averageGain += difference;
+        else averageLoss -= difference;
       }
-      if (losses === 0) return gains === 0 ? 50 : 100;
-      const averageGain = gains / period;
-      const averageLoss = losses / period;
+      averageGain /= period;
+      averageLoss /= period;
+      for (let index = period + 1; index < values.length; index++) {
+        const difference = values[index] - values[index - 1];
+        averageGain = (averageGain * (period - 1) + Math.max(difference, 0)) / period;
+        averageLoss = (averageLoss * (period - 1) + Math.max(-difference, 0)) / period;
+      }
+      if (averageLoss === 0) return averageGain === 0 ? 50 : 100;
       return 100 - (100 / (1 + averageGain / averageLoss));
+    }
+
+    function exponentialAverage(values, period) {
+      const result = Array(values.length).fill(null);
+      const seed = [];
+      let previous = null;
+      const multiplier = 2 / (period + 1);
+      values.forEach((value, index) => {
+        if (!Number.isFinite(value)) {
+          seed.length = 0;
+          previous = null;
+          return;
+        }
+        if (previous === null) {
+          seed.push(value);
+          if (seed.length === period) {
+            previous = seed.reduce((sum, item) => sum + item, 0) / period;
+            result[index] = previous;
+          }
+          return;
+        }
+        previous = (value - previous) * multiplier + previous;
+        result[index] = previous;
+      });
+      return result;
+    }
+
+    function calculateMacd(values) {
+      if (values.length < 34) return null;
+      const fast = exponentialAverage(values, 12);
+      const slow = exponentialAverage(values, 26);
+      const line = values.map((_, index) =>
+        fast[index] === null || slow[index] === null ? null : fast[index] - slow[index]
+      );
+      const signal = exponentialAverage(line, 9);
+      const last = line.length - 1;
+      if (line[last] === null || signal[last] === null) return null;
+      return { line: line[last], signal: signal[last], histogram: line[last] - signal[last] };
+    }
+
+    function calculateAtr(candles, period = 14) {
+      const ranges = candles.map((candle, index) => {
+        const high = Number(candle.high);
+        const low = Number(candle.low);
+        const close = Number(candle.close);
+        const previousClose = index > 0 ? Number(candles[index - 1].close) : close;
+        if (![high, low, close, previousClose].every(Number.isFinite) || high < low) return null;
+        return Math.max(high - low, Math.abs(high - previousClose), Math.abs(low - previousClose));
+      });
+      const validRanges = ranges.filter(Number.isFinite);
+      if (validRanges.length < period) return null;
+      let average = validRanges.slice(0, period).reduce((sum, value) => sum + value, 0) / period;
+      for (let index = period; index < validRanges.length; index++) {
+        average = (average * (period - 1) + validRanges[index]) / period;
+      }
+      return average;
+    }
+
+    function getTechnicalIndicators(candles) {
+      const values = candles.map((candle) => Number(candle.close)).filter(Number.isFinite);
+      const recent = candles.slice(-20);
+      const supportValues = recent.map((candle) =>
+        Number.isFinite(Number(candle.low)) ? Number(candle.low) : Number(candle.close)
+      ).filter(Number.isFinite);
+      const resistanceValues = recent.map((candle) =>
+        Number.isFinite(Number(candle.high)) ? Number(candle.high) : Number(candle.close)
+      ).filter(Number.isFinite);
+      const sma20 = movingAverage(values, 20);
+      const sma50 = movingAverage(values, 50);
+      const last = values[values.length - 1];
+      const recentVolumes = candles.slice(-20).map((candle) => Number(candle.volume));
+      const averageVolume = recentVolumes.length === 20 && recentVolumes.every(Number.isFinite)
+        ? movingAverage(recentVolumes, 20)
+        : null;
+      const currentVolume = Number(candles[candles.length - 1]?.volume);
+      return {
+        sma20,
+        sma50,
+        rsi: calculateRsi(values),
+        macd: calculateMacd(values),
+        atr: calculateAtr(candles),
+        volumeRatio: averageVolume > 0 && Number.isFinite(currentVolume)
+          ? currentVolume / averageVolume
+          : null,
+        support: supportValues.length ? Math.min(...supportValues) : null,
+        resistance: resistanceValues.length ? Math.max(...resistanceValues) : null,
+        trend: sma20 === null || sma50 === null
+          ? "Not enough data"
+          : last > sma20 && sma20 > sma50
+            ? "Bullish"
+            : last < sma20 && sma20 < sma50
+              ? "Bearish"
+              : "Mixed"
+      };
     }
 
     function getMarketSetup(values, currentPrice) {
@@ -1290,11 +1520,25 @@
       const values = state.candles.map((candle) => candle.close);
       const asset = ASSETS[state.selected];
       const setup = getMarketSetup(values, state.prices[state.selected] || values[values.length - 1]);
+      const indicators = getTechnicalIndicators(state.candles);
       state.currentSetup = { ...setup, symbol: state.selected };
       const { sma20, sma50, rsi } = setup;
       setText("sma20", sma20 === null ? "Not enough history" : formatPrice(sma20, asset));
       setText("sma50", sma50 === null ? "Not enough history" : formatPrice(sma50, asset));
       setText("rsiValue", rsi === null ? "Not enough history" : rsi.toFixed(1));
+      setText("macdValue", indicators.macd === null
+        ? "Not enough history"
+        : `${formatPrice(indicators.macd.line, asset)} / ${formatPrice(indicators.macd.signal, asset)}`);
+      setText("atrValue", indicators.atr === null ? "OHLC data unavailable" : formatPrice(indicators.atr, asset));
+      setText("volumeRatioValue", indicators.volumeRatio === null
+        ? "Not provided"
+        : `${indicators.volumeRatio.toFixed(2)}×`);
+      setText("trendValue", indicators.trend);
+      $("trendValue").className = indicators.trend === "Bullish"
+        ? "positive"
+        : indicators.trend === "Bearish" ? "negative" : "";
+      setText("supportValue", indicators.support === null ? "—" : formatPrice(indicators.support, asset));
+      setText("resistanceValue", indicators.resistance === null ? "—" : formatPrice(indicators.resistance, asset));
       setText("analysisUpdated", `Updated ${new Date().toLocaleTimeString()}`);
 
       const badge = $("signalBadge");
@@ -1349,51 +1593,131 @@
       const width = rect.width;
       const height = rect.height;
       context.clearRect(0, 0, width, height);
-      const values = state.candles.map((point) => point.close).filter(Number.isFinite);
-      if (values.length < 2) {
+      const candles = state.candles.filter((point) =>
+        Number.isFinite(point.time) && Number.isFinite(point.close)
+      );
+      if (candles.length < 2) {
         context.fillStyle = "#8da2bd";
         context.font = "12px Segoe UI";
         context.fillText("Waiting for enough price history…", 12, 24);
         return;
       }
+      const values = candles.map((point) => point.close);
       const minimum = Math.min(...values);
       const maximum = Math.max(...values);
-      const range = maximum - minimum || Math.abs(maximum) * 0.001 || 1;
-      const padding = { top: 12, right: 12, bottom: 22, left: 10 };
+      const dataRange = maximum - minimum || Math.abs(maximum) * 0.001 || 1;
+      const range = dataRange * 1.12;
+      const padding = { top: 16, right: 70, bottom: 28, left: 8 };
       const chartWidth = width - padding.left - padding.right;
       const chartHeight = height - padding.top - padding.bottom;
+      const plotRight = width - padding.right;
+      const historicalWidth = chartWidth * 0.68;
+      const minimumWithPadding = minimum - (range - dataRange) / 2;
+      const maximumWithPadding = maximum + (range - dataRange) / 2;
+      const yFor = (value) => padding.top + ((maximumWithPadding - value) / range) * chartHeight;
+      const drawMountain = (points, fill) => {
+        context.beginPath();
+        context.moveTo(points[0][0] * width, points[0][1] * height);
+        for (let index = 1; index < points.length; index++) {
+          context.lineTo(points[index][0] * width, points[index][1] * height);
+        }
+        context.closePath();
+        context.fillStyle = fill;
+        context.fill();
+      };
+      const distantMountain = context.createLinearGradient(0, height * .12, 0, height);
+      distantMountain.addColorStop(0, "#26334a");
+      distantMountain.addColorStop(1, "#151f32");
+      drawMountain(
+        [[0, .69], [.08, .51], [.16, .58], [.3, .18], [.35, .29], [.42, .55], [.51, .39], [.62, .13], [.68, .27], [.77, .57], [.86, .33], [.94, .49], [1, .24], [1, 1], [0, 1]],
+        distantMountain
+      );
+      drawMountain(
+        [[0, .8], [.1, .66], [.2, .73], [.31, .43], [.38, .55], [.47, .7], [.59, .36], [.67, .51], [.78, .74], [.89, .47], [1, .64], [1, 1], [0, 1]],
+        "#202c41"
+      );
+      drawMountain(
+        [[0, .9], [.13, .77], [.24, .83], [.36, .63], [.47, .81], [.6, .57], [.71, .8], [.84, .61], [.94, .78], [1, .7], [1, 1], [0, 1]],
+        "#26334a"
+      );
       context.font = "10px Segoe UI";
-      context.strokeStyle = "#1b2b43";
+      context.strokeStyle = "#26324a";
       context.fillStyle = "#8da2bd";
       context.lineWidth = 1;
       for (let row = 0; row <= 4; row++) {
         const y = padding.top + (chartHeight * row) / 4;
         context.beginPath();
         context.moveTo(padding.left, y);
-        context.lineTo(width - padding.right, y);
+        context.lineTo(plotRight, y);
         context.stroke();
-        const value = maximum - (range * row) / 4;
-        context.fillText(formatPrice(value, ASSETS[state.selected]), padding.left + 4, Math.max(10, y - 3));
+        const value = maximumWithPadding - (range * row) / 4;
+        context.textAlign = "right";
+        context.fillText(formatPrice(value, ASSETS[state.selected]), width - 4, Math.max(10, y - 3));
       }
+      for (let column = 0; column <= 8; column++) {
+        const x = padding.left + (chartWidth * column) / 8;
+        context.beginPath();
+        context.moveTo(x, padding.top);
+        context.lineTo(x, height - padding.bottom);
+        context.stroke();
+      }
+      context.textAlign = "left";
       const points = values.map((value, index) => ({
-        x: padding.left + (chartWidth * index) / (values.length - 1),
-        y: padding.top + ((maximum - value) / range) * chartHeight
+        x: padding.left + (historicalWidth * index) / (values.length - 1),
+        y: yFor(value)
       }));
-      const gradient = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-      gradient.addColorStop(0, "#3997ff44");
-      gradient.addColorStop(1, "#3997ff00");
       context.beginPath();
       context.moveTo(points[0].x, height - padding.bottom);
       points.forEach((point) => context.lineTo(point.x, point.y));
       context.lineTo(points[points.length - 1].x, height - padding.bottom);
       context.closePath();
-      context.fillStyle = gradient;
+      const fill = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      fill.addColorStop(0, "#4274a94d");
+      fill.addColorStop(1, "#28456f14");
+      context.fillStyle = fill;
       context.fill();
       context.beginPath();
-      points.forEach((point, index) => index === 0 ? context.moveTo(point.x, point.y) : context.lineTo(point.x, point.y));
-      context.strokeStyle = "#52aaff";
-      context.lineWidth = 2;
+      points.forEach((point, index) => {
+        if (index === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+      });
+      context.strokeStyle = "#5683b7";
+      context.lineWidth = 1.5;
+      context.lineJoin = "miter";
+      context.lineCap = "square";
       context.stroke();
+
+      const currentPrice = values[values.length - 1];
+      const currentY = yFor(currentPrice);
+      context.beginPath();
+      context.strokeStyle = "#4b78a9";
+      context.lineWidth = 1;
+      context.moveTo(points[points.length - 1].x, currentY);
+      context.lineTo(plotRight, currentY);
+      context.stroke();
+      context.beginPath();
+      context.arc(points[points.length - 1].x, currentY, 3, 0, Math.PI * 2);
+      context.fillStyle = "#1bb9eb";
+      context.fill();
+      const priceLabel = formatPrice(currentPrice, ASSETS[state.selected]);
+      context.font = "bold 10px Segoe UI";
+      context.textAlign = "center";
+      context.fillStyle = "#3e6e9f";
+      context.fillRect(plotRight - 48, currentY - 9, 48, 18);
+      context.fillStyle = "#eef6ff";
+      context.fillText(priceLabel, plotRight - 24, currentY + 3.5);
+      const timeOptions = state.interval === "1d"
+        ? { month: "short", day: "numeric", year: "2-digit" }
+        : { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
+      const formatTime = (time) => Number.isFinite(time)
+        ? new Intl.DateTimeFormat(undefined, timeOptions).format(new Date(time))
+        : "";
+      context.fillStyle = "#8da2bd";
+      context.textAlign = "left";
+      context.fillText(formatTime(candles[0].time), padding.left, height - 3);
+      context.textAlign = "right";
+      context.fillText(formatTime(candles[candles.length - 1].time), points[points.length - 1].x, height - 3);
+      context.textAlign = "left";
     }
 
     function addAsset(symbol) {
@@ -1516,9 +1840,16 @@
     });
     $("authForm").addEventListener("submit", (event) => {
       if (state.passwordRecovery) updatePassword();
+      else if (state.authMode === "signUp") signUp(event);
       else signIn(event);
     });
-    $("signUpButton").addEventListener("click", signUp);
+    $("signUpButton").addEventListener("click", (event) => {
+      if (state.authMode === "signIn") {
+        event.preventDefault();
+        setAuthMode("signUp");
+      }
+    });
+    $("cancelSignUpButton").addEventListener("click", showSignInForm);
     $("forgotPasswordButton").addEventListener("click", sendPasswordReset);
     $("updatePasswordButton").addEventListener("click", updatePassword);
     $("backToSignInButton").addEventListener("click", backToSignIn);
@@ -1540,6 +1871,7 @@
     $("disconnectCtraderButton").addEventListener("click", disconnectCtrader);
     $("ctraderAccount").addEventListener("change", () => {
       state.ctraderAccountId = $("ctraderAccount").value;
+      updateCtraderAccountSummary();
       const hasAccount = Boolean(state.ctraderAccountId);
       $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex" && !hasAccount;
       $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto" || hasAccount;
@@ -1588,8 +1920,12 @@
     });
     document.querySelectorAll(".timeframe").forEach((button) => {
       button.addEventListener("click", () => {
-        document.querySelectorAll(".timeframe").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".timeframe").forEach((item) => {
+          item.classList.remove("active");
+          item.setAttribute("aria-pressed", "false");
+        });
         button.classList.add("active");
+        button.setAttribute("aria-pressed", "true");
         state.interval = button.dataset.interval;
         loadSelectedAsset();
       });

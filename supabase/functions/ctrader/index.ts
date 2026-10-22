@@ -20,7 +20,10 @@ const PERIODS: Record<string, { value: number; milliseconds: number }> = {
   "1m": { value: 1, milliseconds: 60_000 },
   "5m": { value: 5, milliseconds: 300_000 },
   "15m": { value: 7, milliseconds: 900_000 },
+  "30m": { value: 8, milliseconds: 1_800_000 },
   "1h": { value: 9, milliseconds: 3_600_000 },
+  "4h": { value: 10, milliseconds: 14_400_000 },
+  "1d": { value: 12, milliseconds: 86_400_000 },
 };
 
 function getEnv(name: string): string {
@@ -284,7 +287,7 @@ async function refreshConnection(connection: ConnectionData): Promise<Connection
 
 class CTraderSocket {
   private readonly socket: WebSocket;
-  private readonly waiting = new Map<number, {
+  private readonly waiting = new Map<string, {
     resolve: (payload: Record<string, unknown>) => void;
     reject: (error: Error) => void;
     timer: ReturnType<typeof setTimeout>;
@@ -293,25 +296,22 @@ class CTraderSocket {
   private constructor(socket: WebSocket) {
     this.socket = socket;
     socket.addEventListener("message", (event) => {
-      let message: { payloadType?: number; payload?: Record<string, unknown> };
+      let message: {
+        clientMsgId?: string;
+        payloadType?: number;
+        payload?: Record<string, unknown>;
+      };
       try {
         message = JSON.parse(String(event.data));
       } catch {
         return;
       }
-      const type = message.payloadType;
-      if (typeof type !== "number") return;
-      let requestType = type;
-      if (type === 2142) {
-        const firstPending = this.waiting.keys().next();
-        if (firstPending.done) return;
-        requestType = firstPending.value;
-      }
-      const waiter = this.waiting.get(requestType);
+      if (typeof message.clientMsgId !== "string") return;
+      const waiter = this.waiting.get(message.clientMsgId);
       if (!waiter) return;
       clearTimeout(waiter.timer);
-      this.waiting.delete(requestType);
-      if (type === 2142) {
+      this.waiting.delete(message.clientMsgId);
+      if (message.payloadType === 2142) {
         waiter.reject(new Error("cTrader rejected a read-only market-data request."));
       } else {
         waiter.resolve(message.payload ?? {});
@@ -335,25 +335,25 @@ class CTraderSocket {
   }
 
   request(type: number, payload: Record<string, unknown>): Promise<Record<string, unknown>> {
-    if (this.waiting.has(type)) throw new Error("A duplicate cTrader request is already pending.");
+    const clientMsgId = crypto.randomUUID();
     const response = new Promise<Record<string, unknown>>((resolve, reject) => {
       const timer = setTimeout(() => {
-        this.waiting.delete(type);
+        this.waiting.delete(clientMsgId);
         reject(new Error("cTrader did not respond in time. Try again."));
       }, 10_000);
-      this.waiting.set(type, { resolve, reject, timer });
+      this.waiting.set(clientMsgId, { resolve, reject, timer });
     });
     try {
       this.socket.send(JSON.stringify({
-        clientMsgId: crypto.randomUUID(),
+        clientMsgId,
         payloadType: type,
         payload,
       }));
     } catch (error) {
-      const waiter = this.waiting.get(type);
+      const waiter = this.waiting.get(clientMsgId);
       if (waiter) {
         clearTimeout(waiter.timer);
-        this.waiting.delete(type);
+        this.waiting.delete(clientMsgId);
       }
       throw error;
     }
@@ -409,10 +409,13 @@ function safeAccounts(response: Record<string, unknown>): CTraderAccount[] {
   return raw.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const account = item as Record<string, unknown>;
-    if (account.ctidTraderAccountId === undefined) return [];
+    if (
+      account.ctidTraderAccountId === undefined ||
+      typeof account.isLive !== "boolean"
+    ) return [];
     return [{
       ctidTraderAccountId: String(account.ctidTraderAccountId),
-      isLive: account.isLive === true,
+      isLive: account.isLive,
       ...(typeof account.traderLogin === "string" || typeof account.traderLogin === "number"
         ? { traderLogin: String(account.traderLogin) }
         : {}),
@@ -483,17 +486,20 @@ function marketData(
     const trendbars = Array.isArray(response.trendbar) ? response.trendbar as Record<string, unknown>[] : [];
     const candles = trendbars.flatMap((bar) => {
       const low = Number(bar.low);
+      const deltaOpen = Number(bar.deltaOpen ?? 0);
       const deltaClose = Number(bar.deltaClose ?? 0);
       const deltaHigh = Number(bar.deltaHigh ?? 0);
       const timestamp = Number(bar.utcTimestampInMinutes);
       if (
         !Number.isFinite(low) ||
+        !Number.isFinite(deltaOpen) ||
         !Number.isFinite(deltaClose) ||
         !Number.isFinite(deltaHigh) ||
         !Number.isFinite(timestamp)
       ) return [];
       return [{
         time: timestamp * 60_000,
+        open: (low + deltaOpen) / 100_000,
         low: low / 100_000,
         high: (low + deltaHigh) / 100_000,
         close: (low + deltaClose) / 100_000,
