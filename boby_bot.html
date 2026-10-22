@@ -447,6 +447,9 @@
       toastTimer: null
     };
     const $ = (id) => document.getElementById(id);
+    const mountainImage = new Image();
+    mountainImage.addEventListener("load", drawChart);
+    mountainImage.src = "./mountain-chart.jpg";
 
     function loadList(key, fallback) {
       try {
@@ -1593,6 +1596,20 @@
       const width = rect.width;
       const height = rect.height;
       context.clearRect(0, 0, width, height);
+      if (mountainImage.complete && mountainImage.naturalWidth > 0) {
+        const imageScale = Math.max(width / mountainImage.naturalWidth, height / mountainImage.naturalHeight);
+        const imageWidth = mountainImage.naturalWidth * imageScale;
+        const imageHeight = mountainImage.naturalHeight * imageScale;
+        context.save();
+        context.filter = "brightness(0.46) saturate(0.48) contrast(1.08)";
+        context.drawImage(mountainImage, (width - imageWidth) / 2, (height - imageHeight) / 2, imageWidth, imageHeight);
+        context.restore();
+        const shade = context.createLinearGradient(0, 0, 0, height);
+        shade.addColorStop(0, "#07101f66");
+        shade.addColorStop(1, "#07101f99");
+        context.fillStyle = shade;
+        context.fillRect(0, 0, width, height);
+      }
       const candles = state.candles.filter((point) =>
         Number.isFinite(point.time) && Number.isFinite(point.close)
       );
@@ -1615,31 +1632,6 @@
       const minimumWithPadding = minimum - (range - dataRange) / 2;
       const maximumWithPadding = maximum + (range - dataRange) / 2;
       const yFor = (value) => padding.top + ((maximumWithPadding - value) / range) * chartHeight;
-      const drawMountain = (points, fill) => {
-        context.beginPath();
-        context.moveTo(points[0][0] * width, points[0][1] * height);
-        for (let index = 1; index < points.length; index++) {
-          context.lineTo(points[index][0] * width, points[index][1] * height);
-        }
-        context.closePath();
-        context.fillStyle = fill;
-        context.fill();
-      };
-      const distantMountain = context.createLinearGradient(0, height * .12, 0, height);
-      distantMountain.addColorStop(0, "#26334a");
-      distantMountain.addColorStop(1, "#151f32");
-      drawMountain(
-        [[0, .69], [.08, .51], [.16, .58], [.3, .18], [.35, .29], [.42, .55], [.51, .39], [.62, .13], [.68, .27], [.77, .57], [.86, .33], [.94, .49], [1, .24], [1, 1], [0, 1]],
-        distantMountain
-      );
-      drawMountain(
-        [[0, .8], [.1, .66], [.2, .73], [.31, .43], [.38, .55], [.47, .7], [.59, .36], [.67, .51], [.78, .74], [.89, .47], [1, .64], [1, 1], [0, 1]],
-        "#202c41"
-      );
-      drawMountain(
-        [[0, .9], [.13, .77], [.24, .83], [.36, .63], [.47, .81], [.6, .57], [.71, .8], [.84, .61], [.94, .78], [1, .7], [1, 1], [0, 1]],
-        "#26334a"
-      );
       context.font = "10px Segoe UI";
       context.strokeStyle = "#26324a";
       context.fillStyle = "#8da2bd";
