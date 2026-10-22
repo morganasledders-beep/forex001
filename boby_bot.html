@@ -1014,11 +1014,13 @@
         return;
       }
       if (!state.watchlist.includes(normalized)) {
-        const watchlistLimit = state.isOwner ? PLUS_WATCHLIST_LIMIT : FREE_WATCHLIST_LIMIT;
+        const watchlistLimit = state.hasPlusAccess ? PLUS_WATCHLIST_LIMIT : FREE_WATCHLIST_LIMIT;
         if (state.watchlist.length >= watchlistLimit) {
           showToast(state.isOwner
             ? `The owner account supports up to ${PLUS_WATCHLIST_LIMIT} watchlist symbols.`
-            : `The free plan supports ${FREE_WATCHLIST_LIMIT} watchlist symbols. Plus supports ${PLUS_WATCHLIST_LIMIT} and setup-change alerts for KES 1,000/month; checkout is manual.`, true);
+            : state.hasPlusAccess
+              ? `The Plus plan supports up to ${PLUS_WATCHLIST_LIMIT} watchlist symbols.`
+              : `The free plan supports ${FREE_WATCHLIST_LIMIT} watchlist symbols. Plus supports ${PLUS_WATCHLIST_LIMIT} and setup-change alerts for KES 1,000/month; checkout is manual.`, true);
           return;
         }
         state.watchlist.push(normalized);
