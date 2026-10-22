@@ -304,6 +304,15 @@
           <div class="portfolio-line"><span>Unrealized P/L</span><strong id="totalPnl">$0.00</strong></div>
           <div class="analysis-copy">Positions and watchlist are saved in this browser only.</div>
         </section>
+
+        <section class="panel" aria-labelledby="membershipTitle">
+          <div class="card-heading"><h2 id="membershipTitle">Extra watchlists</h2><span class="paper-label">Optional plan</span></div>
+          <div class="portfolio-line"><span>Free plan</span><strong>4 symbols</strong></div>
+          <div class="portfolio-line"><span>Plus plan</span><strong>KES 100 / month</strong></div>
+          <div class="analysis-copy">Plus unlocks up to 7 watchlist symbols. Renewals would be manual through an M-Pesa payment prompt; no automatic payments.</div>
+          <button id="subscriptionButton" class="button secondary small" type="button" disabled>Payments not set up</button>
+          <div id="subscriptionStatus" class="analysis-copy" style="margin-top:8px">No payments are collected. M-Pesa checkout will be enabled only after secure business-account and server setup.</div>
+        </section>
       </aside>
     </main>
     <footer class="footer">FOREX001 · Analysis and paper trading only · No broker execution</footer>
@@ -994,6 +1003,10 @@
         return;
       }
       if (!state.watchlist.includes(normalized)) {
+        if (state.watchlist.length >= 4) {
+          showToast("The free plan supports 4 watchlist symbols. Extra symbols require the KES 100/month Plus plan; M-Pesa checkout is not set up yet.", true);
+          return;
+        }
         state.watchlist.push(normalized);
         saveList(state.storageKeys.watchlist, state.watchlist);
       }

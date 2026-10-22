@@ -16,6 +16,20 @@ The GitHub Pages workflow writes these values into `auth-config.js` during deplo
 
 If the GitHub Actions secrets are missing, the site shows a setup-required screen and does not display the dashboard.
 
+## Optional M-Pesa subscription
+
+The website describes a free tier (up to four watchlist symbols) and a proposed Plus tier (KES 100 per month, up to seven symbols). The M-Pesa checkout button is intentionally disabled: **the website does not currently charge visitors or receive money**.
+
+GitHub Pages only serves static files. Before taking payments, deploy a secure HTTPS backend that:
+
+1. Uses a registered Safaricom Daraja business shortcode and the appropriate Daraja application credentials. Store all Daraja secrets only in the backend host's secret manager.
+2. Accepts an authenticated customer's explicit request to start a one-month subscription, validates the amount and phone number server-side, and initiates a customer-confirmed M-Pesa STK Push to the merchant business account.
+3. Verifies the Daraja payment callback server-side, validates the transaction and amount, handles duplicate callbacks safely, and records the subscription expiry for the signed-in account.
+4. Exposes a protected subscription-status endpoint. The site must grant Plus access only from this verified status, never from a browser flag, receipt text, or local storage.
+5. Sends clear KES 100/month pricing and renewal terms before checkout. Renew monthly only after the customer initiates and confirms each payment; this setup does not enable automatic recurring charges.
+
+Also provide appropriate privacy, refund, and customer-support details before launch. Test the backend with Daraja sandbox credentials before production. Do not request or store a visitor's M-Pesa PIN, OTP, or broker credentials. Do not enter Daraja secrets into GitHub Pages, the HTML, or `auth-config.js`.
+
 ## Publish with GitHub Pages
 
 1. Create a GitHub repository and add `boby_bot.html`, `auth-config.js`, `SETUP.md`, and `.github/workflows/pages.yml`.
@@ -23,7 +37,7 @@ If the GitHub Actions secrets are missing, the site shows a setup-required scree
 3. In repository **Settings → Pages**, choose **GitHub Actions** as the build and deployment source.
 4. Push the files to the repository's `main` branch. The workflow publishes the site and shows its URL in the deployment.
 
-This workspace is not connected to a GitHub repository, so the workflow cannot publish the site until you create or select a repository and push these files.
+The live repository is `https://github.com/morganasledders-beep/forex001`. Push website changes to its `main` branch to trigger the workflow. The workflow deploys the dashboard but does not deploy a payment backend or activate payments.
 
 ## Local preview
 
