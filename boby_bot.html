@@ -309,9 +309,9 @@
           <div class="card-heading"><h2 id="membershipTitle">Extra watchlists</h2><span class="paper-label">Optional plan</span></div>
           <div class="portfolio-line"><span>Free plan</span><strong>4 symbols</strong></div>
           <div class="portfolio-line"><span>Plus plan</span><strong>KES 500 / month</strong></div>
-          <div class="analysis-copy">Plus unlocks up to 7 watchlist symbols. To request a one-month subscription, send KES 500 using M-Pesa Send Money to:</div>
+          <div id="paymentInstructions"><div class="analysis-copy">Plus unlocks up to 7 watchlist symbols. To request a one-month subscription, send KES 500 using M-Pesa Send Money to:</div>
           <p style="margin:10px 0"><a class="broker-link" href="tel:+254718654009" aria-label="Call the M-Pesa recipient at plus 254 718 654 009"><strong>+254 718 654 009</strong></a></p>
-          <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div>
+          <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div></div>
           <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>
           <div class="notice">Manual payment only. No payment is verified or watchlist limit changed automatically. No automatic renewals.</div>
         </section>
@@ -432,7 +432,7 @@
       state.isOwner = user.app_metadata?.role === "owner";
         
       setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
-      $("ownerAccessNotice").hidden = !state.isOwner;
+      $("ownerAccessNotice").hidden = !state.isOwner;       $("paymentInstructions").hidden = state.isOwner;
       if (state.userId !== user.id) {
         state.userId = user.id;
         state.storageKeys = {
