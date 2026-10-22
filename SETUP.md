@@ -18,7 +18,7 @@ If the GitHub Actions secrets are missing, the site shows a setup-required scree
 
 ## Optional M-Pesa subscription
 
-The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). The owner account email configured in `boby_bot.html` is exempt from the watchlist limit. This comparison is in public browser code and is only a convenience for this client-side watchlist feature; it is not secure authorization for private data or backend services.
+The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). Authenticated users with the trusted `app_metadata.role` owner claim are exempt from the watchlist limit. Set this claim only through a secured server-side/admin operation after Supabase is configured; do not set it in browser code or user-editable `user_metadata`. The owner email is not embedded in the public website source. The watchlist and its limit are client-side only, not secure authorization for private data or backend services.
 
 The site publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
 
