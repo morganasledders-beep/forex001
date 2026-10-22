@@ -18,7 +18,7 @@ If the GitHub Actions secrets are missing, the site shows a setup-required scree
 
 ## Optional M-Pesa subscription
 
-The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 100 per month, up to seven symbols). It publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
+The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). It publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
 
 GitHub Pages only serves static files. Before taking payments, deploy a secure HTTPS backend that:
 
