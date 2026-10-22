@@ -360,7 +360,7 @@
       USDCHF: { label: "USD / CHF", name: "US dollar / Swiss franc · ECB reference rate", kind: "forex", base: "USD", quote: "CHF" }
     };
     const DEFAULT_WATCHLIST = ["BTCUSDT", "EURUSD", "GBPUSD", "USDJPY"];
-    const OWNER_EMAIL = "morganasledders@gmail.com";
+    
     const FREE_WATCHLIST_LIMIT = 4;
     const PLUS_WATCHLIST_LIMIT = 7;
     const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
@@ -429,8 +429,8 @@
     function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
-      state.isOwner = typeof user.email === "string"
-        && user.email.trim().toLowerCase() === OWNER_EMAIL;
+      state.isOwner = user.app_metadata?.role === "owner";
+        
       setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
       $("ownerAccessNotice").hidden = !state.isOwner;
       if (state.userId !== user.id) {
