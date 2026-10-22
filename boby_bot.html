@@ -326,7 +326,7 @@
         <span class="brand-name">FOREX001</span>
       </div>
       <h1>Sign in to your dashboard</h1>
-      <p>Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
+      <p>Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>       <p>New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
       <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
       <div id="authFormFields">
         <div class="field">
@@ -549,7 +549,7 @@
           showSignedInView(data.user);
           setAuthMessage("Account created and signed in.");
         } else {
-          setAuthMessage("Account created. Check your email to confirm it, then sign in.");
+          setAuthMessage("Could not sign in automatically. If this email is already registered, use Sign in instead; otherwise try creating the account again.", true);
         }
       } catch (error) {
         console.error("Account creation failed", error);
