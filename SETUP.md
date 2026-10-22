@@ -14,13 +14,13 @@ The dashboard is a static website. It reads public Binance BTC market data and E
 
 The GitHub Pages workflow writes these values into `auth-config.js` during deployment. The publishable/anon key is designed for browser use; access control for any future private database tables must be enforced with Supabase Row Level Security policies. Do not add service-role keys, broker credentials, or other server secrets to this website.
 
-If the GitHub Actions secrets are missing, the site shows a setup-required screen and does not display the dashboard.
+If the GitHub Actions secrets are missing, the site shows a setup-required screen and does not display the dashboard.  To grant the site owner free Plus access, set the authenticated Supabase user's trusted `app_metadata.role` to `owner` using a secured server-side/admin operation. This enables alerts and up to seven symbols without payment. Never set owner or Plus claims from browser code or user-editable `user_metadata`. The owner email is not embedded in the public website source.
 
 ## Optional M-Pesa subscription
 
-The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 500 per month, up to seven symbols). Authenticated users with the trusted `app_metadata.role` owner claim are exempt from the watchlist limit. Set this claim only through a secured server-side/admin operation after Supabase is configured; do not set it in browser code or user-editable `user_metadata`. The owner email is not embedded in the public website source. The watchlist and its limit are client-side only, not secure authorization for private data or backend services.
+The website describes a free tier (up to four watchlist symbols) and a Plus tier (KES 1,000 per month, up to seven symbols and browser alerts when the selected asset's rule-based BUY/SELL setup changes). After manually verifying payment, grant a paid customer Plus by setting that authenticated user's trusted `app_metadata.plus_access` to `true` through a secured server-side/admin operation. The owner role also grants Plus access without payment. Never set either claim from browser code or user-editable `user_metadata`. These client-side checks gate dashboard features only; they are not secure authorization for private data or backend services.
 
-The site publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals.
+The site publicly displays the owner's manually supplied M-Pesa phone number for Send Money payments. Customers must request access from the owner after payment; **the website does not initiate, receive, or verify payments, and does not automatically grant Plus access**. There are no automatic renewals. Browser alerts only run while the dashboard is open, monitor the currently selected asset, and require the customer to enable browser notifications; they are indicators, not guaranteed profits or personalized financial advice. Forex prices are daily ECB reference rates, not live broker quotes.
 
 GitHub Pages only serves static files. Before taking payments, deploy a secure HTTPS backend that:
 
@@ -28,7 +28,7 @@ GitHub Pages only serves static files. Before taking payments, deploy a secure H
 2. Accepts an authenticated customer's explicit request to start a one-month subscription, validates the amount and phone number server-side, and initiates a customer-confirmed M-Pesa STK Push to the merchant business account.
 3. Verifies the Daraja payment callback server-side, validates the transaction and amount, handles duplicate callbacks safely, and records the subscription expiry for the signed-in account.
 4. Exposes a protected subscription-status endpoint. The site must grant Plus access only from this verified status, never from a browser flag, receipt text, or local storage.
-5. Sends clear KES 500/month pricing and renewal terms before checkout. Renew monthly only after the customer initiates and confirms each payment; this setup does not enable automatic recurring charges.
+5. Sends clear KES 1,000/month pricing and renewal terms before checkout. Renew monthly only after the customer initiates and confirms each payment; this setup does not enable automatic recurring charges.
 
 Also provide appropriate privacy, refund, and customer-support details before launch. Test the backend with Daraja sandbox credentials before production. Do not request or store a visitor's M-Pesa PIN, OTP, or broker credentials. Do not enter Daraja secrets into GitHub Pages, the HTML, or `auth-config.js`.
 
