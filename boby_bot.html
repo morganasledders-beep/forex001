@@ -467,7 +467,7 @@
     function showSignedOutView() {
       $("app").hidden = true;
       $("authScreen").hidden = false;
-      setText("accountEmail", "");
+      showSignInForm();       setText("accountEmail", "");
       state.isOwner = false;
       $("ownerAccessNotice").hidden = true;
       state.userId = null;
