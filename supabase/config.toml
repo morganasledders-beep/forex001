@@ -1,0 +1,2 @@
+[functions.ctrader]
+verify_jwt = false

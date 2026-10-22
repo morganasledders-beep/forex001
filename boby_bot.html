@@ -286,6 +286,22 @@
         </section>
 
         <section class="panel">
+          <div class="card-heading"><h2>cTrader market data</h2><span class="paper-label">Read only</span></div>
+          <div id="ctraderStatus" class="analysis-copy">Not connected. Connect to use your broker's FX candles and prices.</div>
+          <div class="field">
+            <label for="ctraderAccount">cTrader account</label>
+            <select id="ctraderAccount" disabled>
+              <option value="">Connect cTrader first</option>
+            </select>
+          </div>
+          <div class="trade-buttons">
+            <button id="connectCtraderButton" class="button secondary small" type="button">Connect cTrader</button>
+            <button id="disconnectCtraderButton" class="button secondary small" type="button" hidden>Disconnect</button>
+          </div>
+          <div class="notice">FOREX001 requests view-only account access for market data. It cannot place or modify broker trades.</div>
+        </section>
+
+        <section class="panel">
           <div class="card-heading"><h2>Paper trade</h2><span class="paper-label">No real orders</span></div>
           <div class="field">
             <label for="tradeAmount">Simulated amount (USD)</label>
@@ -309,10 +325,13 @@
           <div class="card-heading"><h2 id="membershipTitle">Extra watchlists</h2><span class="paper-label">Optional plan</span></div>
           <div class="portfolio-line"><span>Free plan</span><strong>4 symbols</strong></div>
           <div class="portfolio-line"><span>Plus plan</span><strong>KES 1,000 / month</strong></div>
-          <div id="paymentInstructions"><div class="analysis-copy">Plus includes browser alerts when the selected asset's rule-based BUY/SELL setup changes and up to 7 watchlist symbols. Alerts are indicators, not guaranteed profits or personalized financial advice. To request one month of access, send KES 1,000 using M-Pesa Send Money to:</div>
-          <p style="margin:10px 0"><a class="broker-link" href="tel:+254718654009" aria-label="Call the M-Pesa recipient at plus 254 718 654 009"><strong>+254 718 654 009</strong></a></p>
-          <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. Browser notifications also require permission on your device. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div></div>
-          <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>           <div id="plusAccessNotice" class="notice" hidden>Plus access is active. Alerts are indicators and do not guarantee profits.</div>
+          <div id="paymentInstructions">
+            <div class="analysis-copy">Plus includes browser alerts for rule-based BTC/USDT setup changes on the selected timeframe and up to 7 watchlist symbols. Forex uses daily ECB reference rates and has no live alerts. Alerts are indicators, not guaranteed profits or personalized financial advice. To request one month of access, send KES 1,000 using M-Pesa Send Money to:</div>
+            <p style="margin:10px 0"><a class="broker-link" href="tel:+254718654009" aria-label="Call the M-Pesa recipient at plus 254 718 654 009"><strong>+254 718 654 009</strong></a></p>
+            <div class="analysis-copy">After paying, contact the recipient with your website account email and M-Pesa transaction code to request access. The owner must verify payment and enable Plus manually. Browser notifications also require permission on your device. This public number may receive calls or messages. Never share your M-Pesa PIN or OTP.</div>
+          </div>
+          <div id="ownerAccessNotice" class="notice" hidden>Owner account: Plus watchlist access is free. No payment is required for this account.</div>
+          <div id="plusAccessNotice" class="notice" hidden>Plus access is active. Alerts are indicators and do not guarantee profits.</div>
           <div class="notice">Manual payment only. No payment is verified or watchlist limit changed automatically. No automatic renewals.</div>
         </section>
       </aside>
@@ -326,7 +345,8 @@
         <span class="brand-name">FOREX001</span>
       </div>
       <h1 id="authTitle">Sign in to your dashboard</h1>
-      <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>       <p id="signupDescription">New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
+      <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
+      <p id="signupDescription">New here? Enter your email and a password of at least 8 characters, then select Create account. New accounts can sign in immediately; email addresses are not verified.</p>
       <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
       <div id="authFormFields">
         <div class="field">
@@ -338,9 +358,23 @@
           <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
         </div>
         <button id="signInButton" class="button" type="submit">Sign in</button>
-        <button id="signUpButton" class="button secondary" type="button">Create account</button>         <button id="forgotPasswordButton" class="button secondary" type="button">Forgot your password?</button>
+        <button id="signUpButton" class="button secondary" type="button">Create account</button>
+        <button id="forgotPasswordButton" class="button secondary" type="button">Forgot your password?</button>
       </div>
-      <div id="passwordRecoveryFields" hidden><p>Enter the email for your account and request a reset link. Public email delivery requires the site owner to configure custom SMTP in Supabase.</p><div class="field"><label for="recoveryPassword">New password</label><input id="recoveryPassword" type="password" autocomplete="new-password" minlength="8" required></div><div class="field"><label for="recoveryPasswordConfirm">Confirm new password</label><input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required></div><button id="updatePasswordButton" class="button" type="button">Save new password</button><button id="backToSignInButton" class="button secondary" type="button">Back to sign in</button></div><div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
+      <div id="passwordRecoveryFields" hidden>
+        <p>Enter the email for your account and request a reset link. Public email delivery requires the site owner to configure custom SMTP in Supabase.</p>
+        <div class="field">
+          <label for="recoveryPassword">New password</label>
+          <input id="recoveryPassword" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="field">
+          <label for="recoveryPasswordConfirm">Confirm new password</label>
+          <input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button id="updatePasswordButton" class="button" type="button">Save new password</button>
+        <button id="backToSignInButton" class="button secondary" type="button">Back to sign in</button>
+      </div>
+      <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
     </form>
   </section>
   <div id="toast" class="toast" role="status" hidden></div>
@@ -360,7 +394,6 @@
       USDCHF: { label: "USD / CHF", name: "US dollar / Swiss franc · ECB reference rate", kind: "forex", base: "USD", quote: "CHF" }
     };
     const DEFAULT_WATCHLIST = ["BTCUSDT", "EURUSD", "GBPUSD", "USDJPY"];
-    
     const FREE_WATCHLIST_LIMIT = 4;
     const PLUS_WATCHLIST_LIMIT = 7;
     const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
@@ -369,19 +402,26 @@
       trades: [],
       storageKeys: null,
       userId: null,
-      isOwner: false,       hasPlusAccess: false,
+      isOwner: false,
+      hasPlusAccess: false,
       selected: "BTCUSDT",
       interval: "15m",
       prices: {},
       candles: [],
       previousSignal: {},
+      currentSetup: null,
+      ctraderAccounts: [],
+      ctraderAccountId: "",
+      ctraderRequestId: 0,
+      ctraderReturn: "",
       notificationsEnabled: false,
       requestId: 0,
       socket: null,
       socketUrl: null,
       socketRetryTimer: null,
       socketRetryMs: 1000,
-      supabase: null, passwordRecovery: false,
+      supabase: null,
+      passwordRecovery: false,
       dashboardStarted: false,
       toastTimer: null
     };
@@ -415,7 +455,23 @@
       state.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
     }
 
-    function updateAlertAccess() { $("alertButton").textContent = state.hasPlusAccess ? (state.notificationsEnabled ? "Alerts enabled" : "Enable Plus alerts") : "Get Plus alerts · KES 1,000/month"; setText("alertHelp", state.hasPlusAccess ? "Browser alerts notify you when the selected asset's BUY/SELL setup changes. No trades are placed; signals do not guarantee profit." : "Plus alerts notify you when the selected asset's BUY/SELL setup changes. Signals do not guarantee profit."); }      function setFeedStatus(message, connected) {
+    function updateAlertAccess() {
+      const isLiveMarket = ASSETS[state.selected].kind === "crypto" ||
+        (ASSETS[state.selected].kind === "forex" && Boolean(state.ctraderAccountId));
+      const marketName = ASSETS[state.selected].kind === "crypto" ? "BTC/USDT" : state.selected;
+      $("alertButton").textContent = !isLiveMarket
+        ? "FX reference only · no live alerts"
+        : state.hasPlusAccess
+          ? (state.notificationsEnabled ? `${marketName} alerts enabled` : `Enable Plus ${marketName} alerts`)
+          : `Get Plus ${marketName} alerts · KES 1,000/month`;
+      setText("alertHelp", !isLiveMarket
+        ? "Forex prices are daily ECB reference rates, not broker quotes. Connect a cTrader account for broker-candle analysis and setup alerts."
+        : state.hasPlusAccess
+          ? `Alerts cover ${marketName} on the selected timeframe. Browser notifications require this dashboard to stay open; no trades are placed and setups do not guarantee profit.`
+          : `Plus includes browser alerts for rule-based ${marketName} setups on the selected timeframe. Setups are not guaranteed profits or personalized financial advice.`);
+    }
+
+    function setFeedStatus(message, connected) {
       $("feedStatus").textContent = message;
       $("feedDot").classList.toggle("live", connected);
     }
@@ -426,13 +482,54 @@
       element.classList.toggle("error", isError);
     }
 
-    function showPasswordRecovery() {       state.passwordRecovery = true;       $("app").hidden = true;       $("authScreen").hidden = false;       $("authTitle").textContent = "Reset your password";       $("authDescription").hidden = true;       $("signupDescription").hidden = true; $("authEmail").disabled = true; $("authPassword").disabled = true; $("recoveryPassword").disabled = false; $("recoveryPasswordConfirm").disabled = false;       $("authFormFields").hidden = true;       $("passwordRecoveryFields").hidden = false;       setAuthMessage("");     }      function showSignInForm() {       state.passwordRecovery = false;       $("authTitle").textContent = "Sign in to your dashboard";       $("authDescription").hidden = false;       $("signupDescription").hidden = false; $("authEmail").disabled = false; $("authPassword").disabled = false; $("recoveryPassword").disabled = true; $("recoveryPasswordConfirm").disabled = true;       $("authFormFields").hidden = false;       $("passwordRecoveryFields").hidden = true;       $("recoveryPassword").value = "";       $("recoveryPasswordConfirm").value = "";     }      function showSignedInView(user) {
+    function showPasswordRecovery() {
+      state.passwordRecovery = true;
+      $("app").hidden = true;
+      $("authScreen").hidden = false;
+      $("authTitle").textContent = "Reset your password";
+      $("authDescription").hidden = true;
+      $("signupDescription").hidden = true;
+      $("authEmail").disabled = true;
+      $("authPassword").disabled = true;
+      $("authFormFields").hidden = true;
+      $("recoveryPassword").disabled = false;
+      $("recoveryPasswordConfirm").disabled = false;
+      $("passwordRecoveryFields").hidden = false;
+      setAuthMessage("");
+    }
+
+    function showSignInForm() {
+      state.passwordRecovery = false;
+      $("authTitle").textContent = "Sign in to your dashboard";
+      $("authDescription").hidden = false;
+      $("signupDescription").hidden = false;
+      $("authEmail").disabled = false;
+      $("authPassword").disabled = false;
+      $("authFormFields").hidden = false;
+      $("recoveryPassword").disabled = true;
+      $("recoveryPasswordConfirm").disabled = true;
+      $("passwordRecoveryFields").hidden = true;
+      $("recoveryPassword").value = "";
+      $("recoveryPasswordConfirm").value = "";
+    }
+
+    function showSignedInView(user) {
       $("authScreen").hidden = true;
       $("app").hidden = false;
-      state.isOwner = user.app_metadata?.role === "owner";       state.hasPlusAccess = state.isOwner || user.app_metadata?.plus_access === true;
-        
+      state.isOwner = user.app_metadata?.role === "owner";
+      state.hasPlusAccess = state.isOwner || user.app_metadata?.plus_access === true;
       setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
-      $("ownerAccessNotice").hidden = !state.isOwner;       $("plusAccessNotice").hidden = !state.hasPlusAccess || state.isOwner;       $("paymentInstructions").hidden = state.hasPlusAccess;       updateAlertAccess();
+      $("ownerAccessNotice").hidden = !state.isOwner;
+      $("plusAccessNotice").hidden = !state.hasPlusAccess || state.isOwner;
+      $("paymentInstructions").hidden = state.hasPlusAccess;
+      updateAlertAccess();
+      refreshCtraderStatus();
+      if (state.ctraderReturn) {
+        showToast(state.ctraderReturn === "connected"
+          ? "cTrader authorization completed. Select the account to use for FX data."
+          : "cTrader authorization did not complete. Check app settings and try again.", state.ctraderReturn !== "connected");
+        state.ctraderReturn = "";
+      }
       if (state.userId !== user.id) {
         state.userId = user.id;
         state.storageKeys = {
@@ -451,8 +548,8 @@
       }
       state.dashboardStarted = true;
       updateClock();
-      $("cryptoTimeframes").hidden = ASSETS[state.selected].kind !== "crypto";
-      $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
+      $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex" && !state.ctraderAccountId;
+      $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto" || Boolean(state.ctraderAccountId);
       renderWatchlist();
       renderTrades();
       loadAllWatchlistPrices();
@@ -467,11 +564,29 @@
     function showSignedOutView() {
       $("app").hidden = true;
       $("authScreen").hidden = false;
-      showSignInForm();       setText("accountEmail", "");
+      showSignInForm();
+      setText("accountEmail", "");
       state.isOwner = false;
+      state.hasPlusAccess = false;
+      state.notificationsEnabled = false;
       $("ownerAccessNotice").hidden = true;
+      $("plusAccessNotice").hidden = true;
+      $("paymentInstructions").hidden = false;
+      updateAlertAccess();
       state.userId = null;
       state.storageKeys = null;
+      state.ctraderAccounts = [];
+      state.ctraderAccountId = "";
+      state.ctraderRequestId++;
+      updateAlertAccess();
+      updateMarketStatLabels();
+      $("ctraderStatus").textContent = "Sign in to connect cTrader market data.";
+      $("ctraderAccount").replaceChildren(new Option("Sign in first", ""));
+      $("ctraderAccount").disabled = true;
+      $("connectCtraderButton").disabled = true;
+      $("disconnectCtraderButton").hidden = true;
+      $("cryptoTimeframes").hidden = ASSETS[state.selected].kind !== "crypto";
+      $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
       disconnectBitcoinStream();
     }
 
@@ -481,6 +596,16 @@
       $("authConfigNotice").hidden = true;
       $("authFormFields").hidden = false;
       setAuthMessage("");
+      const recoveryHash = new URLSearchParams(window.location.hash.slice(1));
+      const query = new URLSearchParams(window.location.search);
+      state.ctraderReturn = query.get("ctrader") || "";
+      if (state.ctraderReturn) {
+        query.delete("ctrader");
+        const remainingQuery = query.toString();
+        window.history.replaceState({}, "", `${window.location.pathname}${remainingQuery ? `?${remainingQuery}` : ""}${window.location.hash}`);
+      }
+      const recoveryRedirect = recoveryHash.get("type") === "recovery" || new URLSearchParams(window.location.search).has("code");
+      if (recoveryRedirect) showPasswordRecovery();
       const config = window.BOBY_AUTH_CONFIG || {};
       if (!config.supabaseUrl || !config.supabaseAnonKey) {
         $("authConfigNotice").hidden = false;
@@ -495,12 +620,21 @@
       try {
         state.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
         state.supabase.auth.onAuthStateChange((event, session) => {
-          if (event === "PASSWORD_RECOVERY") showPasswordRecovery(); else if (state.passwordRecovery) { if (event === "SIGNED_OUT") showSignInForm(); } else if (session && session.user) showSignedInView(session.user);
+          if (event === "PASSWORD_RECOVERY") {
+            showPasswordRecovery();
+            return;
+          }
+          if (state.passwordRecovery) {
+            if (event === "SIGNED_OUT") showSignInForm();
+            return;
+          }
+          if (session && session.user) showSignedInView(session.user);
           else showSignedOutView();
         });
         const { data, error } = await state.supabase.auth.getSession();
         if (error) throw error;
-        const recoveryHash = new URLSearchParams(window.location.hash.slice(1)); const recoveryRedirect = recoveryHash.get("type") === "recovery" || new URLSearchParams(window.location.search).has("code"); if (recoveryRedirect) showPasswordRecovery(); else if (data.session && data.session.user) showSignedInView(data.session.user);
+        if (recoveryRedirect) showPasswordRecovery();
+        else if (data.session && data.session.user) showSignedInView(data.session.user);
         else showSignedOutView();
       } catch (error) {
         console.error("Could not initialize account sign-in", error);
@@ -560,7 +694,65 @@
       }
     }
 
-    async function sendPasswordReset() {       if (!state.supabase) return;       const emailInput = $("authEmail");       if (!emailInput.reportValidity()) return;       $("forgotPasswordButton").disabled = true;       setAuthMessage("Sending password reset link…");       try {         const { error } = await state.supabase.auth.resetPasswordForEmail(emailInput.value.trim(), {           redirectTo: `${window.location.origin}${window.location.pathname}`         });         if (error) throw error;         setAuthMessage("If an account exists for this email, a reset link was sent. Check your inbox and spam folder.");       } catch (error) {         console.error("Password reset request failed", error);         setAuthMessage(error.message || "Could not send a password reset link. Try again later.", true);       } finally {         $("forgotPasswordButton").disabled = false;       }     }      async function updatePassword() {       if (!state.supabase) return;       const password = $("recoveryPassword").value;       if (!$("recoveryPassword").reportValidity() || !$("recoveryPasswordConfirm").reportValidity()) return;       if (password !== $("recoveryPasswordConfirm").value) {         setAuthMessage("The passwords do not match.", true);         return;       }       $("updatePasswordButton").disabled = true;       setAuthMessage("Updating your password…");       try {         const { data, error } = await state.supabase.auth.updateUser({ password });         if (error) throw error;         if (!data.user) throw new Error("Supabase did not return the updated account.");         state.passwordRecovery = false;         showSignedInView(data.user);         showToast("Password updated successfully.");       } catch (error) {         console.error("Password update failed", error);         setAuthMessage(error.message || "Could not update your password. Request a new reset link and try again.", true);       } finally {         $("updatePasswordButton").disabled = false;       }     }      async function backToSignIn() {       if (!state.supabase) return;       try {         const { error } = await state.supabase.auth.signOut();         if (error) throw error;         showSignInForm();         setAuthMessage("");       } catch (error) {         console.error("Could not leave password recovery", error);         setAuthMessage(`Could not return to sign in: ${error.message}`, true);       }     }      function disconnectBitcoinStream() {
+    async function sendPasswordReset() {
+      if (!state.supabase) return;
+      const emailInput = $("authEmail");
+      if (!emailInput.reportValidity()) return;
+      $("forgotPasswordButton").disabled = true;
+      setAuthMessage("Sending password reset link…");
+      try {
+        const { error } = await state.supabase.auth.resetPasswordForEmail(emailInput.value.trim(), {
+          redirectTo: `${window.location.origin}${window.location.pathname}`
+        });
+        if (error) throw error;
+        setAuthMessage("If an account exists for this email, a reset link was sent. Check your inbox and spam folder.");
+      } catch (error) {
+        console.error("Password reset request failed", error);
+        setAuthMessage(error.message || "Could not send a password reset link. Try again later.", true);
+      } finally {
+        $("forgotPasswordButton").disabled = false;
+      }
+    }
+
+    async function updatePassword() {
+      if (!state.supabase) return;
+      const password = $("recoveryPassword").value;
+      if (!$("recoveryPassword").reportValidity() || !$("recoveryPasswordConfirm").reportValidity()) return;
+      if (password !== $("recoveryPasswordConfirm").value) {
+        setAuthMessage("The passwords do not match.", true);
+        return;
+      }
+      $("updatePasswordButton").disabled = true;
+      setAuthMessage("Updating your password…");
+      try {
+        const { data, error } = await state.supabase.auth.updateUser({ password });
+        if (error) throw error;
+        if (!data.user) throw new Error("Supabase did not return the updated account.");
+        state.passwordRecovery = false;
+        showSignedInView(data.user);
+        showToast("Password updated successfully.");
+      } catch (error) {
+        console.error("Password update failed", error);
+        setAuthMessage(error.message || "Could not update your password. Request a new reset link and try again.", true);
+      } finally {
+        $("updatePasswordButton").disabled = false;
+      }
+    }
+
+    async function backToSignIn() {
+      if (!state.supabase) return;
+      try {
+        const { error } = await state.supabase.auth.signOut();
+        if (error) throw error;
+        showSignInForm();
+        setAuthMessage("");
+      } catch (error) {
+        console.error("Could not leave password recovery", error);
+        setAuthMessage(`Could not return to sign in: ${error.message}`, true);
+      }
+    }
+
+    function disconnectBitcoinStream() {
       clearTimeout(state.socketRetryTimer);
       state.socketRetryTimer = null;
       const socket = state.socket;
@@ -686,7 +878,7 @@
         symbolText.textContent = symbol;
         const nameText = document.createElement("span");
         nameText.className = "asset-name";
-        nameText.textContent = asset.kind === "crypto" ? "Crypto" : "FX reference";
+        nameText.textContent = asset.kind === "crypto" ? "Crypto" : state.ctraderAccountId ? "cTrader FX" : "FX reference";
         left.append(symbolText, document.createElement("br"), nameText);
         const right = document.createElement("span");
         const priceText = document.createElement("span");
@@ -698,16 +890,28 @@
       });
     }
 
+    function updateMarketStatLabels() {
+      const asset = ASSETS[state.selected];
+      $("highLabel").textContent = asset.kind === "crypto"
+        ? "24h high"
+        : state.ctraderAccountId ? "Candle high" : "120d high";
+      $("lowLabel").textContent = asset.kind === "crypto"
+        ? "24h low"
+        : state.ctraderAccountId ? "Candle low" : "120d low";
+      $("volumeLabel").textContent = asset.kind === "crypto"
+        ? "24h volume"
+        : state.ctraderAccountId ? "Data source" : "Rate source";
+    }
+
     function selectAsset(symbol) {
       if (!ASSETS[symbol]) return;
       state.selected = symbol;
       $("assetTitle").textContent = ASSETS[symbol].label;
       $("assetSubtitle").textContent = ASSETS[symbol].name;
-      $("cryptoTimeframes").hidden = ASSETS[symbol].kind !== "crypto";
-      $("fxTimeframe").hidden = ASSETS[symbol].kind === "crypto";
-      $("highLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h high" : "120d high";
-      $("lowLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h low" : "120d low";
-      $("volumeLabel").textContent = ASSETS[symbol].kind === "crypto" ? "24h volume" : "Rate source";
+      $("cryptoTimeframes").hidden = ASSETS[symbol].kind === "forex" && !state.ctraderAccountId;
+      $("fxTimeframe").hidden = ASSETS[symbol].kind === "crypto" || Boolean(state.ctraderAccountId);
+      updateMarketStatLabels();
+      updateAlertAccess();
       renderWatchlist();
       loadSelectedAsset();
     }
@@ -724,6 +928,105 @@
       const response = await fetch(url, { cache: "no-store" });
       if (!response.ok) throw new Error(`Market data request failed (${response.status})`);
       return response.json();
+    }
+
+    async function ctraderRequest(action, parameters = {}) {
+      if (!state.supabase) throw new Error("Sign in before using cTrader.");
+      const { data, error } = await state.supabase.functions.invoke("ctrader", {
+        body: { action, ...parameters }
+      });
+      if (error) {
+        let message = error.message || "The cTrader service is unavailable.";
+        if (error.context && typeof error.context.json === "function") {
+          try {
+            const body = await error.context.json();
+            if (body.error) message = body.error;
+          } catch (parseError) {
+            console.error("Could not read cTrader service error", parseError);
+          }
+        }
+        throw new Error(message);
+      }
+      if (!data || data.error) throw new Error(data?.error || "The cTrader service returned an invalid response.");
+      return data;
+    }
+
+    async function refreshCtraderStatus() {
+      const requestId = ++state.ctraderRequestId;
+      try {
+        const result = await ctraderRequest("status");
+        if (requestId !== state.ctraderRequestId) return;
+        state.ctraderAccounts = Array.isArray(result.accounts) ? result.accounts : [];
+        state.ctraderAccountId = "";
+        updateMarketStatLabels();
+        const select = $("ctraderAccount");
+        select.replaceChildren(new Option(
+          state.ctraderAccounts.length ? "Choose an account" : "No authorized account found",
+          ""
+        ));
+        state.ctraderAccounts.forEach((account) => {
+          const option = new Option(account.label, account.ctidTraderAccountId);
+          select.append(option);
+        });
+        select.disabled = state.ctraderAccounts.length === 0;
+        $("connectCtraderButton").disabled = false;
+        $("disconnectCtraderButton").hidden = !result.connected;
+        $("ctraderStatus").textContent = result.connected
+          ? "Connected to cTrader. Choose an account to load broker FX data."
+          : "Not connected. Connect to use your broker's FX candles and prices.";
+        $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex";
+        $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
+        if (state.selected !== "BTCUSDT") {
+          $("highLabel").textContent = state.ctraderAccounts.length ? "Candle high" : "120d high";
+          $("lowLabel").textContent = state.ctraderAccounts.length ? "Candle low" : "120d low";
+          $("volumeLabel").textContent = state.ctraderAccounts.length ? "Data source" : "Rate source";
+        }
+      } catch (error) {
+        if (requestId !== state.ctraderRequestId) return;
+        console.error("Could not load cTrader connection status", error);
+        $("ctraderStatus").textContent = "cTrader is not configured or could not be reached.";
+        $("ctraderAccount").replaceChildren(new Option("cTrader unavailable", ""));
+        $("ctraderAccount").disabled = true;
+        $("connectCtraderButton").disabled = false;
+      }
+    }
+
+    async function connectCtrader() {
+      $("connectCtraderButton").disabled = true;
+      try {
+        const result = await ctraderRequest("start");
+        const authorizationUrl = new URL(result.authorizationUrl);
+        if (authorizationUrl.origin !== "https://id.ctrader.com") {
+          throw new Error("The cTrader authorization URL is invalid.");
+        }
+        window.location.assign(authorizationUrl.href);
+      } catch (error) {
+        console.error("Could not start cTrader authorization", error);
+        showToast(`Could not connect to cTrader: ${error.message}`, true);
+        $("connectCtraderButton").disabled = false;
+      }
+    }
+
+    async function disconnectCtrader() {
+      $("disconnectCtraderButton").disabled = true;
+      try {
+        await ctraderRequest("disconnect");
+        state.ctraderAccountId = "";
+        state.ctraderAccounts = [];
+        $("ctraderAccount").replaceChildren(new Option("Connect cTrader first", ""));
+        $("ctraderAccount").disabled = true;
+        $("disconnectCtraderButton").hidden = true;
+        $("ctraderStatus").textContent = "cTrader connection removed from FOREX001. Revoke app access in cTrader to fully revoke authorization.";
+        showToast("Saved cTrader tokens removed from FOREX001.");
+        updateMarketStatLabels();
+        updateAlertAccess();
+        if (ASSETS[state.selected].kind === "forex") loadSelectedAsset();
+      } catch (error) {
+        console.error("Could not disconnect cTrader", error);
+        showToast(`Could not disconnect cTrader: ${error.message}`, true);
+      } finally {
+        $("disconnectCtraderButton").disabled = false;
+      }
     }
 
     async function loadBitcoinTicker() {
@@ -777,10 +1080,57 @@
       return { rate: current.rate, points: unique, date: current.date };
     }
 
+    async function loadCtraderForexTicker(symbol) {
+      const result = await ctraderRequest("market", {
+        accountId: state.ctraderAccountId,
+        symbol,
+        timeframe: state.interval
+      });
+      if (!Array.isArray(result.candles) || !Number.isFinite(Number(result.price))) {
+        throw new Error("cTrader returned invalid market data.");
+      }
+      const points = result.candles
+        .map((candle) => ({
+          time: Number(candle.time),
+          low: Number(candle.low),
+          high: Number(candle.high),
+          close: Number(candle.close),
+          volume: Number(candle.volume)
+        }))
+        .filter((point) => Number.isFinite(point.time) && Number.isFinite(point.close))
+        .sort((left, right) => left.time - right.time);
+      if (points.length < 50) {
+        throw new Error("cTrader returned fewer than 50 valid candles; setup analysis needs more history.");
+      }
+      state.prices[symbol] = Number(result.price);
+      return {
+        rate: Number(result.price),
+        points,
+        date: new Date(points[points.length - 1].time).toLocaleString(),
+        brokerSymbol: result.brokerSymbol,
+        source: result.source
+      };
+    }
+
     async function loadSelectedAsset() {
       const symbol = state.selected;
       const requestId = ++state.requestId;
       const asset = ASSETS[symbol];
+      if (asset.kind === "forex") {
+        state.candles = [];
+        delete state.prices[symbol];
+        setText("currentPrice", "—");
+        setText("highValue", "—");
+        setText("lowValue", "—");
+        setText("volumeValue", "—");
+        setText("priceChange", "—");
+        setText("sma20", "—");
+        setText("sma50", "—");
+        setText("rsiValue", "—");
+        state.currentSetup = null;
+        renderWatchlist();
+        drawChart();
+      }
       setText("chartStatus", "Loading market data…");
       $("actionSignal").className = "signal-action wait";
       $("actionSignal").textContent = "WAIT";
@@ -802,18 +1152,26 @@
           setText("updatedValue", new Date().toLocaleTimeString());
           renderCurrentPrice();
         } else {
-          const result = await loadForexTicker(symbol);
+          const result = state.ctraderAccountId
+            ? await loadCtraderForexTicker(symbol)
+            : await loadForexTicker(symbol);
           if (requestId !== state.requestId) return;
           state.candles = result.points;
-          setText("highValue", formatPrice(Math.max(...result.points.map((point) => point.close)), asset));
-          setText("lowValue", formatPrice(Math.min(...result.points.map((point) => point.close)), asset));
-          setText("volumeValue", "ECB reference");
+          setText("highValue", formatPrice(Math.max(...result.points.map((point) => point.high ?? point.close)), asset));
+          setText("lowValue", formatPrice(Math.min(...result.points.map((point) => point.low ?? point.close)), asset));
+          setText("volumeValue", result.source ? "cTrader" : "ECB reference");
           setText("updatedValue", result.date);
           const previous = result.points.length > 1 ? result.points[result.points.length - 2].close : result.rate;
           const change = previous ? ((result.rate - previous) / previous) * 100 : 0;
-          setText("priceChange", `${change >= 0 ? "+" : ""}${change.toFixed(3)}% vs previous reference`);
+          setText("priceChange", `${change >= 0 ? "+" : ""}${change.toFixed(3)}% vs previous candle`);
           $("priceChange").className = `price-change ${change >= 0 ? "positive" : "negative"}`;
-          setText("chartStatus", `Frankfurter / ECB reference rates · latest: ${result.date}`);
+          if (result.source) {
+            $("assetSubtitle").textContent = `${asset.label} · ${result.brokerSymbol} · cTrader market data`;
+            setText("chartStatus", `${result.source} · ${result.brokerSymbol} · ${state.interval} candles`);
+          } else {
+            $("assetSubtitle").textContent = asset.name;
+            setText("chartStatus", `Frankfurter / ECB reference rates · latest: ${result.date}`);
+          }
           renderCurrentPrice();
         }
         if (asset.kind === "crypto") {
@@ -822,6 +1180,8 @@
           setText("chartStatus", live
             ? `Binance BTC/USDT live stream · ${state.interval} candles`
             : "Binance BTC/USDT candle history · REST fallback");
+        } else if (state.ctraderAccountId) {
+          setFeedStatus("cTrader candles", false);
         } else {
           setFeedStatus("ECB reference", false);
         }
@@ -835,6 +1195,12 @@
         setFeedStatus("Data unavailable", false);
         setText("chartStatus", `${error.message}. Check your internet connection and refresh.`);
         setText("analysisText", "Analysis is unavailable until valid market data has loaded.");
+        $("actionSignal").className = "signal-action wait";
+        $("actionSignal").textContent = "WAIT";
+        $("signalBadge").className = "signal neutral";
+        $("signalBadge").textContent = "DATA UNAVAILABLE";
+        renderWatchlist();
+        drawChart();
         showToast(`Could not load ${symbol} market data: ${error.message}`, true);
       }
     }
@@ -895,21 +1261,36 @@
       };
     }
 
-    function alertForSetupChange(action, symbol) {
-      const previous = state.previousSignal[symbol];
-      state.previousSignal[symbol] = action;
-      if (!state.hasPlusAccess || previous === undefined || previous === action || action === "WAIT") return;
-      const message = `${symbol}: ${action}. Check the indicators and risk before deciding.`;
+    function notifySetup(setup, symbol, isCurrentSetup = false) {
+      const price = state.prices[symbol];
+      const priceText = Number.isFinite(price) ? ` · Price ${formatPrice(price, ASSETS[symbol])}` : "";
+      const timeframe = state.interval;
+      const prefix = isCurrentSetup ? "Current setup" : "Setup changed";
+      const message = `${prefix}: ${symbol} ${setup.action} · ${timeframe}${priceText}`;
       showToast(message);
       if (state.notificationsEnabled && "Notification" in window && Notification.permission === "granted") {
-        new Notification("forex001 market setup", { body: message, tag: `forex001-${symbol}` });
+        const rsiText = setup.rsi === null ? "" : ` RSI(14): ${setup.rsi.toFixed(1)}.`;
+        new Notification(`forex001 · ${ASSETS[symbol].label} setup`, {
+          body: `${message}.${rsiText} Rule-based indicator summary, not a trade instruction.`,
+          tag: `forex001-${symbol}-${timeframe}`
+        });
       }
+    }
+
+    function alertForSetupChange(setup, symbol) {
+      if (ASSETS[symbol].kind === "forex" && !state.ctraderAccountId) return;
+      const signalKey = `${symbol}:${state.interval}`;
+      const previous = state.previousSignal[signalKey];
+      state.previousSignal[signalKey] = setup.action;
+      if (!state.hasPlusAccess || previous === undefined || previous === setup.action || setup.action === "WAIT") return;
+      notifySetup(setup, symbol);
     }
 
     function renderAnalysis() {
       const values = state.candles.map((candle) => candle.close);
       const asset = ASSETS[state.selected];
       const setup = getMarketSetup(values, state.prices[state.selected] || values[values.length - 1]);
+      state.currentSetup = { ...setup, symbol: state.selected };
       const { sma20, sma50, rsi } = setup;
       setText("sma20", sma20 === null ? "Not enough history" : formatPrice(sma20, asset));
       setText("sma50", sma50 === null ? "Not enough history" : formatPrice(sma50, asset));
@@ -920,7 +1301,13 @@
       badge.className = "signal";
       const action = $("actionSignal");
       action.className = "signal-action";
-      if (setup.action === "BUY SETUP") {
+      const historicalFxReference = asset.kind === "forex" && !state.ctraderAccountId;
+      if (historicalFxReference) {
+        action.classList.add("wait");
+        action.textContent = "REFERENCE ONLY";
+        badge.classList.add("neutral");
+        badge.textContent = "DAILY ECB REFERENCE";
+      } else if (setup.action === "BUY SETUP") {
         action.classList.add("buy");
         action.textContent = "BUY SETUP";
         badge.classList.add("bullish");
@@ -942,10 +1329,12 @@
         badge.textContent = "NO ALIGNED SETUP";
       }
       setText("analysisText", setup.reason);
-      if (asset.kind === "forex") {
-        setText("analysisText", `${setup.reason} Forex calculations use daily ECB reference prices, not real-time broker quotes.`);
+      if (historicalFxReference) {
+        setText("analysisText", `${setup.reason} This is historical analysis of daily ECB reference rates, not live broker pricing. It is not a real-time FX buy/sell signal.`);
+      } else if (asset.kind === "forex") {
+        setText("analysisText", `${setup.reason} This rule-based analysis uses candles from your selected cTrader account. It is not financial advice or a guarantee of results.`);
       }
-      alertForSetupChange(setup.action, state.selected);
+      alertForSetupChange(setup, state.selected);
     }
 
     function drawChart() {
@@ -1107,7 +1496,9 @@
 
     function loadAllWatchlistPrices() {
       const symbols = state.watchlist.filter((symbol) => ASSETS[symbol]);
-      const forexSymbols = symbols.filter((symbol) => ASSETS[symbol].kind === "forex");
+      const forexSymbols = symbols.filter((symbol) =>
+        ASSETS[symbol].kind === "forex" && !(state.ctraderAccountId && symbol === state.selected)
+      );
       const jobs = [loadBitcoinTicker().catch((error) => console.error("Could not refresh BTC watchlist price", error))];
       forexSymbols.forEach((symbol) => jobs.push(
         loadFxRate(symbol).catch((error) => console.error(`Could not refresh ${symbol} watchlist price`, error))
@@ -1123,8 +1514,14 @@
       event.preventDefault();
       addAsset($("symbolSearch").value);
     });
-    $("authForm").addEventListener("submit", (event) => {       if (state.passwordRecovery) updatePassword();       else signIn(event);     });
-    $("signUpButton").addEventListener("click", signUp); $("forgotPasswordButton").addEventListener("click", sendPasswordReset); $("updatePasswordButton").addEventListener("click", updatePassword); $("backToSignInButton").addEventListener("click", backToSignIn);     $("forgotPasswordButton").addEventListener("click", sendPasswordReset);     $("updatePasswordButton").addEventListener("click", updatePassword);     $("backToSignInButton").addEventListener("click", backToSignIn);
+    $("authForm").addEventListener("submit", (event) => {
+      if (state.passwordRecovery) updatePassword();
+      else signIn(event);
+    });
+    $("signUpButton").addEventListener("click", signUp);
+    $("forgotPasswordButton").addEventListener("click", sendPasswordReset);
+    $("updatePasswordButton").addEventListener("click", updatePassword);
+    $("backToSignInButton").addEventListener("click", backToSignIn);
     $("signOutButton").addEventListener("click", async () => {
       if (!state.supabase) return;
       try {
@@ -1139,9 +1536,32 @@
       loadAllWatchlistPrices();
       loadSelectedAsset();
     });
+    $("connectCtraderButton").addEventListener("click", connectCtrader);
+    $("disconnectCtraderButton").addEventListener("click", disconnectCtrader);
+    $("ctraderAccount").addEventListener("change", () => {
+      state.ctraderAccountId = $("ctraderAccount").value;
+      const hasAccount = Boolean(state.ctraderAccountId);
+      $("cryptoTimeframes").hidden = ASSETS[state.selected].kind === "forex" && !hasAccount;
+      $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto" || hasAccount;
+      updateMarketStatLabels();
+      if (ASSETS[state.selected].kind === "forex") {
+        updateAlertAccess();
+        loadSelectedAsset();
+      }
+    });
     $("callButton").addEventListener("click", () => placePaperTrade("CALL"));
     $("putButton").addEventListener("click", () => placePaperTrade("PUT"));
-    $("alertButton").addEventListener("click", async () => {       if (!state.hasPlusAccess) {         $("membershipTitle").scrollIntoView({ behavior: "smooth", block: "center" });         showToast("BUY/SELL setup-change alerts are included with Plus for KES 1,000/month. Payment and access are verified manually.");         return;       }
+    $("alertButton").addEventListener("click", async () => {
+      if (ASSETS[state.selected].kind === "forex" && !state.ctraderAccountId) {
+        showToast("Connect a cTrader account and select it to enable broker-candle FX setup alerts.", true);
+        return;
+      }
+      if (!state.hasPlusAccess) {
+        $("membershipTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+        const marketName = ASSETS[state.selected].kind === "crypto" ? "BTC/USDT" : state.selected;
+        showToast(`${marketName} setup-change alerts are included with Plus for KES 1,000/month. Payment and access are verified manually.`);
+        return;
+      }
       if (!("Notification" in window)) {
         showToast("This browser does not support desktop notifications.", true);
         return;
@@ -1155,9 +1575,12 @@
           return;
         }
         state.notificationsEnabled = true;
-        $("alertButton").textContent = "Alerts enabled";
-        setText("alertHelp", "Browser alerts notify you when the selected asset's BUY/SELL setup changes. No trades are placed; signals do not guarantee profit.");
-        showToast("Browser alerts enabled for changes in market setup.");
+        updateAlertAccess();
+        if (state.currentSetup?.symbol === state.selected && state.currentSetup.action !== "WAIT") {
+          notifySetup(state.currentSetup, state.selected, true);
+        } else {
+          showToast(`${state.selected} browser alerts are enabled for setup changes on the selected timeframe.`);
+        }
       } catch (error) {
         console.error("Could not enable browser notifications", error);
         showToast("Could not enable browser notifications in this browser context.", true);
@@ -1168,7 +1591,7 @@
         document.querySelectorAll(".timeframe").forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
         state.interval = button.dataset.interval;
-        if (ASSETS[state.selected].kind === "crypto") loadSelectedAsset();
+        loadSelectedAsset();
       });
     });
     window.addEventListener("resize", drawChart);
