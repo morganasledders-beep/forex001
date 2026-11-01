@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#07101f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="FOREX001">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/forex001.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/forex001-180.png">
   <title>forex001 - Market Dashboard</title>
   <style>
     :root {
@@ -170,7 +176,7 @@
     @media (max-width: 700px) {
       .header { flex-wrap: wrap; padding: 10px 12px; gap: 10px; }
       .brand { min-width: 0; }
-      .header-right { margin-left: auto; }
+      .header-right { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
       .search { order: 3; flex-basis: 100%; max-width: none; }
       .clock { display: none; }
       .main { display: flex; flex-direction: column; }
@@ -202,6 +208,7 @@
       <div class="header-right">
         <span id="accountEmail" class="account-email"></span>
         <span class="clock" id="clock">--:--:-- UTC</span>
+        <button id="installAppButton" class="button secondary small" type="button">Install app</button>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
         <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
       </div>
@@ -451,6 +458,7 @@
       toastTimer: null
     };
     const $ = (id) => document.getElementById(id);
+    let installPrompt = null;
     const mountainImage = new Image();
     mountainImage.addEventListener("load", drawChart);
     mountainImage.src = "./mountain-chart.jpg";
@@ -1928,6 +1936,45 @@
       loadAllWatchlistPrices();
       loadSelectedAsset();
     });
+    $("installAppButton").addEventListener("click", async () => {
+      if (!installPrompt) {
+        showToast("Install from your browser menu: Add to Home Screen or Install FOREX001.");
+        return;
+      }
+      try {
+        await installPrompt.prompt();
+        const choice = await installPrompt.userChoice;
+        installPrompt = null;
+        if (choice.outcome === "accepted") {
+          $("installAppButton").hidden = true;
+          showToast("FOREX001 is being installed.");
+        }
+      } catch (error) {
+        console.error("Could not install FOREX001", error);
+        showToast("Could not start installation. Use your browser menu to install the app.", true);
+      }
+    });
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      $("installAppButton").hidden = false;
+    });
+    window.addEventListener("appinstalled", () => {
+      installPrompt = null;
+      $("installAppButton").hidden = true;
+      showToast("FOREX001 app installed.");
+    });
+    const standaloneQuery = window.matchMedia("(display-mode: standalone)");
+    if (standaloneQuery.matches || window.navigator.standalone === true) {
+      $("installAppButton").hidden = true;
+    }
+    if ("serviceWorker" in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(() => {
+        console.info("FOREX001 offline app shell is ready.");
+      }).catch((error) => {
+        console.error("Could not register the FOREX001 service worker", error);
+      });
+    }
     $("connectCtraderButton").addEventListener("click", connectCtrader);
     $("disconnectCtraderButton").addEventListener("click", disconnectCtrader);
     $("ctraderNotifyButton").addEventListener("click", async () => {

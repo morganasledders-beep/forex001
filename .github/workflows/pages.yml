@@ -36,6 +36,9 @@ jobs:
           cp boby_bot.html dist/index.html
           cp SETUP.md dist/SETUP.md
           cp mountain-chart.jpg dist/mountain-chart.jpg
+          cp manifest.webmanifest service-worker.js dist/
+          mkdir -p dist/icons
+          cp icons/forex001.svg icons/forex001-180.png icons/forex001-192.png icons/forex001-512.png dist/icons/
           python - <<'PY'
           import json
           import os
