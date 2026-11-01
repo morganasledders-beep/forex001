@@ -208,7 +208,7 @@
       <div class="header-right">
         <span id="accountEmail" class="account-email"></span>
         <span class="clock" id="clock">--:--:-- UTC</span>
-        <button id="installAppButton" class="button secondary small" type="button">Install app</button>
+        <button id="installAppButton" class="button secondary small install-app-button" type="button">Install app</button>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
         <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
       </div>
@@ -371,6 +371,7 @@
         <div class="brand-icon">F</div>
         <span class="brand-name">FOREX001</span>
       </div>
+      <button id="installAppButtonAuth" class="button secondary small install-app-button" type="button">Install app</button>
       <h1 id="authTitle">Sign in to your dashboard</h1>
       <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
       <p id="signupDescription" hidden>Create an account with your email and a password of at least 8 characters. If email confirmation is enabled, check your inbox before signing in.</p>
@@ -489,6 +490,12 @@
       toast.hidden = false;
       clearTimeout(state.toastTimer);
       state.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
+    }
+
+    function setInstallButtonVisibility(visible) {
+      document.querySelectorAll(".install-app-button").forEach((button) => {
+        button.hidden = !visible;
+      });
     }
 
     function updateCtraderNotificationButton() {
@@ -1936,37 +1943,39 @@
       loadAllWatchlistPrices();
       loadSelectedAsset();
     });
-    $("installAppButton").addEventListener("click", async () => {
-      if (!installPrompt) {
-        showToast("Install from your browser menu: Add to Home Screen or Install FOREX001.");
-        return;
-      }
-      try {
-        await installPrompt.prompt();
-        const choice = await installPrompt.userChoice;
-        installPrompt = null;
-        if (choice.outcome === "accepted") {
-          $("installAppButton").hidden = true;
-          showToast("FOREX001 is being installed.");
+    document.querySelectorAll(".install-app-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        if (!installPrompt) {
+          showToast("Install from your browser menu: Add to Home Screen or Install FOREX001.");
+          return;
         }
-      } catch (error) {
-        console.error("Could not install FOREX001", error);
-        showToast("Could not start installation. Use your browser menu to install the app.", true);
-      }
+        try {
+          await installPrompt.prompt();
+          const choice = await installPrompt.userChoice;
+          installPrompt = null;
+          if (choice.outcome === "accepted") {
+            setInstallButtonVisibility(false);
+            showToast("FOREX001 is being installed.");
+          }
+        } catch (error) {
+          console.error("Could not install FOREX001", error);
+          showToast("Could not start installation. Use your browser menu to install the app.", true);
+        }
+      });
     });
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
       installPrompt = event;
-      $("installAppButton").hidden = false;
+      setInstallButtonVisibility(true);
     });
     window.addEventListener("appinstalled", () => {
       installPrompt = null;
-      $("installAppButton").hidden = true;
+      setInstallButtonVisibility(false);
       showToast("FOREX001 app installed.");
     });
     const standaloneQuery = window.matchMedia("(display-mode: standalone)");
     if (standaloneQuery.matches || window.navigator.standalone === true) {
-      $("installAppButton").hidden = true;
+      setInstallButtonVisibility(false);
     }
     if ("serviceWorker" in navigator && window.isSecureContext) {
       navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(() => {
