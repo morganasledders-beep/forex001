@@ -857,10 +857,6 @@
     }
 
     function holidayGreetingForDate(date = new Date()) {
-      if (state.themePreference !== "auto") {
-        return MANUAL_HOLIDAY_GREETINGS[state.themePreference] || "";
-      }
-
       const month = date.getMonth() + 1;
       const day = date.getDate();
       if ((month === 12 && (day === 24 || day === 25 || day === 26))) return MANUAL_HOLIDAY_GREETINGS.christmas;
@@ -879,7 +875,9 @@
           (month === easterMonday.getMonth() + 1 && day === easterMonday.getDate())) {
         return "Happy Easter! Wishing you hope, renewal, and happiness.";
       }
-      return "";
+      return state.themePreference === "auto"
+        ? ""
+        : MANUAL_HOLIDAY_GREETINGS[state.themePreference] || "";
     }
 
     function updateHolidayGreeting(date = new Date()) {
