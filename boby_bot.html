@@ -156,7 +156,11 @@
       width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
       background: linear-gradient(135deg, var(--blue), var(--green)); color: white;
     }
-    .brand-name { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: transparent; background-clip: text; }
+    .brand-name { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .brand-word { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: transparent; background-clip: text; }
+    .brand-seasonal { display: inline-block; color: var(--amber); font-size: 13px; line-height: 1; filter: drop-shadow(0 1px 5px var(--auth-glow)); animation: brand-seasonal-drift 3s ease-in-out infinite; }
+    .brand-seasonal:last-child { animation-delay: -1.5s; }
+    @keyframes brand-seasonal-drift { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-3px) rotate(8deg); } }
     .status-pill { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
     .status-dot.live { background: var(--green); box-shadow: 0 0 10px #16d39a66; }
@@ -206,6 +210,7 @@
     .seasonal-overlay span:nth-child(12) { left: 91%; --snow-duration: 18s; --snow-delay: -13s; font-size: 14px; }
     @keyframes seasonal-snow { from { transform: translate3d(0, -8vh, 0) rotate(0deg); } to { transform: translate3d(6vw, 110vh, 0) rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) {
+      .brand-seasonal { animation: none; }
       .theme-art span { animation: none; }
       .seasonal-overlay { display: none !important; }
     }
@@ -385,7 +390,11 @@
     <header class="header">
       <div class="brand">
         <div class="brand-icon">F</div>
-        <span class="brand-name">FOREX001</span>
+        <span class="brand-name">
+          <span class="brand-seasonal" aria-hidden="true"></span>
+          <span class="brand-word">FOREX001</span>
+          <span class="brand-seasonal" aria-hidden="true"></span>
+        </span>
         <span class="status-pill"><i id="feedDot" class="status-dot"></i><span id="feedStatus">Connecting</span></span>
       </div>
       <form id="searchForm" class="search" role="search">
@@ -656,7 +665,11 @@
     <form id="authForm" class="auth-card">
       <div class="brand" style="margin-bottom:18px">
         <div class="brand-icon">F</div>
-        <span class="brand-name">FOREX001</span>
+        <span class="brand-name">
+          <span class="brand-seasonal" aria-hidden="true"></span>
+          <span class="brand-word">FOREX001</span>
+          <span class="brand-seasonal" aria-hidden="true"></span>
+        </span>
       </div>
       <button id="installAppButtonAuth" class="button secondary small install-app-button" type="button">Install app</button>
       <h1 id="authTitle">Sign in to your dashboard</h1>
@@ -886,6 +899,11 @@
       const decorations = THEME_DECORATIONS[theme] || THEME_DECORATIONS.classic;
       $("themeArt").querySelectorAll("span").forEach((item, index) => {
         item.textContent = decorations[index];
+      });
+      document.querySelectorAll(".brand-name").forEach((brand) => {
+        brand.querySelectorAll(".brand-seasonal").forEach((item, index) => {
+          item.textContent = decorations[index === 0 ? 0 : decorations.length - 1];
+        });
       });
     }
 
