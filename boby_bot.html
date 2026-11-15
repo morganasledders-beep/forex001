@@ -184,6 +184,12 @@
     .theme-picker select { min-width: 175px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-soft); color: var(--text); font-size: 11px; }
     .theme-status { color: var(--muted); font-size: 10px; }
     .theme-help { flex-basis: 100%; color: var(--muted); font-size: 10px; text-align: right; }
+    .theme-art { height: 50px; display: flex; align-items: center; justify-content: space-evenly; overflow: hidden; border-bottom: 1px solid var(--line); background: radial-gradient(ellipse at center, var(--auth-glow), transparent 65%), linear-gradient(90deg, var(--surface), var(--panel), var(--surface)); }
+    .theme-art span { display: block; min-width: 32px; color: var(--amber); font-size: 24px; text-align: center; filter: drop-shadow(0 2px 6px var(--auth-glow)); animation: theme-drift 4s ease-in-out infinite; }
+    .theme-art span:nth-child(2), .theme-art span:nth-child(4) { animation-delay: -2s; }
+    .theme-art span:nth-child(3) { font-size: 32px; animation-delay: -1s; }
+    @keyframes theme-drift { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-5px) rotate(5deg); } }
+    @media (prefers-reduced-motion: reduce) { .theme-art span { animation: none; } }
     .holiday-greeting { padding: 10px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, var(--panel), var(--panel-soft)); color: var(--text); text-align: center; font-size: 12px; font-weight: 700; line-height: 1.45; }
     .main { display: grid; grid-template-columns: 230px minmax(0, 1fr) 310px; flex: 1; min-height: 0; }
     .markets-dashboard { flex: 1; min-width: 0; padding: 18px 22px; overflow: auto; }
@@ -393,6 +399,9 @@
         <span id="themeHelp" class="theme-help">Manual themes stay selected, even during holidays. All themes are included in the app; Auto follows the local calendar.</span>
       </div>
     </nav>
+    <div id="themeArt" class="theme-art" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
     <div id="holidayGreeting" class="holiday-greeting" role="status" aria-live="polite" hidden></div>
     <main id="overviewDashboard" class="main">
       <aside class="sidebar">
@@ -701,6 +710,17 @@
       autumn: "Autumn",
       winter: "Winter"
     };
+    const THEME_DECORATIONS = {
+      classic: ["◇", "◆", "✦", "◆", "◇"],
+      christmas: ["❄️", "✨", "🎄", "✨", "❄️"],
+      newyear: ["✨", "🎆", "✦", "🎆", "✨"],
+      valentines: ["♡", "♥", "❣", "♥", "♡"],
+      halloween: ["👻", "🦇", "🎃", "🦇", "👻"],
+      spring: ["🌼", "🌷", "🦋", "🌷", "🌼"],
+      summer: ["☀️", "🌻", "🌊", "🌻", "☀️"],
+      autumn: ["🍂", "🍁", "🍄", "🍁", "🍂"],
+      winter: ["❄️", "✨", "⛄", "✨", "❄️"]
+    };
     const MANUAL_HOLIDAY_GREETINGS = {
       christmas: "Merry Christmas! Wishing you peace, joy, and good health.",
       newyear: "Happy New Year! Wishing you happiness, success, and new opportunities.",
@@ -827,6 +847,7 @@
       state.themePreference = preference;
       const theme = preference === "auto" ? automaticSeasonalTheme() : preference;
       document.body.dataset.season = theme;
+      updateThemeArt(theme);
       $("themeSelect").value = preference;
       setText("seasonalThemeStatus", preference === "auto"
         ? `Automatic theme · ${THEME_LABELS[theme]}`
@@ -836,6 +857,13 @@
       if (persist) savePreference("forex001-seasonal-theme-v1", preference);
       updateHolidayGreeting();
       drawChart();
+    }
+
+    function updateThemeArt(theme) {
+      const decorations = THEME_DECORATIONS[theme] || THEME_DECORATIONS.classic;
+      $("themeArt").querySelectorAll("span").forEach((item, index) => {
+        item.textContent = decorations[index];
+      });
     }
 
     function easterSunday(year) {
