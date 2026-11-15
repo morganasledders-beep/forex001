@@ -178,15 +178,40 @@
     .button.small { padding: 7px 10px; font-size: 12px; }
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
     .settings-menu { position: relative; }
-    .settings-menu > summary { display: inline-flex; align-items: center; list-style: none; cursor: pointer; }
+    .settings-menu > summary { display: inline-flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; }
     .settings-menu > summary::-webkit-details-marker { display: none; }
+    .profile-menu-icon { width: 16px; height: 16px; flex: 0 0 auto; }
     .settings-panel {
       position: absolute; top: calc(100% + 9px); right: 0; z-index: 10;
-      display: grid; gap: 12px; width: min(340px, calc(100vw - 24px)); padding: 14px;
+      display: grid; box-sizing: border-box; gap: 12px; width: min(380px, calc(100vw - 48px)); max-height: min(80vh, 700px);
+      overflow-y: auto; padding: 14px;
       border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
       box-shadow: 0 12px 32px #0008;
     }
     .settings-account { overflow-wrap: anywhere; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .profile-form { display: grid; gap: 9px; }
+    .profile-form .field { margin: 0; }
+    .profile-form > .button { width: 100%; }
+    .profile-avatar-row { display: flex; align-items: center; gap: 12px; }
+    .profile-avatar {
+      display: grid; flex: 0 0 58px; place-items: center; overflow: hidden;
+      width: 58px; height: 58px; border: 1px solid var(--line); border-radius: 50%;
+      background: var(--panel-soft);
+    }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-avatar-placeholder { font-size: 25px; }
+    .profile-avatar-details { display: grid; min-width: 0; gap: 6px; }
+    .profile-avatar-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .profile-avatar-details .button { width: max-content; }
+    .profile-avatar-input {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%); white-space: nowrap;
+    }
+    .profile-avatar-input:focus-visible + .button { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .profile-help { color: var(--muted); font-size: 9px; line-height: 1.4; }
+    .profile-status { min-height: 16px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .profile-status.error { color: var(--red); }
+    .settings-divider { width: 100%; height: 1px; margin: 0; border: 0; background: var(--line); }
     .settings-panel .theme-picker { display: grid; gap: 7px; margin: 0; }
     .settings-panel .theme-picker select { width: 100%; }
     .settings-panel .theme-help { text-align: left; }
@@ -417,10 +442,45 @@
       <div class="header-right">
         <time class="clock" id="clock" aria-label="Current local date and time">Loading local time…</time>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
-        <details class="settings-menu">
-          <summary class="button secondary small">Settings</summary>
+        <details id="profileMenu" class="settings-menu">
+          <summary class="button secondary small" aria-label="Profile and account settings" title="Open profile and account settings">
+            <svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.3"></circle>
+              <path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
+            </svg>
+            <span>Profile</span>
+          </summary>
           <div class="settings-panel">
             <span id="accountEmail" class="account-email settings-account" role="status"></span>
+            <form id="profileForm" class="profile-form">
+              <div class="profile-avatar-row">
+                <div class="profile-avatar">
+                  <img id="profileAvatarPreview" alt="Profile photo" hidden>
+                  <span id="profileAvatarPlaceholder" class="profile-avatar-placeholder" aria-hidden="true">👤</span>
+                </div>
+                <div class="profile-avatar-details">
+                  <span class="profile-avatar-label">Profile picture</span>
+                  <input id="profileAvatarInput" class="profile-avatar-input" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="profileAvatarHelp">
+                  <label for="profileAvatarInput" class="button secondary small">Choose photo</label>
+                  <span id="profileAvatarHelp" class="profile-help">Private to your account · JPEG, PNG, or WebP up to 5 MB.</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="profileFullName">Full name</label>
+                <input id="profileFullName" type="text" autocomplete="name" maxlength="100" required>
+              </div>
+              <div class="field">
+                <label for="profileEmail">Email</label>
+                <input id="profileEmail" type="email" autocomplete="email" readonly>
+              </div>
+              <div class="field">
+                <label for="profilePhone">Phone number (optional)</label>
+                <input id="profilePhone" type="tel" autocomplete="tel" maxlength="32">
+              </div>
+              <button id="saveProfileButton" class="button" type="submit">Save profile</button>
+              <span id="profileStatus" class="profile-status" role="status" aria-live="polite"></span>
+            </form>
+            <hr class="settings-divider">
             <div class="theme-picker">
               <label for="themeSelect">Theme</label>
               <select id="themeSelect" aria-describedby="seasonalThemeStatus themeHelp">
@@ -694,8 +754,18 @@
       <button id="installAppButtonAuth" class="button secondary small install-app-button" type="button">Install app</button>
       <h1 id="authTitle">Sign in to your dashboard</h1>
       <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
-      <p id="signupDescription" hidden>Create an account with your email and a password of at least 8 characters. If email confirmation is enabled, check your inbox before signing in.</p>
+      <p id="signupDescription" hidden>Create an account with your full name, email, and a password of at least 8 characters. Phone number is optional.</p>
       <div id="authFormFields">
+        <div id="signupProfileFields" hidden>
+          <div class="field">
+            <label for="signupFullName">Full name</label>
+            <input id="signupFullName" type="text" autocomplete="name" maxlength="100" disabled>
+          </div>
+          <div class="field">
+            <label for="signupPhone">Phone number (optional)</label>
+            <input id="signupPhone" type="tel" autocomplete="tel" maxlength="32" disabled>
+          </div>
+        </div>
         <div class="field">
           <label for="authEmail">Email</label>
           <input id="authEmail" type="email" autocomplete="email" required>
@@ -752,6 +822,10 @@
     const FREE_WATCHLIST_LIMIT = 4;
     const PLUS_WATCHLIST_LIMIT = 7;
     const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
+    const PROFILE_AVATAR_BUCKET = "forex001-avatars";
+    const PROFILE_AVATAR_MAX_BYTES = 5 * 1024 * 1024;
+    const PROFILE_AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const PROFILE_AVATAR_SIGNED_URL_SECONDS = 60 * 60;
     const THEME_OPTIONS = ["auto", "classic", "christmas", "newyear", "valentines", "halloween", "spring", "summer", "autumn", "winter"];
     const CHART_STYLES = ["mountain", "line", "area", "candlestick", "ohlc"];
     const CHART_ZOOM_LEVELS = [1, 2, 4, 8];
@@ -841,6 +915,9 @@
     let installPrompt = null;
     let pendingAppUpdateWorker = null;
     let reloadingForAppUpdate = false;
+    let selectedProfileAvatarFile = null;
+    let profileAvatarPreviewObjectUrl = null;
+    let savedProfileAvatarUrl = "";
     const mountainImage = new Image();
     mountainImage.addEventListener("load", drawChart);
     mountainImage.src = "./mountain-chart.jpg";
@@ -1106,12 +1183,170 @@
       element.classList.toggle("error", isError);
     }
 
+    function setProfileMessage(message, isError = false) {
+      const element = $("profileStatus");
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    function setProfileAvatarPreview(source) {
+      if (profileAvatarPreviewObjectUrl) {
+        URL.revokeObjectURL(profileAvatarPreviewObjectUrl);
+        profileAvatarPreviewObjectUrl = null;
+      }
+      const image = $("profileAvatarPreview");
+      if (source) {
+        image.src = source;
+        image.hidden = false;
+      } else {
+        image.removeAttribute("src");
+        image.hidden = true;
+      }
+      $("profileAvatarPlaceholder").hidden = Boolean(source);
+    }
+
+    function clearProfileDraft() {
+      selectedProfileAvatarFile = null;
+      $("profileAvatarInput").value = "";
+      $("profileFullName").value = "";
+      $("profileEmail").value = "";
+      $("profilePhone").value = "";
+      savedProfileAvatarUrl = "";
+      setProfileAvatarPreview("");
+      setProfileMessage("");
+    }
+
+    async function populateProfile(user) {
+      const metadata = user.user_metadata && typeof user.user_metadata === "object"
+        ? user.user_metadata
+        : {};
+      $("profileFullName").value = typeof metadata.full_name === "string" ? metadata.full_name : "";
+      $("profileEmail").value = user.email || "";
+      $("profilePhone").value = typeof metadata.phone === "string" ? metadata.phone : "";
+      setText("accountEmail", state.isOwner ? `Owner · ${user.email}` : (user.email || "Signed in"));
+
+      const avatarPath = typeof metadata.avatar_path === "string" ? metadata.avatar_path : "";
+      if (!avatarPath) {
+        savedProfileAvatarUrl = "";
+        setProfileAvatarPreview("");
+        return;
+      }
+
+      const { data, error } = await state.supabase.storage
+        .from(PROFILE_AVATAR_BUCKET)
+        .createSignedUrl(avatarPath, PROFILE_AVATAR_SIGNED_URL_SECONDS);
+      if (error) throw error;
+      if (!data?.signedUrl) throw new Error("Supabase did not return a profile-photo link.");
+      savedProfileAvatarUrl = data.signedUrl;
+      setProfileAvatarPreview(data.signedUrl);
+    }
+
+    async function loadProfile() {
+      if (!state.supabase) {
+        setProfileMessage("Supabase is not available. Reload the app and try again.", true);
+        return;
+      }
+      $("saveProfileButton").disabled = true;
+      setProfileMessage("Loading profile…");
+      try {
+        const { data, error } = await state.supabase.auth.getUser();
+        if (error) throw error;
+        if (!data.user) throw new Error("Please sign in again to view your profile.");
+        await populateProfile(data.user);
+        setProfileMessage("");
+      } catch (error) {
+        console.error("Could not load profile", error);
+        setProfileMessage(error.message || "Could not load your profile.", true);
+      } finally {
+        $("saveProfileButton").disabled = false;
+      }
+    }
+
+    async function saveProfile(event) {
+      event.preventDefault();
+      if (!state.supabase) {
+        setProfileMessage("Supabase is not available. Reload the app and try again.", true);
+        return;
+      }
+      if (!$("profileForm").reportValidity()) return;
+
+      const fullName = $("profileFullName").value.trim();
+      const phone = $("profilePhone").value.trim();
+      const avatarFile = selectedProfileAvatarFile;
+      if (!fullName) {
+        setProfileMessage("Enter your full name.", true);
+        $("profileFullName").focus();
+        return;
+      }
+      if (avatarFile && !PROFILE_AVATAR_MIME_TYPES.includes(avatarFile.type)) {
+        setProfileMessage("Choose a JPEG, PNG, or WebP image.", true);
+        return;
+      }
+      if (avatarFile && (avatarFile.size === 0 || avatarFile.size > PROFILE_AVATAR_MAX_BYTES)) {
+        setProfileMessage("Choose an image larger than 0 bytes and no larger than 5 MB.", true);
+        return;
+      }
+
+      $("saveProfileButton").disabled = true;
+      setProfileMessage("Saving profile…");
+      try {
+        const { data: userData, error: userError } = await state.supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!userData.user) throw new Error("Please sign in again to save your profile.");
+        const user = userData.user;
+        const currentAvatarPath = typeof user.user_metadata?.avatar_path === "string"
+          ? user.user_metadata.avatar_path
+          : "";
+        let avatarPath = currentAvatarPath;
+
+        if (avatarFile) {
+          const { data: uploadData, error: uploadError } = await state.supabase.storage
+            .from(PROFILE_AVATAR_BUCKET)
+            .upload(`${user.id}/avatar`, avatarFile, {
+              cacheControl: "3600",
+              contentType: avatarFile.type,
+              upsert: true
+            });
+          if (uploadError) throw uploadError;
+          if (!uploadData?.path) throw new Error("Supabase did not return the uploaded profile-photo path.");
+          avatarPath = uploadData.path;
+        }
+
+        const profileMetadata = { full_name: fullName, phone: phone || null };
+        if (avatarPath) profileMetadata.avatar_path = avatarPath;
+        const { data: updatedData, error: updateError } = await state.supabase.auth.updateUser({
+          data: profileMetadata
+        });
+        if (updateError) throw updateError;
+        if (!updatedData.user) throw new Error("Supabase did not return the updated profile.");
+
+        selectedProfileAvatarFile = null;
+        $("profileAvatarInput").value = "";
+        try {
+          await populateProfile(updatedData.user);
+          setProfileMessage("Profile saved.");
+        } catch (error) {
+          console.error("Profile saved, but its photo preview could not be refreshed", error);
+          setProfileMessage(`Profile saved, but the photo could not be displayed: ${error.message}`, true);
+        }
+      } catch (error) {
+        console.error("Could not save profile", error);
+        setProfileMessage(error.message || "Could not save your profile. Try again.", true);
+      } finally {
+        $("saveProfileButton").disabled = false;
+      }
+    }
+
     function setAuthMode(mode) {
       state.authMode = mode;
       const signingUp = mode === "signUp";
       $("authTitle").textContent = signingUp ? "Create your account" : "Sign in to your dashboard";
       $("authDescription").hidden = signingUp;
       $("signupDescription").hidden = !signingUp;
+      $("signupProfileFields").hidden = !signingUp;
+      $("signupFullName").disabled = !signingUp;
+      $("signupFullName").required = signingUp;
+      $("signupPhone").disabled = !signingUp;
       $("signInButton").hidden = signingUp;
       $("signUpButton").type = signingUp ? "submit" : "button";
       $("signUpButton").textContent = "Create account";
@@ -1149,6 +1384,8 @@
       $("passwordRecoveryFields").hidden = true;
       $("recoveryPassword").value = "";
       $("recoveryPasswordConfirm").value = "";
+      $("signupFullName").value = "";
+      $("signupPhone").value = "";
     }
 
     function showSignedInView(user) {
@@ -1213,6 +1450,7 @@
       $("app").hidden = true;
       $("authScreen").hidden = false;
       showSignInForm();
+      clearProfileDraft();
       setText("accountEmail", "");
       state.isOwner = false;
       state.hasPlusAccess = false;
@@ -1340,7 +1578,14 @@
       if (!state.supabase) return;
       const email = $("authEmail").value.trim();
       const password = $("authPassword").value;
-      if (!$("authEmail").reportValidity()) return;
+      const fullName = $("signupFullName").value.trim();
+      const phone = $("signupPhone").value.trim();
+      if (!$("authEmail").reportValidity() || !$("signupFullName").reportValidity()) return;
+      if (!fullName) {
+        setAuthMessage("Enter your full name.", true);
+        $("signupFullName").focus();
+        return;
+      }
       if (password.length < 8) {
         setAuthMessage("Use a password with at least 8 characters.", true);
         return;
@@ -1349,7 +1594,11 @@
       $("signUpButton").disabled = true;
       setAuthMessage("Creating your account…");
       try {
-        const { data, error } = await state.supabase.auth.signUp({ email, password });
+        const { data, error } = await state.supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName, phone: phone || null } }
+        });
         if (error) throw error;
         if (data.session && data.user) {
           showSignedInView(data.user);
@@ -2691,6 +2940,34 @@
       $("marketExplorerSymbol").value = symbol;
       mountTradingViewChart(symbol);
     });
+    $("profileMenu").addEventListener("toggle", () => {
+      if ($("profileMenu").open) void loadProfile();
+      else clearProfileDraft();
+    });
+    $("profileAvatarInput").addEventListener("change", () => {
+      const file = $("profileAvatarInput").files[0];
+      if (!file) return;
+      if (!PROFILE_AVATAR_MIME_TYPES.includes(file.type)) {
+        selectedProfileAvatarFile = null;
+        $("profileAvatarInput").value = "";
+        setProfileAvatarPreview(savedProfileAvatarUrl);
+        setProfileMessage("Choose a JPEG, PNG, or WebP image.", true);
+        return;
+      }
+      if (file.size === 0 || file.size > PROFILE_AVATAR_MAX_BYTES) {
+        selectedProfileAvatarFile = null;
+        $("profileAvatarInput").value = "";
+        setProfileAvatarPreview(savedProfileAvatarUrl);
+        setProfileMessage("Choose an image larger than 0 bytes and no larger than 5 MB.", true);
+        return;
+      }
+      selectedProfileAvatarFile = file;
+      const previewUrl = URL.createObjectURL(file);
+      setProfileAvatarPreview(previewUrl);
+      profileAvatarPreviewObjectUrl = previewUrl;
+      setProfileMessage("Photo selected. Save your profile to upload it.");
+    });
+    $("profileForm").addEventListener("submit", saveProfile);
     $("authForm").addEventListener("submit", (event) => {
       if (state.passwordRecovery) updatePassword();
       else if (state.authMode === "signUp") signUp(event);
