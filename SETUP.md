@@ -23,6 +23,9 @@ FOREX001 is published as an installable Progressive Web App (PWA). On Android or
 Installed copies check for app updates when opened and periodically while running. When an update is ready, FOREX001 shows an **Update now** prompt; accepting it reloads the app with the latest files, while **Later** keeps the current version until the user chooses to update. The app cannot send an update notice while fully closed; users should open it online to check. For each future release, update the service-worker cache version so installed copies can detect the new release.
 
 ## Market analysis and alerts
+Use the **Overview** and **Global Markets** navigation buttons to switch between the main dashboard and a full-width in-app market explorer. The TradingView chart loads when you open Global Markets and remains embedded in FOREX001.
+
+The Price chart and embedded TradingView chart zoom independently. Use the Price chart's **+**/**-** controls or Ctrl+mouse-wheel over that chart; use TradingView's own **+**/**-** toolbar controls for the OANDA chart. These controls zoom only their respective chart, not the browser page.
 
 The native price chart updates from the selected market feed. Zoom with the **+** and **-** controls or Ctrl+mouse-wheel; the 1x to 8x levels show progressively fewer recent candles, and **Reset** returns to the full chart. Zoom changes only the visible chart window, not indicators or paper-trade calculations.
 
