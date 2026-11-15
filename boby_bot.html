@@ -179,6 +179,21 @@
     .button.secondary { background: var(--panel-soft); border-color: var(--line); color: var(--text); }
     .button.small { padding: 7px 10px; font-size: 12px; }
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .settings-menu { position: relative; }
+    .settings-menu > summary { display: inline-flex; align-items: center; list-style: none; cursor: pointer; }
+    .settings-menu > summary::-webkit-details-marker { display: none; }
+    .settings-panel {
+      position: absolute; top: calc(100% + 9px); right: 0; z-index: 10;
+      display: grid; gap: 12px; width: min(340px, calc(100vw - 24px)); padding: 14px;
+      border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+      box-shadow: 0 12px 32px #0008;
+    }
+    .settings-account { overflow-wrap: anywhere; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .settings-panel .theme-picker { display: grid; gap: 7px; margin: 0; }
+    .settings-panel .theme-picker select { width: 100%; }
+    .settings-panel .theme-help { text-align: left; }
+    .settings-actions { display: grid; gap: 8px; }
+    .settings-actions .button { width: 100%; }
     [hidden] { display: none !important; }
     .clock { color: var(--muted); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .dashboard-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -352,11 +367,11 @@
       .rightbar .panel { margin: 0; }
     }
     @media (max-width: 700px) {
-      .header { flex-wrap: wrap; padding: 10px 12px; gap: 10px; }
+      .header { min-width: 0; flex-wrap: wrap; padding: 10px 12px; gap: 10px; }
       .brand { min-width: 0; }
       .header-right { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
       .search { order: 3; flex-basis: 100%; max-width: none; }
-      .header-right { width: 100%; margin-left: 0; gap: 8px; }
+      .header-right { width: 100%; min-width: 0; margin-left: 0; gap: 8px; }
       .clock { display: block; flex-basis: 100%; order: -1; text-align: right; font-size: 10px; }
       .main { display: flex; flex-direction: column; }
       .sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 10px; }
@@ -402,34 +417,41 @@
         <button class="button" type="submit">Add</button>
       </form>
       <div class="header-right">
-        <span id="accountEmail" class="account-email"></span>
         <time class="clock" id="clock" aria-label="Current local date and time">Loading local time…</time>
-        <button id="installAppButton" class="button secondary small install-app-button" type="button">Install app</button>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
-        <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
+        <details class="settings-menu">
+          <summary class="button secondary small">Settings</summary>
+          <div class="settings-panel">
+            <span id="accountEmail" class="account-email settings-account" role="status"></span>
+            <div class="theme-picker">
+              <label for="themeSelect">Theme</label>
+              <select id="themeSelect" aria-describedby="seasonalThemeStatus themeHelp">
+                <option value="auto">Auto — holidays &amp; seasons</option>
+                <option value="classic">Classic</option>
+                <option value="christmas">Christmas</option>
+                <option value="newyear">New Year</option>
+                <option value="valentines">Valentine's Day</option>
+                <option value="halloween">Halloween</option>
+                <option value="spring">Spring</option>
+                <option value="summer">Summer</option>
+                <option value="autumn">Autumn</option>
+                <option value="winter">Winter</option>
+              </select>
+              <span id="seasonalThemeStatus" class="theme-status" role="status">Automatic theme</span>
+              <span id="themeHelp" class="theme-help">Manual themes stay selected, even during holidays. All themes are included in the app; Auto follows the local calendar.</span>
+            </div>
+            <div class="settings-actions">
+              <button id="installAppButton" class="button secondary small install-app-button" type="button">Install app</button>
+              <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
+            </div>
+          </div>
+        </details>
       </div>
     </header>
 
     <nav class="dashboard-nav" aria-label="Dashboard navigation">
       <button id="overviewNavButton" class="button secondary small" type="button" aria-controls="overviewDashboard" aria-pressed="true">Overview</button>
       <button id="marketsNavButton" class="button secondary small" type="button" aria-controls="globalMarketsDashboard" aria-pressed="false">Global Markets</button>
-      <div class="theme-picker">
-        <label for="themeSelect">Theme</label>
-        <select id="themeSelect" aria-describedby="seasonalThemeStatus themeHelp">
-          <option value="auto">Auto — holidays &amp; seasons</option>
-          <option value="classic">Classic</option>
-          <option value="christmas">Christmas</option>
-          <option value="newyear">New Year</option>
-          <option value="valentines">Valentine's Day</option>
-          <option value="halloween">Halloween</option>
-          <option value="spring">Spring</option>
-          <option value="summer">Summer</option>
-          <option value="autumn">Autumn</option>
-          <option value="winter">Winter</option>
-        </select>
-        <span id="seasonalThemeStatus" class="theme-status" role="status">Automatic theme</span>
-        <span id="themeHelp" class="theme-help">Manual themes stay selected, even during holidays. All themes are included in the app; Auto follows the local calendar.</span>
-      </div>
     </nav>
     <div id="themeArt" class="theme-art" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span>
