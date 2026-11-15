@@ -177,8 +177,14 @@
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
     [hidden] { display: none !important; }
     .clock { color: var(--muted); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .dashboard-nav { display: flex; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .dashboard-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
     .dashboard-nav .button[aria-pressed="true"] { border-color: var(--blue); background: var(--panel); }
+    .theme-picker { display: flex; flex: 0 1 460px; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; max-width: 100%; }
+    .theme-picker label { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .theme-picker select { min-width: 175px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-soft); color: var(--text); font-size: 11px; }
+    .theme-status { color: var(--muted); font-size: 10px; }
+    .theme-help { flex-basis: 100%; color: var(--muted); font-size: 10px; text-align: right; }
+    .holiday-greeting { padding: 10px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, var(--panel), var(--panel-soft)); color: var(--text); text-align: center; font-size: 12px; font-weight: 700; line-height: 1.45; }
     .main { display: grid; grid-template-columns: 230px minmax(0, 1fr) 310px; flex: 1; min-height: 0; }
     .markets-dashboard { flex: 1; min-width: 0; padding: 18px 22px; overflow: auto; }
     .sidebar, .rightbar { background: var(--sidebar-surface); }
@@ -334,6 +340,9 @@
       .market-explorer-controls { grid-template-columns: 1fr; }
       .market-explorer-wrap { height: 380px; }
       .dashboard-nav { padding: 8px 12px; }
+      .theme-picker { flex-basis: 100%; margin-left: 0; }
+      .theme-help { text-align: left; }
+      .holiday-greeting { padding: 9px 12px; font-size: 11px; }
       .markets-dashboard { padding: 12px; }
       .markets-dashboard .market-explorer-wrap { height: clamp(360px, 65vh, 620px); }
       .asset-heading h1 { font-size: 18px; }
@@ -366,7 +375,25 @@
     <nav class="dashboard-nav" aria-label="Dashboard navigation">
       <button id="overviewNavButton" class="button secondary small" type="button" aria-controls="overviewDashboard" aria-pressed="true">Overview</button>
       <button id="marketsNavButton" class="button secondary small" type="button" aria-controls="globalMarketsDashboard" aria-pressed="false">Global Markets</button>
+      <div class="theme-picker">
+        <label for="themeSelect">Theme</label>
+        <select id="themeSelect" aria-describedby="seasonalThemeStatus themeHelp">
+          <option value="auto">Auto — holidays &amp; seasons</option>
+          <option value="classic">Classic</option>
+          <option value="christmas">Christmas</option>
+          <option value="newyear">New Year</option>
+          <option value="valentines">Valentine's Day</option>
+          <option value="halloween">Halloween</option>
+          <option value="spring">Spring</option>
+          <option value="summer">Summer</option>
+          <option value="autumn">Autumn</option>
+          <option value="winter">Winter</option>
+        </select>
+        <span id="seasonalThemeStatus" class="theme-status" role="status">Automatic theme</span>
+        <span id="themeHelp" class="theme-help">Manual themes stay selected, even during holidays. All themes are included in the app; Auto follows the local calendar.</span>
+      </div>
     </nav>
+    <div id="holidayGreeting" class="holiday-greeting" role="status" aria-live="polite" hidden></div>
     <main id="overviewDashboard" class="main">
       <aside class="sidebar">
         <h2 class="section-title">Watchlist</h2>
@@ -470,27 +497,6 @@
       </section>
 
       <aside class="rightbar">
-        <section class="panel">
-          <h2>Appearance</h2>
-          <div class="field">
-            <label for="themeSelect">Seasonal theme</label>
-            <select id="themeSelect">
-              <option value="auto">Auto seasonal</option>
-              <option value="classic">Classic</option>
-              <option value="christmas">Christmas</option>
-              <option value="newyear">New Year</option>
-              <option value="valentines">Valentine's Day</option>
-              <option value="halloween">Halloween</option>
-              <option value="spring">Spring</option>
-              <option value="summer">Summer</option>
-              <option value="autumn">Autumn</option>
-              <option value="winter">Winter</option>
-            </select>
-          </div>
-          <div id="seasonalThemeStatus" class="analysis-copy" role="status">Auto seasonal theme</div>
-          <div class="analysis-copy">Themes are visual only. Auto changes for holidays and seasons; your choice is saved on this browser.</div>
-        </section>
-
         <section class="panel">
           <h2>Pocket Option</h2>
           <div class="broker-status"><i class="status-dot"></i><span>Not connected to this dashboard</span></div>
@@ -695,6 +701,12 @@
       autumn: "Autumn",
       winter: "Winter"
     };
+    const MANUAL_HOLIDAY_GREETINGS = {
+      christmas: "Merry Christmas! Wishing you peace, joy, and good health.",
+      newyear: "Happy New Year! Wishing you happiness, success, and new opportunities.",
+      valentines: "Happy Valentine's Day! Wishing everyone love, kindness, and meaningful connections.",
+      halloween: "Happy Halloween! Wishing you a fun, safe, and memorable celebration."
+    };
     const state = {
       watchlist: [...DEFAULT_WATCHLIST],
       trades: [],
@@ -822,7 +834,59 @@
       document.querySelector('meta[name="theme-color"]').content =
         getComputedStyle(document.body).getPropertyValue("--bg").trim();
       if (persist) savePreference("forex001-seasonal-theme-v1", preference);
+      updateHolidayGreeting();
       drawChart();
+    }
+
+    function easterSunday(year) {
+      const a = year % 19;
+      const b = Math.floor(year / 100);
+      const c = year % 100;
+      const d = Math.floor(b / 4);
+      const e = b % 4;
+      const f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4);
+      const k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      const day = ((h + l - 7 * m + 114) % 31) + 1;
+      return new Date(year, month - 1, day);
+    }
+
+    function holidayGreetingForDate(date = new Date()) {
+      if (state.themePreference !== "auto") {
+        return MANUAL_HOLIDAY_GREETINGS[state.themePreference] || "";
+      }
+
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      if ((month === 12 && (day === 24 || day === 25 || day === 26))) return MANUAL_HOLIDAY_GREETINGS.christmas;
+      if ((month === 12 && day === 31) || (month === 1 && day === 1)) return MANUAL_HOLIDAY_GREETINGS.newyear;
+      if (month === 2 && day === 14) return MANUAL_HOLIDAY_GREETINGS.valentines;
+      if (month === 10 && day === 31) return MANUAL_HOLIDAY_GREETINGS.halloween;
+      if (month === 3 && day === 8) return "Happy International Women's Day! Wishing women everywhere respect, joy, and opportunity.";
+      if (month === 5 && day === 1) return "Happy Labour Day! Wishing everyone a restful and rewarding day.";
+      if (month === 6 && day === 1) return "Happy Madaraka Day! Wishing Kenya peace, unity, and prosperity.";
+      if (month === 10 && day === 20) return "Happy Mashujaa Day! Wishing everyone a proud and joyful day.";
+      if (month === 12 && day === 12) return "Happy Jamhuri Day! Wishing Kenya peace, unity, and prosperity.";
+
+      const easter = easterSunday(date.getFullYear());
+      const easterMonday = new Date(easter.getFullYear(), easter.getMonth(), easter.getDate() + 1);
+      if ((month === easter.getMonth() + 1 && day === easter.getDate()) ||
+          (month === easterMonday.getMonth() + 1 && day === easterMonday.getDate())) {
+        return "Happy Easter! Wishing you hope, renewal, and happiness.";
+      }
+      return "";
+    }
+
+    function updateHolidayGreeting(date = new Date()) {
+      const greeting = holidayGreetingForDate(date);
+      const banner = $("holidayGreeting");
+      if (banner.textContent !== greeting) banner.textContent = greeting;
+      banner.hidden = !greeting;
     }
 
     function refreshAutomaticSeasonalTheme() {
@@ -1505,6 +1569,7 @@
       if (state.localDateKey && state.localDateKey !== dateKey) {
         refreshAutomaticSeasonalTheme();
       }
+      updateHolidayGreeting(now);
       state.localDateKey = dateKey;
     }
 
