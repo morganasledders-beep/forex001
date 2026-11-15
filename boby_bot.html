@@ -24,24 +24,139 @@
       --green: #16d39a;
       --red: #ff6174;
       --amber: #ffc15a;
+      --surface: #0a1527;
+      --sidebar-surface: #091427;
+      --brand-start: #64b4ff;
+      --brand-end: #57e5b5;
+      --page-glow: none;
+      --auth-glow: #102747;
+      --chart-card-background: linear-gradient(155deg, #111b30 0%, #0b1426 55%, #10192b 100%);
+      --chart-canvas: #0b172a;
+      --chart-grid: #26324a;
+      --chart-label: #8da2bd;
+      --chart-line: #5683b7;
+      --chart-current: #1bb9eb;
+      --chart-price-background: #3e6e9f;
+      --chart-area-start: #4274a94d;
+      --chart-area-end: #28456f14;
+      --chart-up: #16d39a;
+      --chart-down: #ff6174;
+      --timeframe-background: #081424;
+      --timeframe-border: #243750;
+      --timeframe-text: #91a5bb;
+      --timeframe-hover: #15263a;
+      --timeframe-active-border: #237966;
+      --timeframe-active-background: #18493f;
+      --notice-background: #211d16;
+      --notice-text: #e4c98e;
+      --auth-surface-glow: #102747;
       font-family: Inter, "Segoe UI", system-ui, sans-serif;
     }
 
+    body[data-season="christmas"] {
+      --bg: #081711; --panel: #0d211a; --panel-soft: #132d23; --line: #2a4c3d; --text: #effbf4; --muted: #9dbbaa;
+      --blue: #45c69b; --green: #67d99a; --red: #ff687b; --amber: #f0cc76; --surface: #0b1b16; --sidebar-surface: #091711;
+      --brand-start: #ff6d7f; --brand-end: #68dfa1; --auth-glow: #163225;
+      --chart-card-background: linear-gradient(155deg, #142a21 0%, #0d1d17 55%, #142820 100%); --chart-canvas: #0b1c15;
+      --chart-grid: #29483b; --chart-line: #71d5ae; --chart-current: #f0cc76; --chart-price-background: #315d4a;
+      --chart-area-start: #43bd884d; --chart-area-end: #43bd8808; --chart-up: #67d99a; --chart-down: #ff687b;
+      --timeframe-background: #0a1c15; --timeframe-border: #315344; --timeframe-text: #a4c3b2; --timeframe-hover: #19382c;
+      --timeframe-active-border: #b94c5d; --timeframe-active-background: #3a2024; --notice-background: #282116;
+      --notice-text: #f0d99c; --page-glow: radial-gradient(circle at 90% 2%, #bd405028, transparent 32%), radial-gradient(circle at 4% 55%, #2382581c, transparent 30%);
+    }
+    body[data-season="newyear"] {
+      --bg: #101528; --panel: #171f36; --panel-soft: #202c49; --line: #354468; --text: #f4f4ff; --muted: #a5b0d1;
+      --blue: #78b9ff; --green: #62d6bd; --red: #ff7185; --amber: #f6d887; --surface: #121a30; --sidebar-surface: #0e162a;
+      --brand-start: #76c1ff; --brand-end: #d3a7ff; --auth-glow: #232746;
+      --chart-card-background: linear-gradient(155deg, #202944 0%, #131b30 55%, #211d3b 100%); --chart-canvas: #121a2d;
+      --chart-grid: #394764; --chart-line: #8abfff; --chart-current: #f6d887; --chart-price-background: #536da0;
+      --chart-area-start: #749be94d; --chart-area-end: #749be908; --chart-up: #62d6bd; --chart-down: #ff7185;
+      --timeframe-background: #111a2e; --timeframe-border: #354468; --timeframe-text: #a5b0d1; --timeframe-hover: #263452;
+      --timeframe-active-border: #9e7bd3; --timeframe-active-background: #302544; --notice-background: #292338;
+      --notice-text: #e5d6ff; --page-glow: radial-gradient(circle at 88% 0%, #9a6ed32b, transparent 32%), radial-gradient(circle at 12% 65%, #3b8bd01c, transparent 30%);
+    }
+    body[data-season="valentines"] {
+      --bg: #1c101c; --panel: #281629; --panel-soft: #362039; --line: #57334d; --text: #fff0f7; --muted: #d2a9bf;
+      --blue: #ef7bb3; --green: #70d7b0; --red: #ff647b; --amber: #ffd18a; --surface: #211321; --sidebar-surface: #1a101a;
+      --brand-start: #ff739e; --brand-end: #be8dff; --auth-glow: #54243f;
+      --chart-card-background: linear-gradient(155deg, #39203a 0%, #221426 55%, #321b34 100%); --chart-canvas: #211322;
+      --chart-grid: #5a3652; --chart-line: #ef91c0; --chart-current: #ffd18a; --chart-price-background: #8b4771;
+      --chart-area-start: #dd69a34d; --chart-area-end: #dd69a308; --chart-up: #70d7b0; --chart-down: #ff647b;
+      --timeframe-background: #211321; --timeframe-border: #57334d; --timeframe-text: #d2a9bf; --timeframe-hover: #432446;
+      --timeframe-active-border: #c65e95; --timeframe-active-background: #502344; --notice-background: #3b2536;
+      --notice-text: #f7c8df; --page-glow: radial-gradient(circle at 90% 1%, #dd518a2d, transparent 32%), radial-gradient(circle at 8% 62%, #a962c11c, transparent 30%);
+    }
+    body[data-season="halloween"] {
+      --bg: #17130c; --panel: #241b11; --panel-soft: #342516; --line: #594023; --text: #fff4e5; --muted: #c6ad88;
+      --blue: #f09a42; --green: #74d59a; --red: #ff6c62; --amber: #f4c66b; --surface: #1b150d; --sidebar-surface: #151109;
+      --brand-start: #ffab4a; --brand-end: #a66be0; --auth-glow: #402619;
+      --chart-card-background: linear-gradient(155deg, #362312 0%, #1c160e 55%, #2c1d17 100%); --chart-canvas: #1d170f;
+      --chart-grid: #59432c; --chart-line: #f4a849; --chart-current: #d18cff; --chart-price-background: #845127;
+      --chart-area-start: #df8c354d; --chart-area-end: #df8c3508; --chart-up: #74d59a; --chart-down: #ff6c62;
+      --timeframe-background: #1b150d; --timeframe-border: #594023; --timeframe-text: #c6ad88; --timeframe-hover: #3a2918;
+      --timeframe-active-border: #ca7830; --timeframe-active-background: #4a2d16; --notice-background: #352715;
+      --notice-text: #f0d09a; --page-glow: radial-gradient(circle at 90% 1%, #e17a272b, transparent 32%), radial-gradient(circle at 8% 60%, #8141a01b, transparent 30%);
+    }
+    body[data-season="spring"] {
+      --bg: #0c1918; --panel: #112522; --panel-soft: #18332f; --line: #2d5249; --text: #effcf7; --muted: #a1c3ba;
+      --blue: #54cbb0; --green: #72d69a; --red: #fa7381; --amber: #e7d075; --surface: #0e1e1b; --sidebar-surface: #0a1715;
+      --brand-start: #69d7b5; --brand-end: #b9d878; --auth-glow: #1b3c34;
+      --chart-card-background: linear-gradient(155deg, #19352e 0%, #10211e 55%, #1b3025 100%); --chart-canvas: #10201c;
+      --chart-grid: #31544a; --chart-line: #64cdb2; --chart-current: #e7d075; --chart-price-background: #3d786a;
+      --chart-area-start: #58b99a4d; --chart-area-end: #58b99a08; --chart-up: #72d69a; --chart-down: #fa7381;
+      --timeframe-background: #0e1e1b; --timeframe-border: #2d5249; --timeframe-text: #a1c3ba; --timeframe-hover: #1d3d37;
+      --timeframe-active-border: #5b9c76; --timeframe-active-background: #234639; --notice-background: #2b2919;
+      --notice-text: #eee2a4; --page-glow: radial-gradient(circle at 90% 0%, #56c68b24, transparent 34%), radial-gradient(circle at 8% 62%, #81bd6320, transparent 30%);
+    }
+    body[data-season="summer"] {
+      --bg: #0b1520; --panel: #101f30; --panel-soft: #172c41; --line: #2b4861; --text: #f0f8ff; --muted: #a2bbcc;
+      --blue: #42b6ec; --green: #37d5a5; --red: #ff7076; --amber: #ffd06a; --surface: #0c1926; --sidebar-surface: #09131e;
+      --brand-start: #4abdf0; --brand-end: #f8cb67; --auth-glow: #17435b;
+      --chart-card-background: linear-gradient(155deg, #18334a 0%, #101e30 55%, #183b43 100%); --chart-canvas: #101e2b;
+      --chart-grid: #2c4b61; --chart-line: #54c7ee; --chart-current: #ffd06a; --chart-price-background: #356a91;
+      --chart-area-start: #3aace54d; --chart-area-end: #3aace508; --chart-up: #37d5a5; --chart-down: #ff7076;
+      --timeframe-background: #0c1926; --timeframe-border: #2b4861; --timeframe-text: #a2bbcc; --timeframe-hover: #1b364c;
+      --timeframe-active-border: #258f9e; --timeframe-active-background: #18414a; --notice-background: #30291a;
+      --notice-text: #f1d899; --page-glow: radial-gradient(circle at 90% 0%, #35a9dd26, transparent 34%), radial-gradient(circle at 5% 64%, #f5b8481c, transparent 30%);
+    }
+    body[data-season="autumn"] {
+      --bg: #19130e; --panel: #261c14; --panel-soft: #35271a; --line: #59452e; --text: #fff6ea; --muted: #c7b49a;
+      --blue: #d58b4d; --green: #80cf8c; --red: #f26c69; --amber: #edc46f; --surface: #1c160f; --sidebar-surface: #15110c;
+      --brand-start: #e7a65a; --brand-end: #c87954; --auth-glow: #492e1d;
+      --chart-card-background: linear-gradient(155deg, #392719 0%, #211912 55%, #302219 100%); --chart-canvas: #211911;
+      --chart-grid: #594732; --chart-line: #e0a061; --chart-current: #efc96d; --chart-price-background: #805c37;
+      --chart-area-start: #ca82454d; --chart-area-end: #ca824508; --chart-up: #80cf8c; --chart-down: #f26c69;
+      --timeframe-background: #1c160f; --timeframe-border: #59452e; --timeframe-text: #c7b49a; --timeframe-hover: #3a2b1d;
+      --timeframe-active-border: #b8793e; --timeframe-active-background: #4a321d; --notice-background: #302719;
+      --notice-text: #ecd39e; --page-glow: radial-gradient(circle at 90% 0%, #d17e3228, transparent 34%), radial-gradient(circle at 6% 65%, #b45b2a1c, transparent 30%);
+    }
+    body[data-season="winter"] {
+      --bg: #0b1420; --panel: #111f30; --panel-soft: #192b40; --line: #314760; --text: #f1f7ff; --muted: #a6b8ce;
+      --blue: #77b8f5; --green: #57d1b3; --red: #ff7180; --amber: #f1d17a; --surface: #0d1928; --sidebar-surface: #091321;
+      --brand-start: #8ecaff; --brand-end: #78dfd2; --auth-glow: #1b3550;
+      --chart-card-background: linear-gradient(155deg, #1a2e43 0%, #101d2d 55%, #1c2a43 100%); --chart-canvas: #111e2c;
+      --chart-grid: #344a61; --chart-line: #83bdf5; --chart-current: #f1d17a; --chart-price-background: #486f99;
+      --chart-area-start: #70a9df4d; --chart-area-end: #70a9df08; --chart-up: #57d1b3; --chart-down: #ff7180;
+      --timeframe-background: #0d1928; --timeframe-border: #314760; --timeframe-text: #a6b8ce; --timeframe-hover: #20364e;
+      --timeframe-active-border: #5289bd; --timeframe-active-background: #1d3d59; --notice-background: #25283a;
+      --notice-text: #e0e6ff; --page-glow: radial-gradient(circle at 90% 0%, #66a8e228, transparent 34%), radial-gradient(circle at 6% 65%, #74d8d01c, transparent 30%);
+    }
+
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--text); }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background-color: var(--bg); background-image: var(--page-glow); background-attachment: fixed; color: var(--text); }
     button, input, select { font: inherit; }
     button { color: inherit; }
     .app { min-height: 100vh; display: flex; flex-direction: column; }
     .header {
       min-height: 64px; padding: 12px 20px; display: flex; align-items: center; gap: 16px;
-      border-bottom: 1px solid var(--line); background: #0a1527;
+      border-bottom: 1px solid var(--line); background: var(--surface);
     }
     .brand { display: flex; align-items: center; gap: 10px; min-width: 190px; font-weight: 800; letter-spacing: .04em; }
     .brand-icon {
       width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
       background: linear-gradient(135deg, var(--blue), var(--green)); color: white;
     }
-    .brand-name { background: linear-gradient(90deg, #64b4ff, #57e5b5); color: transparent; background-clip: text; }
+    .brand-name { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: transparent; background-clip: text; }
     .status-pill { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
     .status-dot.live { background: var(--green); box-shadow: 0 0 10px #16d39a66; }
@@ -61,9 +176,9 @@
     .button.small { padding: 7px 10px; font-size: 12px; }
     .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
     [hidden] { display: none !important; }
-    .clock { color: var(--muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .clock { color: var(--muted); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .main { display: grid; grid-template-columns: 230px minmax(0, 1fr) 310px; flex: 1; min-height: 0; }
-    .sidebar, .rightbar { background: #091427; }
+    .sidebar, .rightbar { background: var(--sidebar-surface); }
     .sidebar { border-right: 1px solid var(--line); padding: 16px 12px; }
     .rightbar { border-left: 1px solid var(--line); padding: 14px; }
     .section-title { margin: 2px 0 10px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -98,19 +213,33 @@
     .chart-card {
       min-height: 300px;
       overflow: hidden;
-      background: linear-gradient(155deg, #111b30 0%, #0b1426 55%, #10192b 100%);
+      background: var(--chart-card-background);
     }
-    .card-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .card-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
     .card-heading h2 { margin: 0; font-size: 13px; }
-    .chart-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .chart-mode { color: #67e6bd; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-    .timeframes { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid #243750; border-radius: 7px; background: #081424; }
-    .timeframe { min-width: 34px; padding: 6px 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #91a5bb; cursor: pointer; font-size: 10px; font-weight: 700; }
-    .timeframe:hover { color: white; background: #15263a; }
-    .timeframe.active { border-color: #237966; background: #18493f; color: #effff9; box-shadow: inset 0 0 0 1px #2a9b7628; }
+    .chart-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+    .chart-mode { color: var(--green); font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .chart-style-select { min-width: 128px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-soft); color: var(--text); font-size: 10px; }
+    .chart-zoom-controls { display: inline-flex; align-items: center; gap: 4px; }
+    .chart-zoom-controls button { min-width: 30px; }
+    .chart-zoom-controls button:disabled { opacity: .45; cursor: not-allowed; }
+    .chart-zoom-level { min-width: 30px; color: var(--muted); font-size: 10px; text-align: center; font-variant-numeric: tabular-nums; }
+    .chart-style-help { margin-top: 5px; }
+    .timeframes { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid var(--timeframe-border); border-radius: 7px; background: var(--timeframe-background); }
+    .timeframe { min-width: 34px; padding: 6px 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--timeframe-text); cursor: pointer; font-size: 10px; font-weight: 700; }
+    .timeframe:hover { color: white; background: var(--timeframe-hover); }
+    .timeframe.active { border-color: var(--timeframe-active-border); background: var(--timeframe-active-background); color: #effff9; box-shadow: inset 0 0 0 1px #2a9b7628; }
     .chart-wrap { position: relative; height: 340px; margin: 0 -2px; }
     canvas { display: block; width: 100%; height: 100%; }
     .chart-status { min-height: 16px; margin-top: 5px; color: var(--muted); font-size: 10px; }
+    .market-explorer { margin: 12px 0; }
+    .market-explorer-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, auto) auto; align-items: end; gap: 8px; }
+    .market-explorer-controls .field { margin: 0; }
+    .market-explorer-wrap { height: 480px; margin-top: 12px; }
+    .market-explorer-widget { width: 100%; height: 100%; }
+    .market-explorer-widget > .tradingview-widget-container { width: 100%; height: 100%; }
+    .market-explorer-widget .tradingview-widget-container__widget { width: 100%; height: calc(100% - 32px); }
+    .market-explorer-widget iframe { width: 100%; height: 100%; }
     .lower-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .analysis-copy { color: var(--muted); font-size: 11px; line-height: 1.6; }
     .signal {
@@ -151,15 +280,23 @@
     th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; }
     th { color: var(--muted); font-size: 9px; text-transform: uppercase; }
     .empty-row { padding: 15px 5px; color: var(--muted); text-align: center; }
-    .notice { margin-top: 12px; border-left: 3px solid var(--amber); padding: 8px 10px; background: #211d16; color: #e4c98e; font-size: 10px; line-height: 1.5; }
+    .notice { margin-top: 12px; border-left: 3px solid var(--amber); padding: 8px 10px; background: var(--notice-background); color: var(--notice-text); font-size: 10px; line-height: 1.5; }
     .toast {
       position: fixed; right: 18px; bottom: 18px; z-index: 5; max-width: 340px;
       padding: 11px 14px; border: 1px solid var(--line); border-radius: 9px;
       background: #12223a; box-shadow: 0 8px 28px #0008; font-size: 12px;
     }
     .toast.error { border-color: #8f3947; }
+    .app-update-notice {
+      position: fixed; right: 18px; bottom: 18px; z-index: 6; display: flex; flex-wrap: wrap;
+      align-items: center; gap: 10px; width: calc(100vw - 36px); max-width: 440px;
+      padding: 12px; border: 1px solid var(--blue); border-radius: 10px;
+      background: var(--panel); box-shadow: 0 8px 28px #0008;
+    }
+    .app-update-message { flex: 1 1 190px; color: var(--text); font-size: 12px; line-height: 1.45; }
+    .app-update-actions { display: flex; gap: 8px; margin-left: auto; }
     .footer { border-top: 1px solid var(--line); padding: 9px 16px; color: var(--muted); font-size: 10px; }
-    .auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(ellipse at top, #102747, var(--bg) 65%); }
+    .auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: radial-gradient(ellipse at top, var(--auth-glow), var(--bg) 65%); }
     .auth-card { width: min(100%, 390px); padding: 25px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: 0 18px 60px #0006; }
     .auth-card h1 { margin: 0 0 7px; font-size: 23px; }
     .auth-card p { color: var(--muted); font-size: 12px; line-height: 1.55; }
@@ -178,7 +315,8 @@
       .brand { min-width: 0; }
       .header-right { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
       .search { order: 3; flex-basis: 100%; max-width: none; }
-      .clock { display: none; }
+      .header-right { width: 100%; margin-left: 0; gap: 8px; }
+      .clock { display: block; flex-basis: 100%; order: -1; text-align: right; font-size: 10px; }
       .main { display: flex; flex-direction: column; }
       .sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 10px; }
       .watchlist { display: flex; overflow-x: auto; }
@@ -188,8 +326,11 @@
       .rightbar { display: flex; flex-direction: column; padding: 12px; }
       .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .lower-grid { grid-template-columns: 1fr; }
+      .market-explorer-controls { grid-template-columns: 1fr; }
+      .market-explorer-wrap { height: 380px; }
       .asset-heading h1 { font-size: 18px; }
       .price-large { font-size: 19px; }
+      .app-update-notice { right: 12px; bottom: 12px; left: 12px; width: auto; max-width: none; }
     }
   </style>
 </head>
@@ -207,7 +348,7 @@
       </form>
       <div class="header-right">
         <span id="accountEmail" class="account-email"></span>
-        <span class="clock" id="clock">--:--:-- UTC</span>
+        <time class="clock" id="clock" aria-label="Current local date and time">Loading local time…</time>
         <button id="installAppButton" class="button secondary small install-app-button" type="button">Install app</button>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
         <button id="signOutButton" class="button secondary small" type="button">Sign out</button>
@@ -222,7 +363,7 @@
           <strong>Data sources</strong><br>
           BTC prices: Binance public market data.<br>
           FX reference rates: Frankfurter (ECB).<br><br>
-          FX reference prices update on business days and are not broker quotes.
+          FX reference prices update on business days and are not broker quotes. The separate TradingView explorer covers its supported symbols; its quotes are not used in FOREX001 analysis or paper trading.
         </div>
       </aside>
 
@@ -245,11 +386,84 @@
           <div class="stat"><div class="stat-label">Last updated</div><div id="updatedValue" class="stat-value">—</div></div>
         </div>
 
+        <section class="card market-explorer" aria-labelledby="marketExplorerTitle">
+          <div class="card-heading">
+            <h2 id="marketExplorerTitle">Global Market Explorer</h2>
+            <span class="muted" style="font-size:10px">Embedded TradingView chart</span>
+          </div>
+          <form id="marketExplorerForm" class="market-explorer-controls">
+            <div class="field">
+              <label for="marketExplorerSymbol">Market symbol</label>
+              <input id="marketExplorerSymbol" type="text" value="OANDA:SPX500USD" maxlength="40" autocomplete="off" spellcheck="false" aria-describedby="marketExplorerHelp">
+            </div>
+            <div class="field">
+              <label for="marketExplorerPreset">Quick select</label>
+              <select id="marketExplorerPreset">
+                <option value="">Choose a market…</option>
+                <optgroup label="Stocks">
+                  <option value="NASDAQ:AAPL">Apple · NASDAQ:AAPL</option>
+                  <option value="NASDAQ:MSFT">Microsoft · NASDAQ:MSFT</option>
+                  <option value="NASDAQ:NVDA">NVIDIA · NASDAQ:NVDA</option>
+                </optgroup>
+                <optgroup label="Indices">
+                  <option value="OANDA:SPX500USD">S&amp;P 500 CFD · OANDA:SPX500USD</option>
+                  <option value="NASDAQ:NDX">Nasdaq 100 · NASDAQ:NDX</option>
+                  <option value="DJ:DJI">Dow Jones · DJ:DJI</option>
+                  <option value="CBOE:VIX">VIX · CBOE:VIX</option>
+                </optgroup>
+                <optgroup label="Forex">
+                  <option value="OANDA:EURUSD">EUR/USD · OANDA:EURUSD</option>
+                  <option value="OANDA:GBPUSD">GBP/USD · OANDA:GBPUSD</option>
+                  <option value="OANDA:USDJPY">USD/JPY · OANDA:USDJPY</option>
+                </optgroup>
+                <optgroup label="Crypto">
+                  <option value="BINANCE:BTCUSDT">Bitcoin · BINANCE:BTCUSDT</option>
+                  <option value="BINANCE:ETHUSDT">Ethereum · BINANCE:ETHUSDT</option>
+                </optgroup>
+                <optgroup label="Commodity futures">
+                  <option value="COMEX:GC1!">Gold futures · COMEX:GC1!</option>
+                  <option value="COMEX:SI1!">Silver futures · COMEX:SI1!</option>
+                  <option value="NYMEX:CL1!">WTI crude futures · NYMEX:CL1!</option>
+                  <option value="NYMEX:NG1!">Natural gas futures · NYMEX:NG1!</option>
+                  <option value="CBOT:ZC1!">Corn futures · CBOT:ZC1!</option>
+                  <option value="CBOT:ZW1!">Wheat futures · CBOT:ZW1!</option>
+                </optgroup>
+              </select>
+            </div>
+            <button class="button secondary" type="submit">Load chart</button>
+          </form>
+          <div id="marketExplorerHelp" class="analysis-copy" style="margin-top:8px">
+            Browse TradingView-supported stocks, indices, forex, crypto, and commodities. Enter a TradingView symbol (for example, EXCHANGE:SYMBOL); the chart also has its own symbol search. TradingView does not allow SP:SPX in embedded charts, so the S&amp;P 500 preset uses OANDA:SPX500USD, an OANDA CFD rather than the cash index.
+          </div>
+          <div class="market-explorer-wrap">
+            <div id="marketExplorerWidget" class="market-explorer-widget" aria-label="Embedded TradingView market chart"></div>
+          </div>
+          <div id="marketExplorerStatus" class="chart-status" role="status" aria-live="polite">Loading TradingView chart…</div>
+          <div class="analysis-copy"><a id="marketExplorerOpenLink" class="broker-link" href="#marketExplorerWidget">View OANDA:SPX500USD (S&amp;P 500 CFD) in app</a></div>
+          <div class="notice">
+            This separate widget does not update FOREX001 watchlist prices, indicators, paper-trade P/L, or broker connections. TradingView reports forex and crypto widget data as real-time; stock data is delayed, and other exchange delays vary. Market coverage depends on TradingView’s supported symbols.
+            <a href="https://www.tradingview.com/widget-docs/faq/data/" target="_blank" rel="noopener noreferrer">Data details</a>
+          </div>
+        </section>
+
         <div class="card chart-card">
           <div class="card-heading">
             <h2>Price chart</h2>
             <div class="chart-toolbar">
-              <span class="chart-mode">Line</span>
+            <span id="chartMode" class="chart-mode">Mountain line</span>
+            <select id="chartTypeSelect" class="chart-style-select" aria-label="Price chart style">
+              <option value="mountain">Mountain line</option>
+              <option value="line">Line</option>
+              <option value="area">Area</option>
+              <option value="candlestick">Candlesticks</option>
+              <option value="ohlc">OHLC bars</option>
+            </select>
+              <div class="chart-zoom-controls" role="group" aria-label="Price chart zoom">
+                <button id="chartZoomOut" class="button secondary small" type="button" aria-label="Zoom out" title="Zoom out">-</button>
+                <span id="chartZoomLevel" class="chart-zoom-level" aria-live="polite" aria-atomic="true">1x</span>
+                <button id="chartZoomIn" class="button secondary small" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+                <button id="chartZoomReset" class="button secondary small" type="button">Reset</button>
+              </div>
               <div id="cryptoTimeframes" class="timeframes" role="group" aria-label="Chart timeframe">
                 <button class="timeframe" data-interval="1m" aria-pressed="false" type="button">1m</button>
                 <button class="timeframe" data-interval="5m" aria-pressed="false" type="button">5m</button>
@@ -263,7 +477,7 @@
             <span id="fxTimeframe" class="muted" style="font-size:10px" hidden>Daily reference · 120 days</span>
           </div>
           <div class="chart-wrap"><canvas id="priceChart" aria-label="Price history chart"></canvas></div>
-          <div class="chart-status">Blue price trace · Mountain backdrop · Current price marker</div>
+          <div id="chartStyleHelp" class="chart-status chart-style-help">Chart style changes the display only; analysis uses the same market data.</div>
           <div id="chartStatus" class="chart-status">Loading price history…</div>
         </div>
 
@@ -300,10 +514,31 @@
             <div id="positionsEmpty" class="empty-row">No paper positions yet.</div>
           </section>
         </div>
-        <div class="notice">Line chart with mountain shading. Indicators are educational summaries, not financial advice or guaranteed trading signals. Market prices may be delayed or unavailable.</div>
+        <div class="notice">Chart style changes only how the candles are drawn; analysis still uses the selected market data. Indicators are educational summaries, not financial advice or guaranteed trading signals. Market prices may be delayed or unavailable.</div>
       </section>
 
       <aside class="rightbar">
+        <section class="panel">
+          <h2>Appearance</h2>
+          <div class="field">
+            <label for="themeSelect">Seasonal theme</label>
+            <select id="themeSelect">
+              <option value="auto">Auto seasonal</option>
+              <option value="classic">Classic</option>
+              <option value="christmas">Christmas</option>
+              <option value="newyear">New Year</option>
+              <option value="valentines">Valentine's Day</option>
+              <option value="halloween">Halloween</option>
+              <option value="spring">Spring</option>
+              <option value="summer">Summer</option>
+              <option value="autumn">Autumn</option>
+              <option value="winter">Winter</option>
+            </select>
+          </div>
+          <div id="seasonalThemeStatus" class="analysis-copy" role="status">Auto seasonal theme</div>
+          <div class="analysis-copy">Themes are visual only. Auto changes for holidays and seasons; your choice is saved on this browser.</div>
+        </section>
+
         <section class="panel">
           <h2>Pocket Option</h2>
           <div class="broker-status"><i class="status-dot"></i><span>Not connected to this dashboard</span></div>
@@ -375,7 +610,6 @@
       <h1 id="authTitle">Sign in to your dashboard</h1>
       <p id="authDescription">Your account is managed securely by Supabase. This sign-in is for this website only; never enter your broker password here.</p>
       <p id="signupDescription" hidden>Create an account with your email and a password of at least 8 characters. If email confirmation is enabled, check your inbox before signing in.</p>
-      <div id="authConfigNotice" class="notice" hidden>Website setup is incomplete. Create a Supabase project and add its Project URL and publishable key to GitHub repository secrets as described in <a href="./SETUP.md" style="color:#8cc9ff">SETUP.md</a>, then redeploy.</div>
       <div id="authFormFields">
         <div class="field">
           <label for="authEmail">Email</label>
@@ -407,6 +641,13 @@
     </form>
   </section>
   <div id="toast" class="toast" role="status" hidden></div>
+  <div id="appUpdateNotice" class="app-update-notice" role="status" aria-live="polite" hidden>
+    <span id="appUpdateMessage" class="app-update-message">A FOREX001 update is ready.</span>
+    <div class="app-update-actions">
+      <button id="appUpdateButton" class="button small" type="button">Update now</button>
+      <button id="appUpdateLaterButton" class="button secondary small" type="button">Later</button>
+    </div>
+  </div>
 
   <script src="./auth-config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -426,6 +667,20 @@
     const FREE_WATCHLIST_LIMIT = 4;
     const PLUS_WATCHLIST_LIMIT = 7;
     const STORAGE = { watchlist: "boby-watchlist-v1", trades: "boby-paper-trades-v1" };
+    const THEME_OPTIONS = ["auto", "classic", "christmas", "newyear", "valentines", "halloween", "spring", "summer", "autumn", "winter"];
+    const CHART_STYLES = ["mountain", "line", "area", "candlestick", "ohlc"];
+    const CHART_ZOOM_LEVELS = [1, 2, 4, 8];
+    const THEME_LABELS = {
+      classic: "Classic",
+      christmas: "Christmas",
+      newyear: "New Year",
+      valentines: "Valentine's Day",
+      halloween: "Halloween",
+      spring: "Spring",
+      summer: "Summer",
+      autumn: "Autumn",
+      winter: "Winter"
+    };
     const state = {
       watchlist: [...DEFAULT_WATCHLIST],
       trades: [],
@@ -448,6 +703,14 @@
       ctraderReturn: "",
       notificationsEnabled: false,
       requestId: 0,
+      themePreference: "auto",
+      chartType: "mountain",
+      chartZoom: 1,
+      localDateKey: "",
+      resumeRefreshAt: 0,
+      marketExplorerSymbol: "OANDA:SPX500USD",
+      marketExplorerRequestId: 0,
+      marketExplorerMounted: false,
       socket: null,
       socketUrl: null,
       socketRetryTimer: null,
@@ -458,8 +721,23 @@
       dashboardStarted: false,
       toastTimer: null
     };
+    const LOCAL_DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+    const LOCAL_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short"
+    });
+    const LOCAL_TIME_ZONE = LOCAL_TIME_FORMATTER.resolvedOptions().timeZone || "device time zone";
     const $ = (id) => document.getElementById(id);
     let installPrompt = null;
+    let pendingAppUpdateWorker = null;
+    let reloadingForAppUpdate = false;
     const mountainImage = new Image();
     mountainImage.addEventListener("load", drawChart);
     mountainImage.src = "./mountain-chart.jpg";
@@ -483,6 +761,118 @@
       }
     }
 
+    function loadPreference(key, validValues, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return validValues.includes(value) ? value : fallback;
+      } catch (error) {
+        console.error(`Could not read ${key} from local storage`, error);
+        return fallback;
+      }
+    }
+
+    function savePreference(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        console.error(`Could not save ${key} to local storage`, error);
+        showToast("Your display preference applies for this session but could not be saved.", true);
+      }
+    }
+
+    function automaticSeasonalTheme(date = new Date()) {
+      const month = date.getMonth();
+      const day = date.getDate();
+      if (month === 11) return day <= 26 ? "christmas" : "newyear";
+      if (month === 0 && day <= 5) return "newyear";
+      if (month === 1 && day <= 15) return "valentines";
+      if (month === 9 && day >= 20) return "halloween";
+      if (month >= 2 && month <= 4) return "spring";
+      if (month >= 5 && month <= 7) return "summer";
+      if (month >= 8 && month <= 10) return "autumn";
+      return "winter";
+    }
+
+    function applySeasonalTheme(preference, persist = true) {
+      if (!THEME_OPTIONS.includes(preference)) {
+        throw new Error(`Unknown seasonal theme: ${preference}`);
+      }
+      state.themePreference = preference;
+      const theme = preference === "auto" ? automaticSeasonalTheme() : preference;
+      document.body.dataset.season = theme;
+      $("themeSelect").value = preference;
+      setText("seasonalThemeStatus", preference === "auto"
+        ? `Automatic theme · ${THEME_LABELS[theme]}`
+        : `Manual theme · ${THEME_LABELS[theme]}`);
+      document.querySelector('meta[name="theme-color"]').content =
+        getComputedStyle(document.body).getPropertyValue("--bg").trim();
+      if (persist) savePreference("forex001-seasonal-theme-v1", preference);
+      drawChart();
+    }
+
+    function refreshAutomaticSeasonalTheme() {
+      if (state.themePreference !== "auto") return;
+      const theme = automaticSeasonalTheme();
+      if (document.body.dataset.season !== theme) applySeasonalTheme("auto", false);
+    }
+
+    function chartStyleLabel(style) {
+      return {
+        mountain: "Mountain line",
+        line: "Line",
+        area: "Area",
+        candlestick: "Candlesticks",
+        ohlc: "OHLC bars"
+      }[style] || "Mountain line";
+    }
+
+    function updateChartTypeAvailability() {
+      const hasOhlc = state.candles.length > 0 && state.candles.every((candle) =>
+        [candle.open, candle.high, candle.low].every(Number.isFinite)
+      );
+      const needsOhlc = ["candlestick", "ohlc"].includes(state.chartType);
+      $("chartTypeSelect").querySelectorAll('option[value="candlestick"], option[value="ohlc"]').forEach((option) => {
+        option.disabled = state.candles.length > 0 && !hasOhlc;
+      });
+      $("chartTypeSelect").value = state.chartType;
+      setText("chartMode", needsOhlc && state.candles.length > 0 && !hasOhlc
+        ? "Mountain line"
+        : chartStyleLabel(state.chartType));
+      setText("chartStyleHelp", needsOhlc && state.candles.length > 0 && !hasOhlc
+        ? `${chartStyleLabel(state.chartType)} needs OHLC data. Showing the mountain line for this closing-price-only source. Use + or - or Ctrl+wheel to zoom.`
+        : "Chart style changes the display only. Use + or - or Ctrl+wheel to zoom.");
+    }
+
+    function updateChartZoomControls() {
+      const zoomIndex = CHART_ZOOM_LEVELS.indexOf(state.chartZoom);
+      setText("chartZoomLevel", `${state.chartZoom}x`);
+      $("chartZoomOut").disabled = zoomIndex <= 0;
+      $("chartZoomIn").disabled = zoomIndex >= CHART_ZOOM_LEVELS.length - 1;
+    }
+
+    function changeChartZoom(direction) {
+      const currentIndex = CHART_ZOOM_LEVELS.indexOf(state.chartZoom);
+      const nextIndex = Math.max(0, Math.min(CHART_ZOOM_LEVELS.length - 1, currentIndex + direction));
+      if (nextIndex === currentIndex) return;
+      state.chartZoom = CHART_ZOOM_LEVELS[nextIndex];
+      updateChartZoomControls();
+      drawChart();
+    }
+
+    function resetChartZoom() {
+      state.chartZoom = CHART_ZOOM_LEVELS[0];
+      updateChartZoomControls();
+      drawChart();
+    }
+
+    function initializeAppearanceControls() {
+      state.themePreference = loadPreference("forex001-seasonal-theme-v1", THEME_OPTIONS, "auto");
+      state.chartType = loadPreference("forex001-chart-style-v1", CHART_STYLES, "mountain");
+      $("chartTypeSelect").value = state.chartType;
+      applySeasonalTheme(state.themePreference, false);
+      updateChartTypeAvailability();
+    }
+
     function showToast(message, isError = false) {
       const toast = $("toast");
       toast.textContent = message;
@@ -495,6 +885,24 @@
     function setInstallButtonVisibility(visible) {
       document.querySelectorAll(".install-app-button").forEach((button) => {
         button.hidden = !visible;
+      });
+    }
+
+    function showAppUpdateNotice(worker) {
+      if (!(standaloneQuery.matches || navigator.standalone === true)) return;
+      pendingAppUpdateWorker = worker;
+      $("appUpdateButton").disabled = false;
+      $("appUpdateLaterButton").disabled = false;
+      setText("appUpdateMessage", "A FOREX001 update is ready. Update now to get the latest improvements.");
+      $("appUpdateNotice").hidden = false;
+    }
+
+    function monitorAppUpdate(registration, worker) {
+      if (!worker) return;
+      worker.addEventListener("statechange", () => {
+        if (worker.state === "installed" && navigator.serviceWorker.controller) {
+          showAppUpdateNotice(registration.waiting || worker);
+        }
       });
     }
 
@@ -616,10 +1024,10 @@
         state.trades = loadList(state.storageKeys.trades, []);
       }
       if (state.dashboardStarted) {
+        if (!state.marketExplorerMounted) mountTradingViewChart(state.marketExplorerSymbol);
         renderWatchlist();
         renderTrades();
-        loadAllWatchlistPrices();
-        loadSelectedAsset();
+        refreshDashboardData(true);
         return;
       }
       state.dashboardStarted = true;
@@ -628,13 +1036,10 @@
       $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto" || Boolean(state.ctraderAccountId);
       renderWatchlist();
       renderTrades();
-      loadAllWatchlistPrices();
-      loadSelectedAsset();
+      refreshDashboardData(true);
+      mountTradingViewChart(state.marketExplorerSymbol);
       setInterval(updateClock, 1000);
-      setInterval(() => {
-        loadAllWatchlistPrices();
-        if (ASSETS[state.selected].kind === "forex") loadSelectedAsset();
-      }, 60000);
+      setInterval(refreshDashboardData, 60000);
     }
 
     function showSignedOutView() {
@@ -671,13 +1076,14 @@
       $("disconnectCtraderButton").hidden = true;
       $("cryptoTimeframes").hidden = ASSETS[state.selected].kind !== "crypto";
       $("fxTimeframe").hidden = ASSETS[state.selected].kind === "crypto";
+      clearTradingViewChart();
+      setText("marketExplorerStatus", "Sign in to load the TradingView market explorer.");
       disconnectBitcoinStream();
     }
 
     async function startAuthentication() {
       $("app").hidden = true;
       $("authScreen").hidden = false;
-      $("authConfigNotice").hidden = true;
       $("authFormFields").hidden = false;
       setAuthMessage("");
       const recoveryHash = new URLSearchParams(window.location.hash.slice(1));
@@ -692,9 +1098,12 @@
       if (recoveryRedirect) showPasswordRecovery();
       const config = window.BOBY_AUTH_CONFIG || {};
       if (!config.supabaseUrl || !config.supabaseAnonKey) {
-        $("authConfigNotice").hidden = false;
-        $("authFormFields").hidden = true;
-        setAuthMessage("Authentication is not configured yet.");
+        $("authEmail").disabled = true;
+        $("authPassword").disabled = true;
+        $("signInButton").disabled = true;
+        $("signUpButton").disabled = true;
+        $("forgotPasswordButton").disabled = true;
+        setAuthMessage("Authentication is not configured yet. Add your Supabase publishable (anon) key in auth-config.js to enable sign-in.", true);
         return;
       }
       if (!window.supabase || typeof window.supabase.createClient !== "function") {
@@ -1069,7 +1478,32 @@
     }
 
     function updateClock() {
-      setText("clock", `${new Date().toISOString().slice(11, 19)} UTC`);
+      const now = new Date();
+      const clock = $("clock");
+      clock.textContent = `${LOCAL_DATE_FORMATTER.format(now)} · ${LOCAL_TIME_FORMATTER.format(now)}`;
+      clock.dateTime = now.toISOString();
+      clock.title = `Local time (${LOCAL_TIME_ZONE})`;
+
+      const dateKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      if (state.localDateKey && state.localDateKey !== dateKey) {
+        refreshAutomaticSeasonalTheme();
+      }
+      state.localDateKey = dateKey;
+    }
+
+    function refreshDashboardData(reloadSelected = false) {
+      loadAllWatchlistPrices();
+      if (reloadSelected || ASSETS[state.selected].kind === "forex") loadSelectedAsset();
+    }
+
+    function refreshDashboardOnResume() {
+      if (document.hidden || !state.dashboardStarted || $("app").hidden) return;
+      const now = Date.now();
+      if (now - state.resumeRefreshAt < 5000) return;
+      state.resumeRefreshAt = now;
+      updateClock();
+      refreshAutomaticSeasonalTheme();
+      refreshDashboardData(true);
     }
 
     async function fetchJson(url) {
@@ -1403,6 +1837,7 @@
         } else {
           setFeedStatus("ECB reference", false);
         }
+        updateChartTypeAvailability();
         renderWatchlist();
         drawChart();
         renderAnalysis();
@@ -1417,6 +1852,7 @@
         $("actionSignal").textContent = "WAIT";
         $("signalBadge").className = "signal neutral";
         $("signalBadge").textContent = "DATA UNAVAILABLE";
+        updateChartTypeAvailability();
         renderWatchlist();
         drawChart();
         showToast(`Could not load ${symbol} market data: ${error.message}`, true);
@@ -1680,6 +2116,22 @@
       const width = rect.width;
       const height = rect.height;
       context.clearRect(0, 0, width, height);
+      const css = getComputedStyle(document.body);
+      const themeColor = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+      const chartStyle = state.chartType;
+      const allCandles = state.candles.filter((point) =>
+        Number.isFinite(point.time) && Number.isFinite(point.close)
+      );
+      const visibleCount = Math.max(2, Math.ceil(allCandles.length / state.chartZoom));
+      const candles = allCandles.slice(-visibleCount);
+      const hasOhlc = candles.length > 0 && candles.every((candle) =>
+        [candle.open, candle.high, candle.low].every(Number.isFinite)
+      );
+      const renderedStyle = !hasOhlc && ["candlestick", "ohlc"].includes(chartStyle)
+        ? "mountain"
+        : chartStyle;
+      context.fillStyle = themeColor("--chart-canvas", "#0b172a");
+      context.fillRect(0, 0, width, height);
       if (mountainImage.complete && mountainImage.naturalWidth > 0) {
         const imageScale = Math.max(width / mountainImage.naturalWidth, height / mountainImage.naturalHeight);
         const imageWidth = mountainImage.naturalWidth * imageScale;
@@ -1689,23 +2141,24 @@
         context.drawImage(mountainImage, (width - imageWidth) / 2, (height - imageHeight) / 2, imageWidth, imageHeight);
         context.restore();
         const shade = context.createLinearGradient(0, 0, 0, height);
-        shade.addColorStop(0, "#07101f66");
-        shade.addColorStop(1, "#07101f99");
+        shade.addColorStop(0, "#00000066");
+        shade.addColorStop(1, "#00000099");
         context.fillStyle = shade;
         context.fillRect(0, 0, width, height);
       }
-      const candles = state.candles.filter((point) =>
-        Number.isFinite(point.time) && Number.isFinite(point.close)
-      );
       if (candles.length < 2) {
-        context.fillStyle = "#8da2bd";
+        context.fillStyle = themeColor("--chart-label", "#8da2bd");
         context.font = "12px Segoe UI";
         context.fillText("Waiting for enough price history…", 12, 24);
         return;
       }
       const values = candles.map((point) => point.close);
-      const minimum = Math.min(...values);
-      const maximum = Math.max(...values);
+      const usesOhlcRange = hasOhlc && ["candlestick", "ohlc"].includes(renderedStyle);
+      const rangeValues = usesOhlcRange
+        ? candles.flatMap((candle) => [candle.low, candle.high])
+        : values;
+      const minimum = Math.min(...rangeValues);
+      const maximum = Math.max(...rangeValues);
       const dataRange = maximum - minimum || Math.abs(maximum) * 0.001 || 1;
       const range = dataRange * 1.12;
       const padding = { top: 16, right: 70, bottom: 28, left: 8 };
@@ -1717,8 +2170,8 @@
       const maximumWithPadding = maximum + (range - dataRange) / 2;
       const yFor = (value) => padding.top + ((maximumWithPadding - value) / range) * chartHeight;
       context.font = "10px Segoe UI";
-      context.strokeStyle = "#26324a";
-      context.fillStyle = "#8da2bd";
+      context.strokeStyle = themeColor("--chart-grid", "#26324a");
+      context.fillStyle = themeColor("--chart-label", "#8da2bd");
       context.lineWidth = 1;
       for (let row = 0; row <= 4; row++) {
         const y = padding.top + (chartHeight * row) / 4;
@@ -1742,45 +2195,81 @@
         x: padding.left + (historicalWidth * index) / (values.length - 1),
         y: yFor(value)
       }));
-      context.beginPath();
-      context.moveTo(points[0].x, height - padding.bottom);
-      points.forEach((point) => context.lineTo(point.x, point.y));
-      context.lineTo(points[points.length - 1].x, height - padding.bottom);
-      context.closePath();
-      const fill = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-      fill.addColorStop(0, "#4274a94d");
-      fill.addColorStop(1, "#28456f14");
-      context.fillStyle = fill;
-      context.fill();
-      context.beginPath();
-      points.forEach((point, index) => {
-        if (index === 0) context.moveTo(point.x, point.y);
-        else context.lineTo(point.x, point.y);
-      });
-      context.strokeStyle = "#5683b7";
-      context.lineWidth = 1.5;
-      context.lineJoin = "miter";
-      context.lineCap = "square";
-      context.stroke();
+      if (renderedStyle === "candlestick" || renderedStyle === "ohlc") {
+        const step = historicalWidth / (candles.length - 1);
+        const bodyWidth = Math.max(1, Math.min(10, step * 0.68));
+        candles.forEach((candle, index) => {
+          const x = points[index].x;
+          const openY = yFor(candle.open);
+          const closeY = yFor(candle.close);
+          const color = candle.close >= candle.open
+            ? themeColor("--chart-up", "#16d39a")
+            : themeColor("--chart-down", "#ff6174");
+          context.strokeStyle = color;
+          context.fillStyle = color;
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(x, yFor(candle.high));
+          context.lineTo(x, yFor(candle.low));
+          if (renderedStyle === "ohlc") {
+            context.moveTo(x - bodyWidth / 2, openY);
+            context.lineTo(x, openY);
+            context.moveTo(x, closeY);
+            context.lineTo(x + bodyWidth / 2, closeY);
+          }
+          context.stroke();
+          if (renderedStyle === "candlestick") {
+            context.fillRect(
+              x - bodyWidth / 2,
+              Math.min(openY, closeY),
+              bodyWidth,
+              Math.max(1, Math.abs(openY - closeY))
+            );
+          }
+        });
+      } else {
+        if (renderedStyle === "mountain" || renderedStyle === "area") {
+          context.beginPath();
+          context.moveTo(points[0].x, height - padding.bottom);
+          points.forEach((point) => context.lineTo(point.x, point.y));
+          context.lineTo(points[points.length - 1].x, height - padding.bottom);
+          context.closePath();
+          const fill = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+          fill.addColorStop(0, themeColor("--chart-area-start", "#4274a94d"));
+          fill.addColorStop(1, themeColor("--chart-area-end", "#28456f14"));
+          context.fillStyle = fill;
+          context.fill();
+        }
+        context.beginPath();
+        points.forEach((point, index) => {
+          if (index === 0) context.moveTo(point.x, point.y);
+          else context.lineTo(point.x, point.y);
+        });
+        context.strokeStyle = themeColor("--chart-line", "#5683b7");
+        context.lineWidth = 1.5;
+        context.lineJoin = "miter";
+        context.lineCap = "square";
+        context.stroke();
+      }
 
       const currentPrice = values[values.length - 1];
       const currentY = yFor(currentPrice);
       context.beginPath();
-      context.strokeStyle = "#4b78a9";
+      context.strokeStyle = themeColor("--chart-line", "#5683b7");
       context.lineWidth = 1;
       context.moveTo(points[points.length - 1].x, currentY);
       context.lineTo(plotRight, currentY);
       context.stroke();
       context.beginPath();
       context.arc(points[points.length - 1].x, currentY, 3, 0, Math.PI * 2);
-      context.fillStyle = "#1bb9eb";
+      context.fillStyle = themeColor("--chart-current", "#1bb9eb");
       context.fill();
       const priceLabel = formatPrice(currentPrice, ASSETS[state.selected]);
       context.font = "bold 10px Segoe UI";
       context.textAlign = "center";
-      context.fillStyle = "#3e6e9f";
+      context.fillStyle = themeColor("--chart-price-background", "#3e6e9f");
       context.fillRect(plotRight - 48, currentY - 9, 48, 18);
-      context.fillStyle = "#eef6ff";
+      context.fillStyle = themeColor("--text", "#eef6ff");
       context.fillText(priceLabel, plotRight - 24, currentY + 3.5);
       const timeOptions = state.interval === "1d"
         ? { month: "short", day: "numeric", year: "2-digit" }
@@ -1788,12 +2277,97 @@
       const formatTime = (time) => Number.isFinite(time)
         ? new Intl.DateTimeFormat(undefined, timeOptions).format(new Date(time))
         : "";
-      context.fillStyle = "#8da2bd";
+      context.fillStyle = themeColor("--chart-label", "#8da2bd");
       context.textAlign = "left";
       context.fillText(formatTime(candles[0].time), padding.left, height - 3);
       context.textAlign = "right";
       context.fillText(formatTime(candles[candles.length - 1].time), points[points.length - 1].x, height - 3);
       context.textAlign = "left";
+    }
+
+    function normalizeTradingViewSymbol(value) {
+      const symbol = value.trim().toUpperCase();
+      if (!/^[A-Z0-9._!:-]{1,40}$/.test(symbol)) {
+        throw new Error("Enter a TradingView symbol using letters, numbers, and an optional exchange prefix.");
+      }
+      return symbol;
+    }
+
+    function clearTradingViewChart() {
+      state.marketExplorerRequestId++;
+      state.marketExplorerMounted = false;
+      $("marketExplorerWidget").replaceChildren();
+    }
+
+    function mountTradingViewChart(value) {
+      let symbol;
+      try {
+        symbol = normalizeTradingViewSymbol(value);
+      } catch (error) {
+        showToast(error.message, true);
+        $("marketExplorerSymbol").focus();
+        return;
+      }
+
+      if (symbol === "SP:SPX") {
+        clearTradingViewChart();
+        state.marketExplorerSymbol = symbol;
+        $("marketExplorerSymbol").value = symbol;
+        $("marketExplorerOpenLink").href = "#marketExplorerWidget";
+        $("marketExplorerOpenLink").textContent = "Load OANDA S&P 500 CFD in app";
+        $("marketExplorerStatus").textContent = "TradingView blocks SP:SPX in embedded charts. Choose OANDA:SPX500USD for an S&P 500 CFD chart; it is not the cash index.";
+        return;
+      }
+
+      const requestId = ++state.marketExplorerRequestId;
+      state.marketExplorerMounted = true;
+      const host = $("marketExplorerWidget");
+      host.replaceChildren();
+
+      const widget = document.createElement("div");
+      widget.className = "tradingview-widget-container";
+      const chart = document.createElement("div");
+      chart.className = "tradingview-widget-container__widget";
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+      script.async = true;
+      script.textContent = JSON.stringify({
+        autosize: true,
+        symbol,
+        interval: "D",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: "1",
+        locale: "en",
+        allow_symbol_change: true,
+        hide_top_toolbar: false,
+        hide_side_toolbar: false,
+        save_image: false,
+        calendar: false,
+        support_host: "https://www.tradingview.com"
+      });
+      script.addEventListener("load", () => {
+        if (requestId !== state.marketExplorerRequestId) return;
+        state.marketExplorerMounted = true;
+        const instrumentLabel = symbol === "OANDA:SPX500USD" ? `${symbol} (OANDA S&P 500 CFD; not the cash index)` : symbol;
+        setText("marketExplorerStatus", `TradingView chart loaded for ${instrumentLabel}. Data is provided by TradingView and may be delayed.`);
+      }, { once: true });
+      script.addEventListener("error", () => {
+        if (requestId !== state.marketExplorerRequestId) return;
+        state.marketExplorerMounted = false;
+        setText("marketExplorerStatus", "TradingView could not load inside the app. Check your connection and try again.");
+      }, { once: true });
+
+      chart.append(script);
+      widget.append(chart);
+      host.append(widget);
+      state.marketExplorerSymbol = symbol;
+      $("marketExplorerSymbol").value = symbol;
+      $("marketExplorerOpenLink").href = "#marketExplorerWidget";
+      const instrumentLabel = symbol === "OANDA:SPX500USD" ? `${symbol} (S&P 500 CFD)` : symbol;
+      $("marketExplorerOpenLink").textContent = `View ${instrumentLabel} in app`;
+      $("marketExplorerStatus").textContent = `Loading TradingView chart for ${symbol}…`;
     }
 
     function addAsset(symbol) {
@@ -1914,6 +2488,25 @@
       event.preventDefault();
       addAsset($("symbolSearch").value);
     });
+    $("marketExplorerForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      mountTradingViewChart($("marketExplorerSymbol").value);
+    });
+    $("marketExplorerOpenLink").addEventListener("click", (event) => {
+      event.preventDefault();
+      if (state.marketExplorerSymbol === "SP:SPX") {
+        $("marketExplorerPreset").value = "OANDA:SPX500USD";
+        mountTradingViewChart("OANDA:SPX500USD");
+      }
+      if (!state.marketExplorerMounted) mountTradingViewChart(state.marketExplorerSymbol);
+      $("marketExplorerWidget").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    $("marketExplorerPreset").addEventListener("change", () => {
+      const symbol = $("marketExplorerPreset").value;
+      if (!symbol) return;
+      $("marketExplorerSymbol").value = symbol;
+      mountTradingViewChart(symbol);
+    });
     $("authForm").addEventListener("submit", (event) => {
       if (state.passwordRecovery) updatePassword();
       else if (state.authMode === "signUp") signUp(event);
@@ -1977,9 +2570,41 @@
     if (standaloneQuery.matches || window.navigator.standalone === true) {
       setInstallButtonVisibility(false);
     }
+    $("appUpdateButton").addEventListener("click", () => {
+      if (!pendingAppUpdateWorker) return;
+      $("appUpdateButton").disabled = true;
+      $("appUpdateLaterButton").disabled = true;
+      setText("appUpdateMessage", "Installing the update…");
+      pendingAppUpdateWorker.postMessage({ type: "ACTIVATE_UPDATE" });
+    });
+    $("appUpdateLaterButton").addEventListener("click", () => {
+      $("appUpdateNotice").hidden = true;
+    });
     if ("serviceWorker" in navigator && window.isSecureContext) {
-      navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(() => {
+      let hasServiceWorkerController = Boolean(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hasServiceWorkerController) {
+          hasServiceWorkerController = Boolean(navigator.serviceWorker.controller);
+          return;
+        }
+        if (reloadingForAppUpdate) return;
+        reloadingForAppUpdate = true;
+        window.location.reload();
+      });
+      navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then((registration) => {
         console.info("FOREX001 offline app shell is ready.");
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          showAppUpdateNotice(registration.waiting);
+        }
+        monitorAppUpdate(registration, registration.installing);
+        registration.addEventListener("updatefound", () => {
+          monitorAppUpdate(registration, registration.installing);
+        });
+        setInterval(() => {
+          registration.update().catch((error) => {
+            console.error("Could not check for a FOREX001 update", error);
+          });
+        }, 60 * 60 * 1000);
       }).catch((error) => {
         console.error("Could not register the FOREX001 service worker", error);
       });
@@ -2093,6 +2718,25 @@
         showToast("Could not enable browser notifications in this browser context.", true);
       }
     });
+    $("themeSelect").addEventListener("change", () => {
+      applySeasonalTheme($("themeSelect").value);
+    });
+    $("chartTypeSelect").addEventListener("change", () => {
+      const style = $("chartTypeSelect").value;
+      if (!CHART_STYLES.includes(style)) return;
+      state.chartType = style;
+      savePreference("forex001-chart-style-v1", style);
+      updateChartTypeAvailability();
+      drawChart();
+    });
+    $("chartZoomIn").addEventListener("click", () => changeChartZoom(1));
+    $("chartZoomOut").addEventListener("click", () => changeChartZoom(-1));
+    $("chartZoomReset").addEventListener("click", resetChartZoom);
+    $("priceChart").addEventListener("wheel", (event) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      changeChartZoom(event.deltaY < 0 ? 1 : -1);
+    }, { passive: false });
     document.querySelectorAll(".timeframe").forEach((button) => {
       button.addEventListener("click", () => {
         document.querySelectorAll(".timeframe").forEach((item) => {
@@ -2106,7 +2750,12 @@
       });
     });
     window.addEventListener("resize", drawChart);
+    document.addEventListener("visibilitychange", refreshDashboardOnResume);
+    window.addEventListener("focus", refreshDashboardOnResume);
 
+    initializeAppearanceControls();
+    updateChartZoomControls();
+    setInterval(refreshAutomaticSeasonalTheme, 60 * 60 * 1000);
     startAuthentication();
   </script>
 </body>
