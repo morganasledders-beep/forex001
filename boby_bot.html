@@ -189,7 +189,26 @@
     .theme-art span:nth-child(2), .theme-art span:nth-child(4) { animation-delay: -2s; }
     .theme-art span:nth-child(3) { font-size: 32px; animation-delay: -1s; }
     @keyframes theme-drift { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-5px) rotate(5deg); } }
-    @media (prefers-reduced-motion: reduce) { .theme-art span { animation: none; } }
+    .seasonal-overlay { position: fixed; inset: 0; z-index: 4; display: none; overflow: hidden; pointer-events: none; }
+    body[data-season="christmas"] .seasonal-overlay { display: block; }
+    .seasonal-overlay span { position: absolute; top: -8vh; color: #e7f7ff; opacity: .38; text-shadow: 0 0 8px #d9f3ff; animation: seasonal-snow var(--snow-duration) linear var(--snow-delay) infinite; }
+    .seasonal-overlay span:nth-child(1) { left: 3%; --snow-duration: 13s; --snow-delay: -8s; font-size: 13px; }
+    .seasonal-overlay span:nth-child(2) { left: 11%; --snow-duration: 17s; --snow-delay: -2s; font-size: 18px; }
+    .seasonal-overlay span:nth-child(3) { left: 19%; --snow-duration: 15s; --snow-delay: -12s; font-size: 12px; }
+    .seasonal-overlay span:nth-child(4) { left: 27%; --snow-duration: 19s; --snow-delay: -6s; font-size: 16px; }
+    .seasonal-overlay span:nth-child(5) { left: 35%; --snow-duration: 14s; --snow-delay: -10s; font-size: 14px; }
+    .seasonal-overlay span:nth-child(6) { left: 43%; --snow-duration: 18s; --snow-delay: -4s; font-size: 12px; }
+    .seasonal-overlay span:nth-child(7) { left: 51%; --snow-duration: 16s; --snow-delay: -14s; font-size: 18px; }
+    .seasonal-overlay span:nth-child(8) { left: 59%; --snow-duration: 20s; --snow-delay: -7s; font-size: 13px; }
+    .seasonal-overlay span:nth-child(9) { left: 67%; --snow-duration: 14s; --snow-delay: -3s; font-size: 17px; }
+    .seasonal-overlay span:nth-child(10) { left: 75%; --snow-duration: 19s; --snow-delay: -11s; font-size: 12px; }
+    .seasonal-overlay span:nth-child(11) { left: 83%; --snow-duration: 15s; --snow-delay: -5s; font-size: 16px; }
+    .seasonal-overlay span:nth-child(12) { left: 91%; --snow-duration: 18s; --snow-delay: -13s; font-size: 14px; }
+    @keyframes seasonal-snow { from { transform: translate3d(0, -8vh, 0) rotate(0deg); } to { transform: translate3d(6vw, 110vh, 0) rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .theme-art span { animation: none; }
+      .seasonal-overlay { display: none !important; }
+    }
     .holiday-greeting { padding: 10px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, var(--panel), var(--panel-soft)); color: var(--text); text-align: center; font-size: 12px; font-weight: 700; line-height: 1.45; }
     .main { display: grid; grid-template-columns: 230px minmax(0, 1fr) 310px; flex: 1; min-height: 0; }
     .markets-dashboard { flex: 1; min-width: 0; padding: 18px 22px; overflow: auto; }
@@ -359,6 +378,10 @@
 </head>
 <body>
   <div id="app" class="app" hidden>
+    <div class="seasonal-overlay" aria-hidden="true">
+      <span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span>
+      <span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span>
+    </div>
     <header class="header">
       <div class="brand">
         <div class="brand-icon">F</div>
