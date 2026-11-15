@@ -232,21 +232,70 @@
     .theme-art span:nth-child(3) { font-size: 32px; animation-delay: -1s; }
     @keyframes theme-drift { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-5px) rotate(5deg); } }
     .seasonal-overlay { position: fixed; inset: 0; z-index: 4; display: none; overflow: hidden; pointer-events: none; }
-    body[data-season="christmas"] .seasonal-overlay { display: block; }
-    .seasonal-overlay span { position: absolute; top: -8vh; color: #e7f7ff; opacity: .38; text-shadow: 0 0 8px #d9f3ff; animation: seasonal-snow var(--snow-duration) linear var(--snow-delay) infinite; }
-    .seasonal-overlay span:nth-child(1) { left: 3%; --snow-duration: 13s; --snow-delay: -8s; font-size: 13px; }
-    .seasonal-overlay span:nth-child(2) { left: 11%; --snow-duration: 17s; --snow-delay: -2s; font-size: 18px; }
-    .seasonal-overlay span:nth-child(3) { left: 19%; --snow-duration: 15s; --snow-delay: -12s; font-size: 12px; }
-    .seasonal-overlay span:nth-child(4) { left: 27%; --snow-duration: 19s; --snow-delay: -6s; font-size: 16px; }
-    .seasonal-overlay span:nth-child(5) { left: 35%; --snow-duration: 14s; --snow-delay: -10s; font-size: 14px; }
-    .seasonal-overlay span:nth-child(6) { left: 43%; --snow-duration: 18s; --snow-delay: -4s; font-size: 12px; }
-    .seasonal-overlay span:nth-child(7) { left: 51%; --snow-duration: 16s; --snow-delay: -14s; font-size: 18px; }
-    .seasonal-overlay span:nth-child(8) { left: 59%; --snow-duration: 20s; --snow-delay: -7s; font-size: 13px; }
-    .seasonal-overlay span:nth-child(9) { left: 67%; --snow-duration: 14s; --snow-delay: -3s; font-size: 17px; }
-    .seasonal-overlay span:nth-child(10) { left: 75%; --snow-duration: 19s; --snow-delay: -11s; font-size: 12px; }
-    .seasonal-overlay span:nth-child(11) { left: 83%; --snow-duration: 15s; --snow-delay: -5s; font-size: 16px; }
-    .seasonal-overlay span:nth-child(12) { left: 91%; --snow-duration: 18s; --snow-delay: -13s; font-size: 14px; }
-    @keyframes seasonal-snow { from { transform: translate3d(0, -8vh, 0) rotate(0deg); } to { transform: translate3d(6vw, 110vh, 0) rotate(360deg); } }
+    .seasonal-overlay span { position: absolute; display: block; pointer-events: none; }
+    body[data-season="christmas"] .seasonal-overlay,
+    body[data-season="newyear"] .seasonal-overlay,
+    body[data-season="valentines"] .seasonal-overlay,
+    body[data-season="halloween"] .seasonal-overlay,
+    body[data-season="spring"] .seasonal-overlay,
+    body[data-season="summer"] .seasonal-overlay,
+    body[data-season="autumn"] .seasonal-overlay,
+    body[data-season="winter"] .seasonal-overlay { display: block; }
+    body[data-season="christmas"] .seasonal-overlay span,
+    body[data-season="winter"] .seasonal-overlay span {
+      top: -8vh; color: #e7f7ff; opacity: .38; text-shadow: 0 0 8px #d9f3ff;
+      animation: seasonal-snow var(--effect-duration) linear var(--effect-delay) infinite;
+    }
+    .seasonal-overlay span:nth-child(1) { left: 3%; --effect-duration: 13s; --effect-delay: -8s; --effect-drift: 18px; font-size: 13px; }
+    .seasonal-overlay span:nth-child(2) { left: 11%; --effect-duration: 17s; --effect-delay: -2s; --effect-drift: -22px; font-size: 18px; }
+    .seasonal-overlay span:nth-child(3) { left: 19%; --effect-duration: 15s; --effect-delay: -12s; --effect-drift: 24px; font-size: 12px; }
+    .seasonal-overlay span:nth-child(4) { left: 27%; --effect-duration: 19s; --effect-delay: -6s; --effect-drift: -14px; font-size: 16px; }
+    .seasonal-overlay span:nth-child(5) { left: 35%; --effect-duration: 14s; --effect-delay: -10s; --effect-drift: 20px; font-size: 14px; }
+    .seasonal-overlay span:nth-child(6) { left: 43%; --effect-duration: 18s; --effect-delay: -4s; --effect-drift: -18px; font-size: 12px; }
+    .seasonal-overlay span:nth-child(7) { left: 51%; --effect-duration: 16s; --effect-delay: -14s; --effect-drift: 26px; font-size: 18px; }
+    .seasonal-overlay span:nth-child(8) { left: 59%; --effect-duration: 20s; --effect-delay: -7s; --effect-drift: -24px; font-size: 13px; }
+    .seasonal-overlay span:nth-child(9) { left: 67%; --effect-duration: 14s; --effect-delay: -3s; --effect-drift: 18px; font-size: 17px; }
+    .seasonal-overlay span:nth-child(10) { left: 75%; --effect-duration: 19s; --effect-delay: -11s; --effect-drift: -20px; font-size: 12px; }
+    .seasonal-overlay span:nth-child(11) { left: 83%; --effect-duration: 15s; --effect-delay: -5s; --effect-drift: 24px; font-size: 16px; }
+    .seasonal-overlay span:nth-child(12) { left: 91%; --effect-duration: 18s; --effect-delay: -13s; --effect-drift: -16px; font-size: 14px; }
+    body[data-season="newyear"] .seasonal-overlay span {
+      top: var(--firework-top); width: 3px; height: 3px; border-radius: 50%; background: #fff;
+      opacity: 0; box-shadow: 0 -28px 2px #facc15, 20px -20px 2px #fb7185, 28px 0 2px #38bdf8,
+        20px 20px 2px #a78bfa, 0 28px 2px #34d399, -20px 20px 2px #f97316, -28px 0 2px #facc15, -20px -20px 2px #38bdf8;
+      filter: drop-shadow(0 0 6px #fbbf24);
+      animation: seasonal-fireworks 4.2s ease-out var(--effect-delay) infinite;
+    }
+    body[data-season="newyear"] .seasonal-overlay span:nth-child(1) { left: 18%; --firework-top: 21%; --effect-delay: 0s; }
+    body[data-season="newyear"] .seasonal-overlay span:nth-child(2) { left: 42%; --firework-top: 43%; --effect-delay: -1.05s; }
+    body[data-season="newyear"] .seasonal-overlay span:nth-child(3) { left: 68%; --firework-top: 25%; --effect-delay: -2.1s; }
+    body[data-season="newyear"] .seasonal-overlay span:nth-child(4) { left: 86%; --firework-top: 49%; --effect-delay: -3.15s; }
+    body[data-season="newyear"] .seasonal-overlay span:nth-child(n+5) { display: none; }
+    body[data-season="valentines"] .seasonal-overlay span {
+      bottom: -9vh; width: clamp(24px, 3vw, 40px); height: clamp(24px, 3vw, 40px);
+      display: grid; place-items: center; border: 1px solid #f9a8d477; border-radius: 50%;
+      background: radial-gradient(circle at 30% 25%, #fff8, transparent 34%), #f472b51a;
+      box-shadow: inset 0 0 12px #fb718533, 0 0 14px #fb718522; color: #fb7185; opacity: 0;
+      animation: seasonal-heart-rise var(--effect-duration) linear var(--effect-delay) infinite;
+    }
+    body[data-season="valentines"] .seasonal-overlay span::after {
+      position: absolute; top: 5px; left: 6px; width: 4px; height: 4px; border-radius: 50%;
+      background: #fff9; content: "";
+    }
+    body[data-season="halloween"] .seasonal-overlay span,
+    body[data-season="spring"] .seasonal-overlay span,
+    body[data-season="autumn"] .seasonal-overlay span {
+      top: -8vh; opacity: 0; filter: drop-shadow(0 2px 6px #f59e0b55);
+      animation: seasonal-fall var(--effect-duration) linear var(--effect-delay) infinite;
+    }
+    body[data-season="summer"] .seasonal-overlay span {
+      bottom: -8vh; color: #fde68a; opacity: 0; text-shadow: 0 0 12px #fbbf2466;
+      animation: seasonal-summer-rise var(--effect-duration) linear var(--effect-delay) infinite;
+    }
+    @keyframes seasonal-snow { from { transform: translate3d(0, -8vh, 0) rotate(0deg); } to { transform: translate3d(var(--effect-drift), 110vh, 0) rotate(360deg); } }
+    @keyframes seasonal-fireworks { 0%, 65% { opacity: 0; transform: scale(.08) rotate(0deg); } 72% { opacity: .9; } 100% { opacity: 0; transform: scale(1.15) rotate(40deg); } }
+    @keyframes seasonal-heart-rise { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(.7); } 12%, 80% { opacity: .38; } 100% { opacity: 0; transform: translate3d(var(--effect-drift), -115vh, 0) scale(1.12); } }
+    @keyframes seasonal-fall { 0% { opacity: 0; transform: translate3d(0, -8vh, 0) rotate(0deg); } 12%, 90% { opacity: .48; } 100% { opacity: 0; transform: translate3d(var(--effect-drift), 110vh, 0) rotate(360deg); } }
+    @keyframes seasonal-summer-rise { 0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); } 12%, 82% { opacity: .35; } 100% { opacity: 0; transform: translate3d(var(--effect-drift), -115vh, 0) rotate(180deg); } }
     @media (prefers-reduced-motion: reduce) {
       .brand-seasonal { animation: none; }
       .theme-art span { animation: none; }
@@ -421,9 +470,9 @@
 </head>
 <body>
   <div id="app" class="app" hidden>
-    <div class="seasonal-overlay" aria-hidden="true">
-      <span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span>
-      <span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span><span>❄</span>
+    <div id="seasonalOverlay" class="seasonal-overlay" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
     <header class="header">
       <div class="brand">
@@ -861,6 +910,16 @@
       autumn: ["🍂", "🍁", "🍄", "🍁", "🍂"],
       winter: ["❄️", "✨", "⛄", "✨", "❄️"]
     };
+    const THEME_OVERLAY_DECORATIONS = {
+      christmas: Array(12).fill("❄"),
+      newyear: Array(12).fill(""),
+      valentines: Array(12).fill("♥"),
+      halloween: ["🦇", "✦", "🕸️", "🦇", "✦", "🦇", "🕸️", "✦", "🦇", "✦", "🕸️", "🦇"],
+      spring: ["🌸", "🦋", "🌼", "🌷", "🦋", "🌸", "🌷", "🦋", "🌼", "🌸", "🦋", "🌷"],
+      summer: ["✦", "☀", "✧", "☼", "✦", "☀", "✧", "☼", "✦", "☀", "✧", "☼"],
+      autumn: ["🍂", "🍁", "🍄", "🍁", "🍂", "🍁", "🍂", "🍄", "🍁", "🍂", "🍁", "🍄"],
+      winter: Array(12).fill("❄")
+    };
     const MANUAL_HOLIDAY_GREETINGS = {
       christmas: "Merry Christmas! Wishing you peace, joy, and good health.",
       newyear: "Happy New Year! Wishing you happiness, success, and new opportunities.",
@@ -1006,6 +1065,10 @@
       const decorations = THEME_DECORATIONS[theme] || THEME_DECORATIONS.classic;
       $("themeArt").querySelectorAll("span").forEach((item, index) => {
         item.textContent = decorations[index];
+      });
+      const overlayDecorations = THEME_OVERLAY_DECORATIONS[theme] || [];
+      $("seasonalOverlay").querySelectorAll("span").forEach((item, index) => {
+        item.textContent = overlayDecorations.length ? overlayDecorations[index % overlayDecorations.length] : "";
       });
       document.querySelectorAll(".brand-name").forEach((brand) => {
         brand.querySelectorAll(".brand-seasonal").forEach((item, index) => {
