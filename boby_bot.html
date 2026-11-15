@@ -176,11 +176,11 @@
     .button:active { transform: translateY(1px); }
     .button.secondary { background: var(--panel-soft); border-color: var(--line); color: var(--text); }
     .button.small { padding: 7px 10px; font-size: 12px; }
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
-    .settings-menu { position: relative; }
+    .header-right { position: relative; margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .settings-menu { position: static; }
     .settings-menu > summary { display: inline-flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; }
     .settings-menu > summary::-webkit-details-marker { display: none; }
-    .profile-menu-icon { width: 16px; height: 16px; flex: 0 0 auto; }
+    .menu-icon { width: 16px; height: 16px; flex: 0 0 auto; }
     .settings-panel {
       position: absolute; top: calc(100% + 9px); right: 0; z-index: 10;
       display: grid; box-sizing: border-box; gap: 12px; width: min(380px, calc(100vw - 48px)); max-height: min(80vh, 700px);
@@ -188,6 +188,7 @@
       border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
       box-shadow: 0 12px 32px #0008;
     }
+    .settings-panel-compact { width: min(300px, calc(100vw - 48px)); }
     .settings-account { overflow-wrap: anywhere; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
     .profile-form { display: grid; gap: 9px; }
     .profile-form .field { margin: 0; }
@@ -211,7 +212,6 @@
     .profile-help { color: var(--muted); font-size: 9px; line-height: 1.4; }
     .profile-status { min-height: 16px; color: var(--muted); font-size: 10px; line-height: 1.4; }
     .profile-status.error { color: var(--red); }
-    .settings-divider { width: 100%; height: 1px; margin: 0; border: 0; background: var(--line); }
     .settings-panel .theme-picker { display: grid; gap: 7px; margin: 0; }
     .settings-panel .theme-picker select { width: 100%; }
     .settings-panel .theme-help { text-align: left; }
@@ -443,8 +443,8 @@
         <time class="clock" id="clock" aria-label="Current local date and time">Loading local time…</time>
         <button id="refreshButton" class="button secondary small" type="button">Refresh</button>
         <details id="profileMenu" class="settings-menu">
-          <summary class="button secondary small" aria-label="Profile and account settings" title="Open profile and account settings">
-            <svg class="profile-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <summary class="button secondary small" aria-label="Profile" title="Profile">
+            <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
               <circle cx="12" cy="8" r="3.3"></circle>
               <path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
             </svg>
@@ -480,7 +480,17 @@
               <button id="saveProfileButton" class="button" type="submit">Save profile</button>
               <span id="profileStatus" class="profile-status" role="status" aria-live="polite"></span>
             </form>
-            <hr class="settings-divider">
+          </div>
+        </details>
+        <details id="settingsMenu" class="settings-menu">
+          <summary class="button secondary small" aria-label="Settings" title="Settings">
+            <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M10.5 3.5h3l.5 2a7 7 0 0 1 1.5.9l2-.5 1.5 2.6-1.4 1.4a7 7 0 0 1 0 1.8l1.4 1.4-1.5 2.6-2-.5a7 7 0 0 1-1.5.9l-.5 2h-3l-.5-2a7 7 0 0 1-1.5-.9l-2 .5L5 13.1l1.4-1.4a7 7 0 0 1 0-1.8L5 8.5l1.5-2.6 2 .5a7 7 0 0 1 1.5-.9z"></path>
+              <circle cx="12" cy="10.8" r="2.4"></circle>
+            </svg>
+            <span>Settings</span>
+          </summary>
+          <div class="settings-panel settings-panel-compact">
             <div class="theme-picker">
               <label for="themeSelect">Theme</label>
               <select id="themeSelect" aria-describedby="seasonalThemeStatus themeHelp">
@@ -2941,8 +2951,15 @@
       mountTradingViewChart(symbol);
     });
     $("profileMenu").addEventListener("toggle", () => {
-      if ($("profileMenu").open) void loadProfile();
-      else clearProfileDraft();
+      if ($("profileMenu").open) {
+        $("settingsMenu").open = false;
+        void loadProfile();
+      } else {
+        clearProfileDraft();
+      }
+    });
+    $("settingsMenu").addEventListener("toggle", () => {
+      if ($("settingsMenu").open) $("profileMenu").open = false;
     });
     $("profileAvatarInput").addEventListener("change", () => {
       const file = $("profileAvatarInput").files[0];
