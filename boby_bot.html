@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/forex001.svg" type="image/svg+xml">
+  <link rel="icon" href="./icons/forex001-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="./icons/forex001-180.png">
   <title>forex001 - Market Dashboard</title>
   <style>
@@ -152,10 +153,7 @@
       border-bottom: 1px solid var(--line); background: var(--surface);
     }
     .brand { display: flex; align-items: center; gap: 10px; min-width: 190px; font-weight: 800; letter-spacing: .04em; }
-    .brand-icon {
-      width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
-      background: linear-gradient(135deg, var(--blue), var(--green)); color: white;
-    }
+    .brand-icon { display: block; flex: 0 0 34px; width: 34px; height: 34px; border-radius: 10px; object-fit: cover; }
     .brand-name { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
     .brand-word { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: transparent; background-clip: text; }
     .brand-seasonal { display: inline-block; color: var(--amber); font-size: 13px; line-height: 1; filter: drop-shadow(0 1px 5px var(--auth-glow)); animation: brand-seasonal-drift 3s ease-in-out infinite; }
@@ -404,7 +402,7 @@
     </div>
     <header class="header">
       <div class="brand">
-        <div class="brand-icon">F</div>
+        <img class="brand-icon" src="./icons/forex001.svg" alt="" width="34" height="34" aria-hidden="true">
         <span class="brand-name">
           <span class="brand-seasonal" aria-hidden="true"></span>
           <span class="brand-word">FOREX001</span>
@@ -686,7 +684,7 @@
   <section id="authScreen" class="auth-screen" aria-label="Account sign in">
     <form id="authForm" class="auth-card">
       <div class="brand" style="margin-bottom:18px">
-        <div class="brand-icon">F</div>
+        <img class="brand-icon" src="./icons/forex001.svg" alt="" width="34" height="34" aria-hidden="true">
         <span class="brand-name">
           <span class="brand-seasonal" aria-hidden="true"></span>
           <span class="brand-word">FOREX001</span>
